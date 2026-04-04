@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volt Cards Iraq | متجر بطاقات الألعاب</title>
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0f0f13;
+            --card-bg: #1c1c24;
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background-color: rgba(28, 28, 36, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 20px 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo i { color: var(--primary); }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 80px 5%;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(139, 92, 246, 0.1), var(--bg-color));
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .discount-badge {
+            display: inline-block;
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            border: 1px solid var(--danger);
+            animation: pulse 2s infinite;
+        }
+
+        /* Products Grid */
+        .products {
+            padding: 50px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.2);
+            border-color: var(--primary);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .price-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .new-price {
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover { background-color: var(--primary-hover); }
+
+        /* Modal (Purchase Form) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--primary);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .modal-title { margin-bottom: 20px; color: var(--primary); }
+
+        .payment-info {
+            background-color: rgba(139, 92, 246, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--primary);
+            text-align: center;
+        }
+
+        .payment-info span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--success);
+            margin-top: 5px;
+            letter-spacing: 2px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--text-muted); }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
+            outline: none;
+        }
+        .form-control:focus { border-color: var(--primary); }
+
+        /* Image Preview */
+        .file-upload {
+            position: relative;
+            border: 2px dashed #333;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .file-upload:hover { border-color: var(--primary); }
+        .file-upload input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 150px;
+            margin-top: 10px;
+            display: none;
+            border-radius: 8px;
+        }
+
+        /* Success Message Modal */
+        .success-modal { text-align: center; }
+        .success-icon { font-size: 60px; color: var(--success); margin-bottom: 15px; }
+
+        /* Loader */
+        .loader {
+            display: none;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* WhatsApp Floating Button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4);
+            z-index: 100;
+            animation: pulse-wa 2s infinite;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes pulse-wa {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--success);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            transition: 0.5s;
+            z-index: 2000;
+            font-weight: bold;
+        }
+        .toast.show { bottom: 30px; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .whatsapp-float { right: 20px; bottom: 20px; width: 50px; height: 50px; font-size: 25px;}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo"><i class="fa-solid fa-gamepad"></i> Volt Cards Iraq</a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>أفضل متجر بطاقات الألعاب في العراق</h1>
+        <p>شحن فوري، أسعار تنافسية، ودعم متواصل</p>
+        <div class="discount-badge">
+            <i class="fa-solid fa-fire"></i> تخفيض 50% على جميع البطاقات لفترة محدودة!
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="products" id="products-container">
+        <!-- سيتم إضافة البطاقات هنا عن طريق الجافاسكربت -->
+    </section>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/9647723859907" target="_blank" class="whatsapp-float">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Purchase Modal -->
+    <div class="modal" id="purchaseModal">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark close-btn" onclick="closeModal()"></i>
+            
+            <div id="formSection">
+                <h2 class="modal-title">إتمام الطلب</h2>
+                
+                <div class="payment-info">
+                    يرجى تحويل المبلغ عبر آسياسيل حوالة إلى الرقم:
+                    <span>07723859907</span>
+                </div>
+
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label>البطاقة المختارة</label>
+                        <input type="text" id="selectedCard" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>الاسم الكامل</label>
+                        <input type="text" id="userName" class="form-control" required placeholder="أدخل اسمك">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهاتف (واتساب)</label>
+                        <input type="tel" id="userPhone" class="form-control" required placeholder="077x xxx xxxx">
+                    </div>
+                    <div class="form-group">
+                        <label>ID اللاعب / الحساب</label>
+                        <input type="text" id="playerId" class="form-control" required placeholder="أدخل الايدي الخاص بك">
+                    </div>
+                    <div class="form-group">
+                        <label>إثبات التحويل (صورة)</label>
+                        <div class="file-upload">
+                            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                            <p>اضغط هنا لرفع صورة سكرين شوت</p>
+                            <input type="file" id="receiptImg" accept="image/png, image/jpeg" required onchange="previewImage(event)">
+                        </div>
+                        <img id="imagePreview" alt="معاينة الصورة">
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submitBtn">
+                        <span id="btnText">تأكيد وإرسال الطلب</span>
+                        <div class="loader" id="btnLoader"></div>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Success Section (Hidden by default) -->
+            <div id="successSection" class="success-modal" style="display: none;">
+                <i class="fa-solid fa-circle-check success-icon"></i>
+                <h2>تم استلام طلبك بنجاح ✅</h2>
+                <p style="margin: 15px 0; color: var(--text-muted); line-height: 1.8;">
+                    يرجى الانتظار لحين مراجعة التحويل.<br>
+                    سيتم التواصل معك عبر واتساب لتسليم البطاقة.
+                </p>
+                <button class="btn" onclick="closeModal()">إغلاق</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">تم الإرسال بنجاح!</div>
+
+    <script>
+        // بيانات البطاقات
+        const products = [
+            { id: 1, name: "PUBG Mobile - 600 UC", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", price: 20000 },
+            { id: 2, name: "Free Fire - 1080 Diamonds", img: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", price: 15000 },
+            { id: 3, name: "PlayStation Store - $20", img: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", price: 32000 },
+            { id: 4, name: "Xbox Gift Card - $25", img: "https://images.unsplash.com/photo-1605901309584-818e25960b8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", price: 40000 },
+            { id: 5, name: "Steam Wallet - $10", img: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", price: 16000 },
+            { id: 6, name: "Roblox - 800 Robux", img: "https://images.unsplash.com/photo-1614680376573-3e4a19e1b306?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", price: 18000 }
+        ];
+
+        // دالة عرض البطاقات في الصفحة
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            products.forEach(product => {
+                const oldPrice = product.price;
+                const newPrice = oldPrice / 2; // خصم 50%
+
+                const cardHTML = `
+                    <div class="card">
+                        <img src="${product.img}" alt="${product.name}" class="card-img">
+                        <div class="card-content">
+                            <h3 class="card-title">${product.name}</h3>
+                            <div class="price-container">
+                                <span class="old-price">${oldPrice.toLocaleString()} IQD</span>
+                                <span class="new-price">${newPrice.toLocaleString()} IQD</span>
+                            </div>
+                            <button class="btn" onclick="openModal('${product.name}', ${newPrice})">
+                                <i class="fa-solid fa-cart-shopping"></i> شراء الآن
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // دوال النافذة المنبثقة (Modal)
+        const modal = document.getElementById('purchaseModal');
+        const formSection = document.getElementById('formSection');
+        const successSection = document.getElementById('successSection');
+
+        function openModal(cardName, price) {
+            modal.style.display = 'flex';
+            document.getElementById('selectedCard').value = `${cardName} (السعر: ${price.toLocaleString()} IQD)`;
+            
+            // إعادة ضبط النموذج
+            formSection.style.display = 'block';
+            successSection.style.display = 'none';
+            document.getElementById('checkoutForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // معاينة الصورة المرفوعة
+        function previewImage(event) {
+            const reader = new FileReader();
+            const imageField = document.getElementById("imagePreview");
+            
+            reader.onload = function() {
+                if(reader.readyState == 2) {
+                    imageField.src = reader.result;
+                    imageField.style.display = "block";
+                }
+            }
+            if(event.target.files[0]) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+
+        // معالجة إرسال الطلب (بدون باك اند)
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // تشغيل تأثير التحميل (Loader)
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+            const submitBtn = document.getElementById('submitBtn');
+
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'block';
+            submitBtn.disabled = true;
+
+            // حفظ البيانات في LocalStorage (اختياري)
+            const orderData = {
+                card: document.getElementById('selectedCard').value,
+                name: document.getElementById('userName').value,
+                phone: document.getElementById('userPhone').value,
+                playerId: document.getElementById('playerId').value,
+                date: new Date().toLocaleString()
+            };
+            
+            let orders = JSON.parse(localStorage.getItem('volt_orders')) || [];
+            orders.push(orderData);
+            localStorage.setItem('volt_orders', JSON.stringify(orders));
+
+            // محاكاة إرسال البيانات (انتظار ثانيتين)
+            setTimeout(() => {
+                // إرجاع الزر لحالته
+                btnText.style.display = 'block';
+                btnLoader.style.display = 'none';
+                submitBtn.disabled = false;
+
+                // إخفاء الفورم وإظهار رسالة النجاح
+                formSection.style.display = 'none';
+                successSection.style.display = 'block';
+
+                showToast();
+            }, 2000);
+        });
+
+        // رسالة التنبيه (Toast)
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // إغلاق النافذة عند الضغط خارجها
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // تشغيل دالة عرض البطاقات عند تحميل الصفحة
+        window.onload = renderProducts;
+
+    </script>
+</body>
+</html>
