@@ -84,8 +84,22 @@
         .discount-badge { display: inline-block; background: rgba(239, 68, 68, 0.1); color: #ff4d4d; padding: 10px 25px; border-radius: 50px; font-weight: 800; font-size: 1.2rem; margin-top: 15px; border: 1px solid rgba(239, 68, 68, 0.2); animation: pulse 2s infinite; }
 
         /* ========================================== */
-        /* شريط البحث الفوري (جديد) */
+        /* قسم كيفية الشراء (الخطوات) */
         /* ========================================== */
+        .how-it-works { padding: 40px 5%; margin: 20px 5% 40px; border-radius: 24px; text-align: center; }
+        .how-it-works h2 { color: var(--text-main); font-size: 2rem; font-weight: 900; margin-bottom: 30px; }
+        .how-it-works h2 i { color: var(--primary); margin-left: 10px; filter: drop-shadow(var(--neon-glow)); }
+        html[dir="ltr"] .how-it-works h2 i { margin-left: 0; margin-right: 10px; }
+        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .step-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); padding: 25px 15px; border-radius: 16px; transition: 0.3s; position: relative; }
+        .step-card:hover { transform: translateY(-5px); border-color: var(--primary); background: rgba(139, 92, 246, 0.05); }
+        .step-icon { width: 60px; height: 60px; margin: 0 auto 15px; background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-size: 24px; box-shadow: var(--neon-glow); position: relative; }
+        .step-num { position: absolute; top: -5px; right: -5px; background: var(--warning); color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 14px; font-weight: bold; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-color); }
+        html[dir="ltr"] .step-num { right: auto; left: -5px; }
+        .step-card h3 { color: var(--text-main); font-size: 1.2rem; margin-bottom: 10px; font-weight: bold; }
+        .step-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+
+        /* شريط البحث الفوري */
         .search-container { padding: 0 5%; margin-bottom: 30px; display: flex; justify-content: center; }
         .search-box { position: relative; width: 100%; max-width: 600px; }
         .search-box i { position: absolute; top: 50%; right: 20px; transform: translateY(-50%); color: var(--text-muted); font-size: 1.3rem; transition: 0.3s;}
@@ -249,6 +263,45 @@
         </div>
     </section>
 
+    <!-- قسم كيفية الشراء (جديد) -->
+    <section class="how-it-works glass">
+        <h2 data-i18n="howToBuyTitle"><i class="fa-solid fa-circle-question"></i> كيف تشتري من الموقع؟</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fa-solid fa-user-pen"></i>
+                    <span class="step-num">1</span>
+                </div>
+                <h3 data-i18n="step1Title">اكتب اسمك</h3>
+                <p data-i18n="step1Desc">ليس شرطاً أن تضيف اسمك الحقيقي.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <span class="step-num">2</span>
+                </div>
+                <h3 data-i18n="step2Title">رقم التحويل</h3>
+                <p data-i18n="step2Desc">اكتب الرقم الذي تم تحويل المبلغ من خلاله.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fa-solid fa-file-image"></i>
+                    <span class="step-num">3</span>
+                </div>
+                <h3 data-i18n="step3Title">إثبات التحويل</h3>
+                <p data-i18n="step3Desc">ارفع صورة لإثبات التحويل (صورة لرسالة التحويل).</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span class="step-num">4</span>
+                </div>
+                <h3 data-i18n="step4Title">تأكيد الطلب</h3>
+                <p data-i18n="step4Desc">اضغط تأكيد، وسوف يرسل لك طلبك عبر قسم الطلبات.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- شريط البحث الفوري -->
     <div class="search-container">
         <div class="search-box">
@@ -351,6 +404,7 @@
                 welcomeTitle: "مرحباً بك في فولت كاردز", welcomeDesc: "وجهتك الأولى للبطاقات الرقمية والألعاب في العراق", enterSite: "ابدأ التصفح",
                 logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "الوضع الداكن", light: "الوضع الفاتح",
                 heroTitle: "أفضل متجر بطاقات رقمية في العراق", heroDesc: "شحن فوري، أسعار تنافسية، ودعم متواصل 24/7", discount: "تخفيض 50% على جميع البطاقات لفترة محدودة!",
+                howToBuyTitle: "كيف تشتري من الموقع؟", step1Title: "اكتب اسمك", step1Desc: "ليس شرطاً أن تضيف اسمك الحقيقي.", step2Title: "رقم التحويل", step2Desc: "اكتب الرقم الذي تم تحويل المبلغ من خلاله.", step3Title: "إثبات التحويل", step3Desc: "ارفع صورة لإثبات التحويل (صورة لرسالة التحويل).", step4Title: "تأكيد الطلب", step4Desc: "اضغط تأكيد، وسوف يرسل لك طلبك عبر قسم الطلبات.",
                 catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات الألعاب", catPc: "ألعاب الكمبيوتر", catStores: "بطاقات المتاجر",
                 buyBtn: "شراء الآن", currency: "د.ع", modalTitle: "إتمام الطلب",
                 formName: "الاسم الكامل", formContact: "رقم الهاتف أو معرف تيليجرام", 
@@ -367,6 +421,7 @@
                 welcomeTitle: "Welcome to Volt Cards", welcomeDesc: "Your ultimate destination for digital cards in Iraq", enterSite: "Start Browsing",
                 logo: "Volt Cards", settings: "Settings", language: "Language", theme: "Theme", dark: "Dark Mode", light: "Light Mode",
                 heroTitle: "Best Digital Cards Store in Iraq", heroDesc: "Instant delivery, competitive prices, 24/7 support", discount: "50% OFF on all cards for a limited time!",
+                howToBuyTitle: "How to buy?", step1Title: "Enter Your Name", step1Desc: "(Doesn't have to be your real name).", step2Title: "Transfer Number", step2Desc: "Enter the number used for the transfer.", step3Title: "Payment Proof", step3Desc: "Upload a screenshot of the transfer message.", step4Title: "Confirm Order", step4Desc: "Click confirm, and your order will be sent via Orders section.",
                 catAll: "All", catMobile: "Mobile Games", catBoost: "Social Boost", catConsole: "Consoles", catPc: "PC Games", catStores: "Store Cards",
                 buyBtn: "Buy Now", currency: "IQD", modalTitle: "Complete Order",
                 formName: "Full Name", formContact: "Phone Number or Telegram @", 
@@ -449,7 +504,6 @@
             if(lang === 'en') enterSiteBtn.innerHTML = `<span data-i18n="enterSite">${translations.en.enterSite}</span> <i class="fa-solid fa-arrow-right"></i>`;
             else enterSiteBtn.innerHTML = `<span data-i18n="enterSite">${translations.ar.enterSite}</span> <i class="fa-solid fa-arrow-left"></i>`;
             
-            // إعادة رسم المنتجات بنفس الفلتر الحالي والبحث الحالي
             const activeCategoryBtn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.classList.contains('active'));
             const category = activeCategoryBtn ? activeCategoryBtn.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
             const currentSearch = document.getElementById('searchInput').value;
@@ -457,26 +511,19 @@
             renderMyOrders();
         }
 
-        // ==========================================
-        //  دوال البحث والفلترة الذكية
-        // ==========================================
         function onSearchInput(event) {
             const query = event.target.value;
-            // عند البحث، يتم تحويل التصنيف إلى "الكل" ليتم البحث في كل المتجر
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             const allBtn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.getAttribute('onclick').includes("'all'"));
             if(allBtn) allBtn.classList.add('active');
-            
             renderProducts('all', query);
         }
 
         function filterProducts(category) { 
-            // تفعيل الزر المناسب
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
             const btnToActivate = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.getAttribute('onclick').includes(`'${category}'`));
             if(btnToActivate) btnToActivate.classList.add('active');
             
-            // تفريغ مربع البحث عند تغيير القسم
             document.getElementById('searchInput').value = ''; 
             renderProducts(category, ''); 
         }
@@ -492,14 +539,13 @@
             ];
             
             let htmlContent = '';
-            let totalFound = 0; // لحساب عدد النتائج
+            let totalFound = 0; 
 
             categories.forEach(cat => {
                 if (categoryFilter !== 'all' && categoryFilter !== cat.id) return;
                 
                 let catProducts = products.filter(p => p.category === cat.id);
                 
-                // تطبيق البحث إذا كان هناك نص مكتوب
                 if (searchQuery.trim() !== '') {
                     const query = searchQuery.toLowerCase();
                     catProducts = catProducts.filter(p => 
@@ -531,7 +577,6 @@
                 }
             });
 
-            // إظهار رسالة إذا لم يتم العثور على أي منتج
             if (totalFound === 0) {
                 container.innerHTML = `
                 <div class="empty-search">
