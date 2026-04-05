@@ -292,7 +292,7 @@
                 <i class="fa-solid fa-circle-check" style="font-size: 80px; color: var(--success); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.4));"></i>
                 <h2 style="color: var(--success); font-weight: 900;" data-i18n="successTitle">تم استلام طلبك بنجاح!</h2>
                 
-                <!-- إضافة صندوق إظهار رقم الطلب -->
+                <!-- صندوق إظهار رقم الطلب -->
                 <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px dashed var(--primary);">
                     <span style="color: var(--text-muted); font-size: 0.9rem;" data-i18n="successDesc">سيتم التواصل معك فوراً. يرجى الاحتفاظ برقم الطلب:</span><br>
                     <strong id="successOrderId" style="color: var(--primary); font-size: 1.4rem; letter-spacing: 1px; display: inline-block; margin-top: 5px;"></strong>
@@ -525,7 +525,7 @@
                 cardDetails += ` | اليوزر/الرابط: ${targetAccount}`;
             }
 
-            // دمج الـ ID والـ IP مع اسم البطاقة لضمان وصولها لسيرفرك القديم كما هي
+            // دمج الـ ID والـ IP مع اسم البطاقة لضمان وصولها لسيرفرك 
             const finalCardDetails = `[طلب: ${orderID}] ${cardDetails} | IP: ${clientIP}`;
 
             if (fileInput.files.length === 0) return;
@@ -545,9 +545,16 @@
                         imageBase64: base64String
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    // التحقق من حالة الحظر 429
+                    if (response.status === 429) {
+                        alert('عذراً، لقد تجاوزت الحد المسموح من الطلبات! يرجى الانتظار 30 دقيقة ثم المحاولة مجدداً. ⏳');
+                        throw new Error('Rate Limited');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if(data.ok) {
+                    if(data && data.ok) {
                         saveOrderToHistory(document.getElementById('selectedCard').value.split('-')[0].trim(), orderID);
                         document.getElementById('formSection').style.display = 'none';
                         document.getElementById('successSection').style.display = 'block';
@@ -555,7 +562,12 @@
                         showToast();
                     } else { alert('حدث خطأ أثناء الإرسال.'); }
                 })
-                .catch(err => { console.error(err); alert('فشل الاتصال بالخادم.'); })
+                .catch(err => { 
+                    if(err.message !== 'Rate Limited') {
+                        console.error(err); 
+                        alert('فشل الاتصال بالخادم.'); 
+                    }
+                })
                 .finally(() => { btnSpan.innerText = originalText; });
             };
             reader.readAsDataURL(fileInput.files[0]);
@@ -579,16 +591,28 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type: 'custom', customName: finalCustomName, customContact: customContact })
             })
-            .then(response => response.json())
+            .then(response => {
+                // التحقق من حالة الحظر 429 للطلبات الخاصة أيضاً
+                if (response.status === 429) {
+                    alert('عذراً، لقد تجاوزت الحد المسموح من الطلبات! يرجى الانتظار 30 دقيقة ثم المحاولة مجدداً. ⏳');
+                    throw new Error('Rate Limited');
+                }
+                return response.json();
+            })
             .then(data => {
-                if(data.ok) {
+                if(data && data.ok) {
                     saveOrderToHistory(`${translations[currentLang].orderCustom}: ${customName}`, orderID);
                     e.target.reset();
                     showToast();
                     toggleSettings();
                 } else { alert('حدث خطأ أثناء الإرسال.'); }
             })
-            .catch(err => { console.error(err); alert('فشل الاتصال بالخادم.'); })
+            .catch(err => { 
+                if(err.message !== 'Rate Limited') {
+                    console.error(err); 
+                    alert('فشل الاتصال بالخادم.'); 
+                }
+            })
             .finally(() => { btnSpan.innerText = originalText; });
         });
 
