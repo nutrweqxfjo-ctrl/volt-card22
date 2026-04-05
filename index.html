@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* المتغيرات الأساسية مع دعم الثيم الزجاجي */
+        /* المتغيرات الأساسية */
         :root {
             --bg-color: #08080c;
             --card-bg: rgba(255, 255, 255, 0.03);
@@ -40,65 +40,42 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         
-        body {
-            background-color: var(--bg-color); color: var(--text-main);
-            overflow-x: hidden; transition: 0.4s; min-height: 100vh;
-        }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; transition: 0.4s; min-height: 100vh; }
 
-        /* خلفية فنية (Glow Spots) لإبراز تأثير الزجاج */
+        /* خلفية فنية */
         .bg-glow-1 { position: fixed; top: -10%; left: -10%; width: 400px; height: 400px; background: var(--primary); filter: blur(150px); opacity: 0.15; z-index: -1; pointer-events: none; }
         .bg-glow-2 { position: fixed; bottom: -10%; right: -10%; width: 400px; height: 400px; background: #ec4899; filter: blur(150px); opacity: 0.1; z-index: -1; pointer-events: none; }
 
         /* تأثير Glassmorphism */
-        .glass {
-            background: var(--glass-bg); backdrop-filter: blur(15px) saturate(160%);
-            -webkit-backdrop-filter: blur(15px) saturate(160%);
-            border: 1px solid var(--border-glass); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(15px) saturate(160%); -webkit-backdrop-filter: blur(15px) saturate(160%); border: 1px solid var(--border-glass); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); }
 
         /* شاشة الترحيب */
-        .welcome-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            background-color: var(--bg-color); z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; transition: 0.6s ease;
-        }
+        .welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: 0.6s ease; }
         .welcome-screen.hidden { opacity: 0; visibility: hidden; transform: scale(1.1); }
         .welcome-content { animation: slideUp 0.8s ease; padding: 20px; }
         .welcome-content h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 15px; color: var(--text-main); }
         .welcome-content p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 30px; }
-
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* شريط التنقل */
+        /* شريط التنقل العلوى */
         header { padding: 15px 5%; position: fixed; width: 100%; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 26px; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; }
         .logo i { color: var(--primary); filter: drop-shadow(var(--neon-glow)); }
-        
         .header-icons { display: flex; gap: 15px; }
         .icon-btn { font-size: 24px; color: var(--text-main); cursor: pointer; transition: 0.3s; background: none; border: none; }
         .icon-btn:hover { color: var(--primary); transform: scale(1.1); }
 
         /* قائمة الإعدادات الجانبية */
-        .settings-sidebar {
-            position: fixed; top: 0; right: -320px; width: 320px; height: 100vh;
-            z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px; overflow-y: auto;
-            border-right: 1px solid var(--border-glass);
-        }
+        .settings-sidebar { position: fixed; top: 0; right: -320px; width: 320px; height: 100vh; z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px; overflow-y: auto; border-right: 1px solid var(--border-glass); }
         html[dir="ltr"] .settings-sidebar { right: auto; left: -320px; border-right: none; border-left: 1px solid var(--border-glass); }
         .settings-sidebar.open { right: 0; }
         html[dir="ltr"] .settings-sidebar.open { left: 0; }
-
         .close-settings { font-size: 24px; color: var(--text-muted); cursor: pointer; margin-bottom: 30px; display: block; text-align: left; transition: 0.3s; }
         .close-settings:hover { color: var(--primary); transform: rotate(90deg); }
         html[dir="ltr"] .close-settings { text-align: right; }
-
         .setting-group { margin-bottom: 25px; }
         .setting-group label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--text-main); }
-        .setting-select, .sidebar-input { 
-            width: 100%; padding: 12px; background: rgba(255,255,255,0.05); color: var(--text-main); 
-            border: 1px solid var(--border-glass); border-radius: 12px; outline: none; font-size: 1rem; margin-bottom: 10px; backdrop-filter: blur(5px);
-        }
+        .setting-select, .sidebar-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-glass); border-radius: 12px; outline: none; font-size: 1rem; margin-bottom: 10px; backdrop-filter: blur(5px); }
         .setting-select:focus, .sidebar-input:focus { border-color: var(--primary); }
 
         /* القسم الرئيسي */
@@ -106,13 +83,25 @@
         .hero h1 { font-size: 3.2rem; font-weight: 900; margin-bottom: 15px; color: var(--text-main); letter-spacing: -1px;}
         .discount-badge { display: inline-block; background: rgba(239, 68, 68, 0.1); color: #ff4d4d; padding: 10px 25px; border-radius: 50px; font-weight: 800; font-size: 1.2rem; margin-top: 15px; border: 1px solid rgba(239, 68, 68, 0.2); animation: pulse 2s infinite; }
 
+        /* ========================================== */
+        /* شريط البحث الفوري (جديد) */
+        /* ========================================== */
+        .search-container { padding: 0 5%; margin-bottom: 30px; display: flex; justify-content: center; }
+        .search-box { position: relative; width: 100%; max-width: 600px; }
+        .search-box i { position: absolute; top: 50%; right: 20px; transform: translateY(-50%); color: var(--text-muted); font-size: 1.3rem; transition: 0.3s;}
+        html[dir="ltr"] .search-box i { right: auto; left: 20px; }
+        .search-input { width: 100%; padding: 18px 55px 18px 20px; border-radius: 50px; border: 1px solid var(--border-glass); background: var(--card-bg); color: var(--text-main); font-size: 1.1rem; outline: none; backdrop-filter: blur(5px); transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);}
+        html[dir="ltr"] .search-input { padding: 18px 20px 18px 55px; }
+        .search-input:focus { border-color: var(--primary); box-shadow: var(--neon-glow); background: rgba(255,255,255,0.08); }
+        .search-input:focus + i { color: var(--primary); }
+
         /* الفلاتر */
-        .categories-container { padding: 20px 5%; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; }
+        .categories-container { padding: 0 5% 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; scroll-margin-top: 100px; }
         .filter-btn { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-glass); padding: 10px 25px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.3s; backdrop-filter: blur(5px); }
         .filter-btn.active { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: var(--neon-glow); }
 
         /* البطاقات */
-        .products-wrapper { padding-bottom: 60px; }
+        .products-wrapper { padding-bottom: 60px; min-height: 40vh; }
         .category-section-title { font-size: 2rem; font-weight: 900; color: var(--text-main); margin: 30px 5% 20px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block; }
         .products-grid { padding: 0 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
         
@@ -132,6 +121,11 @@
 
         .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; box-shadow: var(--neon-glow);}
         .btn:hover { background-color: var(--primary-hover); transform: scale(1.02); }
+
+        /* رسالة البحث الفارغ */
+        .empty-search { text-align: center; padding: 50px 20px; color: var(--text-muted); animation: slideUp 0.5s ease;}
+        .empty-search i { font-size: 60px; color: var(--primary); margin-bottom: 20px; filter: drop-shadow(var(--neon-glow)); opacity: 0.8;}
+        .empty-search h3 { font-size: 1.5rem; color: var(--text-main); margin-bottom: 10px;}
 
         /* النوافذ المنبثقة */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(8px);}
@@ -165,14 +159,25 @@
         .telegram-float { position: fixed; bottom: 30px; right: 30px; background: var(--telegram); color: white; width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; z-index: 100; box-shadow: 0 10px 20px rgba(36, 161, 222, 0.3); padding-right: 4px; animation: pulse-tg 2s infinite; text-decoration: none;}
         html[dir="ltr"] .telegram-float { right: auto; left: 30px; padding-right: 0; padding-left: 4px; }
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes pulse-tg { 0% { box-shadow: 0 0 0 0 rgba(36, 161, 222, 0.5); } 70% { box-shadow: 0 0 0 20px rgba(36, 161, 222, 0); } 100% { box-shadow: 0 0 0 0 rgba(36, 161, 222, 0); } }
+        /* شريط التنقل السفلي للموبايل */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-glass); z-index: 1500; padding: 12px 0; padding-bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: bold; gap: 6px; transition: 0.3s; cursor: pointer; }
+        .nav-item i { font-size: 1.4rem; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { color: var(--primary); }
+        .nav-item.active i { filter: drop-shadow(var(--neon-glow)); transform: translateY(-3px); }
 
+        /* تعديلات شاشات الموبايل */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5rem; }
-            .telegram-float { bottom: 20px; width: 55px; height: 55px; font-size: 28px;}
+            .telegram-float { bottom: 90px; width: 55px; height: 55px; font-size: 28px;}
             .welcome-content h1 { font-size: 2.5rem; }
+            .bottom-nav { display: flex; }
+            .header-icons { display: none; }
+            body { padding-bottom: 80px; }
         }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes pulse-tg { 0% { box-shadow: 0 0 0 0 rgba(36, 161, 222, 0.5); } 70% { box-shadow: 0 0 0 20px rgba(36, 161, 222, 0); } 100% { box-shadow: 0 0 0 0 rgba(36, 161, 222, 0); } }
     </style>
 </head>
 <body>
@@ -192,7 +197,7 @@
     </div>
 
     <header class="glass">
-        <a href="#" class="logo"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
+        <a href="#" class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
         <div class="header-icons">
             <button class="icon-btn" onclick="openMyOrdersModal()" title="طلباتي"><i class="fa-solid fa-box-open"></i></button>
             <button class="icon-btn settings-btn" onclick="toggleSettings()" title="الإعدادات"><i class="fa-solid fa-gear"></i></button>
@@ -244,6 +249,14 @@
         </div>
     </section>
 
+    <!-- شريط البحث الفوري -->
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن بطاقة، لعبة، أو خدمة..." data-i18n-placeholder="searchPlaceholder" oninput="onSearchInput(event)">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+    </div>
+
     <!-- الأزرار -->
     <div class="categories-container" id="categories-container">
         <button class="filter-btn active" onclick="filterProducts('all')" data-i18n="catAll">الكل</button>
@@ -259,6 +272,26 @@
     <a href="https://t.me/HH0O_1" target="_blank" class="telegram-float">
         <i class="fa-brands fa-telegram"></i>
     </a>
+
+    <!-- شريط التنقل السفلي للموبايل -->
+    <nav class="bottom-nav">
+        <a class="nav-item active" onclick="setActiveNav(this); window.scrollTo({top: 0, behavior: 'smooth'});">
+            <i class="fa-solid fa-house"></i>
+            <span data-i18n="navHome">الرئيسية</span>
+        </a>
+        <a href="#searchInput" class="nav-item" onclick="setActiveNav(this); document.getElementById('searchInput').focus();">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span data-i18n="navSearch">بحث</span>
+        </a>
+        <a class="nav-item" onclick="setActiveNav(this); openMyOrdersModal();">
+            <i class="fa-solid fa-box-open"></i>
+            <span data-i18n="navOrders">طلباتي</span>
+        </a>
+        <a class="nav-item" onclick="setActiveNav(this); toggleSettings();">
+            <i class="fa-solid fa-gear"></i>
+            <span data-i18n="navSettings">إعدادات</span>
+        </a>
+    </nav>
 
     <!-- نافذة إتمام الطلب -->
     <div class="modal" id="purchaseModal">
@@ -292,7 +325,6 @@
                 <i class="fa-solid fa-circle-check" style="font-size: 80px; color: var(--success); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.4));"></i>
                 <h2 style="color: var(--success); font-weight: 900;" data-i18n="successTitle">تم استلام طلبك بنجاح!</h2>
                 
-                <!-- صندوق إظهار رقم الطلب -->
                 <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px dashed var(--primary);">
                     <span style="color: var(--text-muted); font-size: 0.9rem;" data-i18n="successDesc">سيتم التواصل معك فوراً. يرجى الاحتفاظ برقم الطلب:</span><br>
                     <strong id="successOrderId" style="color: var(--primary); font-size: 1.4rem; letter-spacing: 1px; display: inline-block; margin-top: 5px;"></strong>
@@ -322,13 +354,14 @@
                 catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات الألعاب", catPc: "ألعاب الكمبيوتر", catStores: "بطاقات المتاجر",
                 buyBtn: "شراء الآن", currency: "د.ع", modalTitle: "إتمام الطلب",
                 formName: "الاسم الكامل", formContact: "رقم الهاتف أو معرف تيليجرام", 
-                formTransferPhone: "رقم الهاتف الذي تم تحويل المبلغ من خلاله",
-                formTargetAccount: "يوزر الحساب أو رابط القناة", 
+                formTransferPhone: "رقم الهاتف الذي تم تحويل المبلغ من خلاله", formTargetAccount: "يوزر الحساب أو رابط القناة", 
                 formUpload: "اضغط هنا لرفع صورة إثبات التحويل", formSubmit: "تأكيد وإرسال الطلب",
                 successTitle: "تم استلام طلبك بنجاح!", successDesc: "سيتم التواصل معك فوراً. يرجى الاحتفاظ برقم الطلب:", closeBtn: "إغلاق", toastMsg: "تم الإرسال بنجاح! ✅",
                 supportTitle: "الدعم الفني", customOrderTitle: "الطلبات الخاصة", customOrderDesc: "لم تجد البطاقة أو الخدمة التي تبحث عنها؟ أرسل طلبك الآن وسنقوم بتوفيرها لك بأفضل سعر ممكن",
                 customCardInput: "الخدمة المطلوبة والكمية", customOrderBtn: "إرسال الطلب الخاص",
-                myOrdersTitle: "سجل طلباتي", noOrders: "لا توجد طلبات سابقة حتى الآن.", orderPending: "قيد المراجعة ⏳", orderCustom: "طلب خاص"
+                myOrdersTitle: "سجل طلباتي", noOrders: "لا توجد طلبات سابقة حتى الآن.", orderPending: "قيد المراجعة ⏳", orderCustom: "طلب خاص",
+                navHome: "الرئيسية", navSearch: "بحث", navOrders: "طلباتي", navSettings: "إعدادات",
+                searchPlaceholder: "ابحث عن بطاقة، لعبة، أو خدمة...", noResultTitle: "عذراً!", noResultDesc: "لم يتم العثور على نتائج مطابقة لبحثك."
             },
             en: {
                 welcomeTitle: "Welcome to Volt Cards", welcomeDesc: "Your ultimate destination for digital cards in Iraq", enterSite: "Start Browsing",
@@ -337,13 +370,14 @@
                 catAll: "All", catMobile: "Mobile Games", catBoost: "Social Boost", catConsole: "Consoles", catPc: "PC Games", catStores: "Store Cards",
                 buyBtn: "Buy Now", currency: "IQD", modalTitle: "Complete Order",
                 formName: "Full Name", formContact: "Phone Number or Telegram @", 
-                formTransferPhone: "Phone number used for the transfer",
-                formTargetAccount: "Account Username or Channel Link", 
+                formTransferPhone: "Phone number used for the transfer", formTargetAccount: "Account Username or Channel Link", 
                 formUpload: "Click here to upload payment receipt", formSubmit: "Confirm & Send Order",
                 successTitle: "Order Received Successfully!", successDesc: "We will contact you immediately. Please save your order ID:", closeBtn: "Close", toastMsg: "Sent Successfully! ✅",
                 supportTitle: "Support", customOrderTitle: "Custom Orders", customOrderDesc: "Didn't find the service or game you're looking for? Send your request now and we'll provide it at the best price!",
                 customCardInput: "Requested Service & Quantity", customOrderBtn: "Send Custom Request",
-                myOrdersTitle: "My Orders History", noOrders: "No previous orders found.", orderPending: "Pending ⏳", orderCustom: "Custom Request"
+                myOrdersTitle: "My Orders History", noOrders: "No previous orders found.", orderPending: "Pending ⏳", orderCustom: "Custom Request",
+                navHome: "Home", navSearch: "Search", navOrders: "Orders", navSettings: "Settings",
+                searchPlaceholder: "Search for a card, game, or service...", noResultTitle: "Oops!", noResultDesc: "No matching results found for your search."
             }
         };
 
@@ -381,7 +415,6 @@
         let selectedProductCategory = ''; 
         let clientIP = 'غير معروف';
 
-        // دالة جلب الآيبي (IP) عند فتح الموقع
         function fetchUserIP() {
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
@@ -389,12 +422,16 @@
                 .catch(error => console.error('Error fetching IP:', error));
         }
 
-        // دالة توليد رقم طلب عشوائي
         function generateOrderID() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = 'VOLT-';
             for (let i = 0; i < 4; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
             return result + '-' + Math.floor(1000 + Math.random() * 9000);
+        }
+
+        function setActiveNav(element) {
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            if(element) element.classList.add('active');
         }
 
         function enterSite() { document.getElementById('welcomeScreen').classList.add('hidden'); }
@@ -411,14 +448,40 @@
             const enterSiteBtn = document.querySelector('.welcome-content .btn');
             if(lang === 'en') enterSiteBtn.innerHTML = `<span data-i18n="enterSite">${translations.en.enterSite}</span> <i class="fa-solid fa-arrow-right"></i>`;
             else enterSiteBtn.innerHTML = `<span data-i18n="enterSite">${translations.ar.enterSite}</span> <i class="fa-solid fa-arrow-left"></i>`;
-            const activeBtn = document.querySelector('.filter-btn.active');
-            const category = activeBtn ? activeBtn.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
-            filterProducts(category); renderMyOrders();
+            
+            // إعادة رسم المنتجات بنفس الفلتر الحالي والبحث الحالي
+            const activeCategoryBtn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.classList.contains('active'));
+            const category = activeCategoryBtn ? activeCategoryBtn.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
+            const currentSearch = document.getElementById('searchInput').value;
+            renderProducts(category, currentSearch); 
+            renderMyOrders();
         }
 
-        function filterProducts(category) { document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); renderProducts(category); }
+        // ==========================================
+        //  دوال البحث والفلترة الذكية
+        // ==========================================
+        function onSearchInput(event) {
+            const query = event.target.value;
+            // عند البحث، يتم تحويل التصنيف إلى "الكل" ليتم البحث في كل المتجر
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            const allBtn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.getAttribute('onclick').includes("'all'"));
+            if(allBtn) allBtn.classList.add('active');
+            
+            renderProducts('all', query);
+        }
 
-        function renderProducts(categoryFilter) {
+        function filterProducts(category) { 
+            // تفعيل الزر المناسب
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
+            const btnToActivate = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.getAttribute('onclick').includes(`'${category}'`));
+            if(btnToActivate) btnToActivate.classList.add('active');
+            
+            // تفريغ مربع البحث عند تغيير القسم
+            document.getElementById('searchInput').value = ''; 
+            renderProducts(category, ''); 
+        }
+
+        function renderProducts(categoryFilter, searchQuery = '') {
             const container = document.getElementById('products-container'); container.innerHTML = ''; 
             const categories = [
                 { id: 'mobile', key: 'catMobile' }, 
@@ -427,11 +490,26 @@
                 { id: 'console', key: 'catConsole' }, 
                 { id: 'pc', key: 'catPc' }
             ];
+            
             let htmlContent = '';
+            let totalFound = 0; // لحساب عدد النتائج
+
             categories.forEach(cat => {
                 if (categoryFilter !== 'all' && categoryFilter !== cat.id) return;
-                const catProducts = products.filter(p => p.category === cat.id);
+                
+                let catProducts = products.filter(p => p.category === cat.id);
+                
+                // تطبيق البحث إذا كان هناك نص مكتوب
+                if (searchQuery.trim() !== '') {
+                    const query = searchQuery.toLowerCase();
+                    catProducts = catProducts.filter(p => 
+                        p[currentLang].name.toLowerCase().includes(query) || 
+                        p[currentLang].cat.toLowerCase().includes(query)
+                    );
+                }
+
                 if (catProducts.length > 0) {
+                    totalFound += catProducts.length;
                     const sectionTitle = translations[currentLang][cat.key];
                     htmlContent += `<div class="category-group"><h2 class="category-section-title">${sectionTitle}</h2><div class="products-grid">`;
                     catProducts.forEach(p => {
@@ -452,7 +530,19 @@
                     htmlContent += `</div></div>`;
                 }
             });
-            container.innerHTML = htmlContent;
+
+            // إظهار رسالة إذا لم يتم العثور على أي منتج
+            if (totalFound === 0) {
+                container.innerHTML = `
+                <div class="empty-search">
+                    <i class="fa-solid fa-ghost"></i>
+                    <h3 data-i18n="noResultTitle">${translations[currentLang].noResultTitle}</h3>
+                    <p data-i18n="noResultDesc">${translations[currentLang].noResultDesc}</p>
+                    <button class="btn" onclick="toggleSettings()" style="width: auto; padding: 10px 30px; margin: 20px auto 0; font-size: 1rem;"><i class="fa-solid fa-paper-plane"></i> ${translations[currentLang].customOrderBtn}</button>
+                </div>`;
+            } else {
+                container.innerHTML = htmlContent;
+            }
         }
 
         function saveOrderToHistory(orderName, orderId) { 
@@ -503,18 +593,13 @@
         function previewImage(event) { const reader = new FileReader(); const img = document.getElementById("imagePreview"); reader.onload = () => { img.src = reader.result; img.style.display = "block"; }; if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]); }
         function showToast() { const toast = document.getElementById('toast'); toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
 
-        // ==========================================
-        //  الإرسال إلى Vercel Backend
-        // ==========================================
         document.getElementById('checkoutForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const btnSpan = document.getElementById('btnText');
             const originalText = btnSpan.innerText;
             btnSpan.innerText = 'جاري الإرسال... ⏳';
             
-            // توليد رقم الطلب
             const orderID = generateOrderID();
-            
             let cardDetails = document.getElementById('selectedCard').value;
             const userName = document.getElementById('userName').value;
             const transferPhone = document.getElementById('transferPhone').value;
@@ -525,7 +610,6 @@
                 cardDetails += ` | اليوزر/الرابط: ${targetAccount}`;
             }
 
-            // دمج الـ ID والـ IP مع اسم البطاقة لضمان وصولها لسيرفرك 
             const finalCardDetails = `[طلب: ${orderID}] ${cardDetails} | IP: ${clientIP}`;
 
             if (fileInput.files.length === 0) return;
@@ -539,14 +623,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         type: 'order',
-                        cardDetails: finalCardDetails, // سيرسل البيانات مع الـ IP ورقم الطلب
+                        cardDetails: finalCardDetails,
                         userName: userName,
                         transferPhone: transferPhone, 
                         imageBase64: base64String
                     })
                 })
                 .then(response => {
-                    // التحقق من حالة الحظر 429
                     if (response.status === 429) {
                         alert('عذراً، لقد تجاوزت الحد المسموح من الطلبات! يرجى الانتظار 30 دقيقة ثم المحاولة مجدداً. ⏳');
                         throw new Error('Rate Limited');
@@ -558,7 +641,7 @@
                         saveOrderToHistory(document.getElementById('selectedCard').value.split('-')[0].trim(), orderID);
                         document.getElementById('formSection').style.display = 'none';
                         document.getElementById('successSection').style.display = 'block';
-                        document.getElementById('successOrderId').innerText = orderID; // إظهار رقم الطلب للعميل
+                        document.getElementById('successOrderId').innerText = orderID;
                         showToast();
                     } else { alert('حدث خطأ أثناء الإرسال.'); }
                 })
@@ -573,7 +656,6 @@
             reader.readAsDataURL(fileInput.files[0]);
         });
 
-        // طلب خاص 
         document.getElementById('customRequestForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const btnSpan = document.querySelector('#customSubmitBtn span');
@@ -592,7 +674,6 @@
                 body: JSON.stringify({ type: 'custom', customName: finalCustomName, customContact: customContact })
             })
             .then(response => {
-                // التحقق من حالة الحظر 429 للطلبات الخاصة أيضاً
                 if (response.status === 429) {
                     alert('عذراً، لقد تجاوزت الحد المسموح من الطلبات! يرجى الانتظار 30 دقيقة ثم المحاولة مجدداً. ⏳');
                     throw new Error('Rate Limited');
