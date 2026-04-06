@@ -2,477 +2,353 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Volt Cards Iraq</title>
-    <!-- خطوط جوجل (Cairo) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- أيقونات FontAwesome -->
+    <!-- خطوط جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- أيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* المتغيرات الأساسية */
+        /* المتغيرات (ألوان التطبيق) */
         :root {
-            --bg-color: #08080c;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --glass-bg: rgba(20, 20, 28, 0.7);
+            --bg-color: #0f172a; /* لون خلفية أغمق وأكثر راحة للعين */
+            --card-bg: #1e293b;
             --primary: #8b5cf6;
             --primary-hover: #7c3aed;
-            --text-main: #ffffff;
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --danger: #ef4444;
             --success: #10b981;
             --warning: #f59e0b;
-            --telegram: #24A1DE;
-            --border-glass: rgba(255, 255, 255, 0.1);
-            --neon-glow: 0 0 15px rgba(139, 92, 246, 0.4);
-            --input-border: rgba(255, 255, 255, 0.1);
+            --border-color: #334155;
+            --input-bg: #0f172a;
+            --bottom-nav-bg: #1e293b;
+            --sheet-bg: #1e293b;
         }
 
         .light-mode {
-            --bg-color: #f0f2f5;
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --text-main: #1e293b;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
             --text-muted: #64748b;
-            --border-glass: rgba(0, 0, 0, 0.1);
-            --input-border: rgba(0, 0, 0, 0.2);
+            --border-color: #e2e8f0;
+            --input-bg: #f8fafc;
+            --bottom-nav-bg: #ffffff;
+            --sheet-bg: #ffffff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; transition: 0.4s; min-height: 100vh; }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; padding-bottom: 80px; transition: background-color 0.3s; }
 
-        /* خلفية فنية */
-        .bg-glow-1 { position: fixed; top: -10%; left: -10%; width: 400px; height: 400px; background: var(--primary); filter: blur(150px); opacity: 0.15; z-index: -1; pointer-events: none; }
-        .bg-glow-2 { position: fixed; bottom: -10%; right: -10%; width: 400px; height: 400px; background: #ec4899; filter: blur(150px); opacity: 0.1; z-index: -1; pointer-events: none; }
+        /* الهيدر المدمج (Compact Header) */
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-size: 1.5rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--primary); }
+        .header-actions i { font-size: 1.5rem; color: var(--text-muted); cursor: pointer; margin-right: 15px; }
+        html[dir="ltr"] .header-actions i { margin-right: 0; margin-left: 15px; }
 
-        /* تأثير Glassmorphism */
-        .glass { background: var(--glass-bg); backdrop-filter: blur(15px) saturate(160%); -webkit-backdrop-filter: blur(15px) saturate(160%); border: 1px solid var(--border-glass); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); }
+        /* شريط البحث */
+        .search-container { padding: 10px 20px; background: var(--bg-color); position: sticky; top: 60px; z-index: 99; }
+        .search-box { position: relative; width: 100%; }
+        .search-box i { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem; }
+        html[dir="ltr"] .search-box i { right: auto; left: 15px; }
+        .search-input { width: 100%; padding: 14px 45px 14px 15px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); font-size: 1rem; outline: none; transition: 0.3s; }
+        html[dir="ltr"] .search-input { padding: 14px 15px 14px 45px; }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
 
-        /* شاشة الترحيب */
-        .welcome-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: 0.6s ease; }
-        .welcome-screen.hidden { opacity: 0; visibility: hidden; transform: scale(1.1); }
-        .welcome-content { animation: slideUp 0.8s ease; padding: 20px; }
-        .welcome-content h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 15px; color: var(--text-main); }
-        .welcome-content p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 30px; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* شريط الأقسام الأفقي (Horizontal Scroll) */
+        .categories-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 20px 20px; scroll-behavior: smooth; background: var(--bg-color); position: sticky; top: 125px; z-index: 98; }
+        .categories-scroll::-webkit-scrollbar { display: none; }
+        .filter-chip { flex-shrink: 0; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 20px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* شريط التنقل العلوى */
-        header { padding: 15px 5%; position: fixed; width: 100%; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 26px; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-        .logo i { color: var(--primary); filter: drop-shadow(var(--neon-glow)); }
-        .header-icons { display: flex; gap: 15px; }
-        .icon-btn { font-size: 24px; color: var(--text-main); cursor: pointer; transition: 0.3s; background: none; border: none; }
-        .icon-btn:hover { color: var(--primary); transform: scale(1.1); }
-
-        /* قائمة الإعدادات الجانبية */
-        .settings-sidebar { position: fixed; top: 0; right: -320px; width: 320px; height: 100vh; z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px; overflow-y: auto; border-right: 1px solid var(--border-glass); }
-        html[dir="ltr"] .settings-sidebar { right: auto; left: -320px; border-right: none; border-left: 1px solid var(--border-glass); }
-        .settings-sidebar.open { right: 0; }
-        html[dir="ltr"] .settings-sidebar.open { left: 0; }
-        .close-settings { font-size: 24px; color: var(--text-muted); cursor: pointer; margin-bottom: 30px; display: block; text-align: left; transition: 0.3s; }
-        .close-settings:hover { color: var(--primary); transform: rotate(90deg); }
-        html[dir="ltr"] .close-settings { text-align: right; }
-        .setting-group { margin-bottom: 25px; }
-        .setting-group label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--text-main); }
-        .setting-select, .sidebar-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-glass); border-radius: 12px; outline: none; font-size: 1rem; margin-bottom: 10px; backdrop-filter: blur(5px); }
-        .setting-select:focus, .sidebar-input:focus { border-color: var(--primary); }
-
-        /* القسم الرئيسي */
-        .hero { margin-top: 60px; padding: 80px 5% 40px; text-align: center; background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, transparent 70%); }
-        .hero h1 { font-size: 3.2rem; font-weight: 900; margin-bottom: 15px; color: var(--text-main); letter-spacing: -1px;}
-        .discount-badge { display: inline-block; background: rgba(239, 68, 68, 0.1); color: #ff4d4d; padding: 10px 25px; border-radius: 50px; font-weight: 800; font-size: 1.2rem; margin-top: 15px; border: 1px solid rgba(239, 68, 68, 0.2); animation: pulse 2s infinite; }
-
-        /* شريط البحث الفوري */
-        .search-container { padding: 0 5%; margin-bottom: 30px; display: flex; justify-content: center; }
-        .search-box { position: relative; width: 100%; max-width: 600px; }
-        .search-box i { position: absolute; top: 50%; right: 20px; transform: translateY(-50%); color: var(--text-muted); font-size: 1.3rem; transition: 0.3s;}
-        html[dir="ltr"] .search-box i { right: auto; left: 20px; }
-        .search-input { width: 100%; padding: 18px 55px 18px 20px; border-radius: 50px; border: 1px solid var(--border-glass); background: var(--card-bg); color: var(--text-main); font-size: 1.1rem; outline: none; backdrop-filter: blur(5px); transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);}
-        html[dir="ltr"] .search-input { padding: 18px 20px 18px 55px; }
-        .search-input:focus { border-color: var(--primary); box-shadow: var(--neon-glow); background: rgba(255,255,255,0.08); }
-        .search-input:focus + i { color: var(--primary); }
-
-        /* الفلاتر */
-        .categories-container { padding: 0 5% 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 10px; scroll-margin-top: 100px; }
-        .filter-btn { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-glass); padding: 10px 25px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.3s; backdrop-filter: blur(5px); }
-        .filter-btn.active { background-color: var(--primary); color: white; border-color: var(--primary); box-shadow: var(--neon-glow); }
-
-        /* البطاقات */
-        .products-wrapper { min-height: 40vh; }
-        .category-section-title { font-size: 2rem; font-weight: 900; color: var(--text-main); margin: 30px 5% 20px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; display: inline-block; }
-        .products-grid { padding: 0 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-bottom: 40px; }
+        /* شبكة المنتجات (2-Column Grid) */
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; margin-bottom: 30px; }
+        @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(4, 1fr); } }
         
-        .card { background: var(--card-bg); border-radius: 24px; overflow: hidden; transition: 0.4s; border: 1px solid var(--border-glass); position: relative; backdrop-filter: blur(10px); }
-        .card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .product-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .product-img { width: 100%; height: 120px; background: #ffffff; display: flex; justify-content: center; align-items: center; padding: 10px; border-bottom: 2px solid var(--primary); }
+        .product-img img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-cat { color: var(--primary); font-size: 0.75rem; font-weight: 800; margin-bottom: 4px; }
+        .product-title { font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .price-wrap { margin-top: auto; display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
+        .price-old { text-decoration: line-through; color: var(--text-muted); font-size: 0.8rem; }
+        .price-new { color: var(--danger); font-size: 1.1rem; font-weight: 900; }
         
-        .card-img-container { width: 100%; height: 180px; background-color: #ffffff; display: flex; justify-content: center; align-items: center; padding: 15px; border-bottom: 3px solid var(--primary); }
-        .card-img-container img { max-width: 100%; max-height: 100%; object-fit: contain; transition: 0.4s ease; }
-        .card:hover .card-img-container img { transform: scale(1.1) rotate(2deg); }
+        .btn-buy { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .btn-buy:active { transform: scale(0.95); }
+
+        /* رسالة فارغة */
+        .empty-state { text-align: center; padding: 40px 20px; grid-column: 1 / -1; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; opacity: 0.7; }
+
+        /* شريط التنقل السفلي */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bottom-nav-bg); border-top: 1px solid var(--border-color); display: flex; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 1000; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: 800; gap: 5px; }
+        .nav-item i { font-size: 1.3rem; transition: 0.2s; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { transform: translateY(-3px); }
+
+        /* نوافذ السحب السفلية (Bottom Sheets) */
+        .sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .sheet-overlay.active { opacity: 1; visibility: visible; }
         
-        .card-content { padding: 20px; }
-        .card-title { font-size: 1.25rem; margin-bottom: 5px; color: var(--text-main); font-weight: 800; line-height: 1.4;}
-        .card-category-text { color: var(--primary); font-size: 0.9rem; margin-bottom: 15px; font-weight: 700; }
-        .price-container { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .old-price { text-decoration: line-through; color: var(--text-muted); font-size: 1.1rem; }
-        .new-price { color: var(--danger); font-size: 1.6rem; font-weight: 900; }
-
-        .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; box-shadow: var(--neon-glow);}
-        .btn:hover { background-color: var(--primary-hover); transform: scale(1.02); }
-
-        /* رسالة البحث الفارغ */
-        .empty-search { text-align: center; padding: 50px 20px; color: var(--text-muted); animation: slideUp 0.5s ease;}
-        .empty-search i { font-size: 60px; color: var(--primary); margin-bottom: 20px; filter: drop-shadow(var(--neon-glow)); opacity: 0.8;}
-        .empty-search h3 { font-size: 1.5rem; color: var(--text-main); margin-bottom: 10px;}
-
-        /* قسم كيفية الشراء */
-        .how-it-works { padding: 40px 5%; margin: 20px 5% 80px; border-radius: 24px; text-align: center; }
-        .how-it-works h2 { color: var(--text-main); font-size: 2rem; font-weight: 900; margin-bottom: 30px; }
-        .how-it-works h2 i { color: var(--primary); margin-left: 10px; filter: drop-shadow(var(--neon-glow)); }
-        html[dir="ltr"] .how-it-works h2 i { margin-left: 0; margin-right: 10px; }
-        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        .step-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); padding: 25px 15px; border-radius: 16px; transition: 0.3s; position: relative; }
-        .step-card:hover { transform: translateY(-5px); border-color: var(--primary); background: rgba(139, 92, 246, 0.05); }
-        .step-icon { width: 60px; height: 60px; margin: 0 auto 15px; background: var(--primary); color: white; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-size: 24px; box-shadow: var(--neon-glow); position: relative; }
-        .step-num { position: absolute; top: -5px; right: -5px; background: var(--warning); color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 14px; font-weight: bold; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-color); }
-        html[dir="ltr"] .step-num { right: auto; left: -5px; }
-        .step-card h3 { color: var(--text-main); font-size: 1.2rem; margin-bottom: 10px; font-weight: bold; }
-        .step-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
-
-        /* النوافذ المنبثقة */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(8px);}
-        .modal-content { background: var(--glass-bg); padding: 40px; border-radius: 28px; width: 90%; max-width: 500px; border: 1px solid var(--border-glass); position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.5); backdrop-filter: blur(25px);}
-        .close-btn { position: absolute; top: 20px; left: 20px; font-size: 24px; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
-        .close-btn:hover { color: var(--danger); transform: scale(1.1); }
-        html[dir="ltr"] .close-btn { left: auto; right: 20px; }
+        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--sheet-bg); border-radius: 24px 24px 0 0; z-index: 10001; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); max-height: 90vh; display: flex; flex-direction: column; }
+        .bottom-sheet.active { transform: translateY(0); }
         
-        .modal-title { margin-bottom: 10px; color: var(--primary); font-size: 1.8rem; font-weight: 900; }
+        .sheet-drag-handle { width: 40px; height: 5px; background: var(--border-color); border-radius: 5px; margin: 15px auto; }
+        .sheet-content { padding: 0 20px 20px; overflow-y: auto; }
         
-        .order-notice { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--warning); padding: 12px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.6; display: flex; gap: 10px; align-items: flex-start; }
-        .order-notice i { margin-top: 3px; }
+        .sheet-title { font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin-bottom: 20px; }
+        
+        /* عناصر الفورم */
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 12px; outline: none; font-size: 1rem; transition: 0.3s; }
+        .form-input:focus { border-color: var(--primary); }
+        
+        .upload-area { border: 2px dashed var(--border-color); padding: 20px; text-align: center; border-radius: 12px; position: relative; background: var(--input-bg); }
+        .upload-area input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .upload-preview { max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 8px; display: none; }
 
-        .form-control { width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 12px; outline: none; margin-bottom: 15px; font-size: 1rem; transition: 0.3s;}
-        .form-control:focus { border-color: var(--primary); background: rgba(139, 92, 246, 0.05); }
-        
-        .file-upload { border: 2px dashed var(--border-glass); padding: 25px; text-align: center; border-radius: 15px; cursor: pointer; position: relative; background: rgba(255,255,255,0.02); transition: 0.3s; }
-        .file-upload:hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.05); }
-        .file-upload input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
-        #imagePreview { max-width: 100%; max-height: 200px; margin-top: 15px; display: none; border-radius: 12px; border: 2px solid var(--primary); box-shadow: var(--neon-glow); }
+        .btn-submit { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; margin-top: 10px; }
 
         /* سجل الطلبات */
-        .order-history-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
-        .order-history-title { font-weight: 800; color: var(--text-main); font-size: 1.1rem; }
-        .order-history-id { color: var(--primary); font-size: 0.9rem; font-weight: bold; letter-spacing: 1px; }
-        .order-history-date { font-size: 0.85rem; color: var(--text-muted); }
-        .order-status { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; background: rgba(245, 158, 11, 0.1); color: var(--warning); width: fit-content; border: 1px solid rgba(245, 158, 11, 0.2); }
-        .empty-orders { text-align: center; color: var(--text-muted); padding: 20px; }
+        .order-item { background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+        .order-id { color: var(--primary); font-weight: 900; font-size: 1.1rem; display: block; margin-bottom: 5px; }
+        .order-name { color: var(--text-main); font-weight: 700; font-size: 0.95rem; }
+        .order-date { color: var(--text-muted); font-size: 0.8rem; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+        .order-status { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; background: rgba(245, 158, 11, 0.1); color: var(--warning); margin-top: 8px; }
 
         /* التنبيهات */
-        .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.9); color: white; padding: 15px 40px; border-radius: 50px; transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 20000; font-size: 1.2rem; font-weight: bold; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); text-align: center; width: max-content; max-width: 90%;}
-        .toast.error { background: rgba(239, 68, 68, 0.9); border-color: rgba(255, 0, 0, 0.3); }
-        .toast.show { bottom: 40px; }
-
-        /* زر تيليجرام */
-        .telegram-float { position: fixed; bottom: 30px; right: 30px; background: var(--telegram); color: white; width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; z-index: 100; box-shadow: 0 10px 20px rgba(36, 161, 222, 0.3); padding-right: 4px; animation: pulse-tg 2s infinite; text-decoration: none;}
-        html[dir="ltr"] .telegram-float { right: auto; left: 30px; padding-right: 0; padding-left: 4px; }
-
-        /* شريط التنقل السفلي للموبايل */
-        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-glass); z-index: 1500; padding: 12px 0; padding-bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: bold; gap: 6px; transition: 0.3s; cursor: pointer; }
-        .nav-item i { font-size: 1.4rem; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { color: var(--primary); }
-        .nav-item.active i { filter: drop-shadow(var(--neon-glow)); transform: translateY(-3px); }
-
-        /* تعديلات شاشات الموبايل */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .telegram-float { bottom: 90px; width: 55px; height: 55px; font-size: 28px;}
-            .welcome-content h1 { font-size: 2.5rem; }
-            .bottom-nav { display: flex; }
-            .header-icons { display: none; }
-            .how-it-works { margin-bottom: 100px; }
-        }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        @keyframes pulse-tg { 0% { box-shadow: 0 0 0 0 rgba(36, 161, 222, 0.5); } 70% { box-shadow: 0 0 0 20px rgba(36, 161, 222, 0); } 100% { box-shadow: 0 0 0 0 rgba(36, 161, 222, 0); } }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -100px); background: var(--success); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 20000; transition: 0.4s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+        .toast.error { background: var(--danger); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+        .toast.show { transform: translate(-50%, 0); }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow-1"></div>
-    <div class="bg-glow-2"></div>
-
-    <div id="welcomeScreen" class="welcome-screen">
-        <div class="welcome-content">
-            <i class="fa-solid fa-bolt" style="font-size: 80px; color: var(--primary); margin-bottom: 20px; filter: drop-shadow(var(--neon-glow));"></i>
-            <h1 data-i18n="welcomeTitle">مرحباً بك في فولت كاردز</h1>
-            <p data-i18n="welcomeDesc">وجهتك الأولى للبطاقات الرقمية والألعاب في العراق</p>
-            <button class="btn" onclick="enterSite()" style="width: auto; padding: 14px 40px; font-size: 1.2rem; margin: 20px auto 0;">
-                <span data-i18n="enterSite">ابدأ التصفح</span> <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </div>
-    </div>
-
-    <header class="glass">
-        <a href="#" class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
-        <div class="header-icons">
-            <button class="icon-btn" onclick="openMyOrdersModal()" title="طلباتي"><i class="fa-solid fa-box-open"></i></button>
-            <button class="icon-btn settings-btn" onclick="toggleSettings()" title="الإعدادات"><i class="fa-solid fa-gear"></i></button>
+    <!-- الهيدر المدمج -->
+    <header>
+        <a href="#" class="logo" onclick="window.scrollTo(0,0)"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
+        <div class="header-actions">
+            <i class="fa-brands fa-telegram" style="color: #24A1DE;" onclick="window.open('https://t.me/HH0O_1', '_blank')"></i>
         </div>
     </header>
 
-    <div class="settings-sidebar glass" id="settingsSidebar">
-        <i class="fa-solid fa-xmark close-settings" onclick="toggleSettings()"></i>
-        <h2 style="margin-bottom: 20px; color: var(--primary); font-weight: 900;" data-i18n="settings">الإعدادات</h2>
-        
-        <div class="setting-group">
-            <label data-i18n="language">اللغة / Language</label>
-            <select class="setting-select" id="langSelect" onchange="changeLanguage(this.value)">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-
-        <div class="setting-group">
-            <label data-i18n="theme">المظهر / Theme</label>
-            <select class="setting-select" id="themeSelect" onchange="changeTheme(this.value)">
-                <option value="dark" data-i18n="dark">الوضع الداكن</option>
-                <option value="light" data-i18n="light">الوضع الفاتح</option>
-            </select>
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid var(--border-glass); margin: 25px 0;">
-
-        <h2 style="margin-bottom: 15px; color: var(--primary); font-size: 1.5rem; font-weight: 900;" data-i18n="supportTitle">الدعم الفني</h2>
-        <div class="setting-group">
-            <label data-i18n="customOrderTitle" style="color: var(--warning);">الطلبات الخاصة</label>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.5;" data-i18n="customOrderDesc">لم تجد كود البطاقة أو الخدمة التي تبحث عنها؟ أرسل طلبك الآن وسنقوم بتوفيرها لك بأفضل سعر ممكن</p>
-            
-            <form id="customRequestForm">
-                <input type="text" id="customCardName" class="sidebar-input" required placeholder="اسم كود البطاقة المطلوبة" data-i18n-placeholder="customCardInput">
-                <input type="text" id="customContact" class="sidebar-input" required placeholder="رقم الهاتف أو معرف تيليجرام" data-i18n-placeholder="formContact">
-                <button type="submit" class="btn" id="customSubmitBtn" style="padding: 12px; font-size: 1rem;">
-                    <i class="fa-solid fa-paper-plane"></i> <span data-i18n="customOrderBtn">إرسال الطلب الخاص</span>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <section class="hero">
-        <h1 data-i18n="heroTitle">متجرك الأول لأكواد الشحن في العراق</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 20px; color: var(--text-muted);" data-i18n="heroDesc">أكواد شحن فورية وأمان تام لجميع مشترياتك</p>
-        <div class="discount-badge">
-            <i class="fa-solid fa-fire"></i> <span data-i18n="discount">تخفيض 50% على جميع الأكواد لفترة محدودة!</span>
-        </div>
-    </section>
-
+    <!-- شريط البحث -->
     <div class="search-container">
         <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن كود شحن، لعبة، أو اشتراك..." data-i18n-placeholder="searchPlaceholder" oninput="onSearchInput(event)">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن لعبة، باقة، أو اشتراك..." data-i18n-placeholder="searchPlaceholder" oninput="onSearchInput(event)">
             <i class="fa-solid fa-magnifying-glass"></i>
         </div>
     </div>
 
-    <div class="categories-container" id="categories-container">
-        <button class="filter-btn active" onclick="filterProducts('all')" data-i18n="catAll">الكل</button>
-        <button class="filter-btn" onclick="filterProducts('mobile')" data-i18n="catMobile">ألعاب الجوال</button>
-        <button class="filter-btn" onclick="filterProducts('boosting')" data-i18n="catBoost">رشق التطبيقات</button>
-        <button class="filter-btn" onclick="filterProducts('stores')" data-i18n="catStores">متاجر واشتراكات</button>
-        <button class="filter-btn" onclick="filterProducts('console')" data-i18n="catConsole">منصات الألعاب</button>
-        <button class="filter-btn" onclick="filterProducts('pc')" data-i18n="catPc">ألعاب الكمبيوتر</button>
+    <!-- شريط الأقسام الأفقي -->
+    <div class="categories-scroll" id="categories-container">
+        <div class="filter-chip active" onclick="filterProducts('all')" data-i18n="catAll">الكل</div>
+        <div class="filter-chip" onclick="filterProducts('mobile')" data-i18n="catMobile">ألعاب الجوال</div>
+        <div class="filter-chip" onclick="filterProducts('boosting')" data-i18n="catBoost">رشق التطبيقات</div>
+        <div class="filter-chip" onclick="filterProducts('stores')" data-i18n="catStores">متاجر واشتراكات</div>
+        <div class="filter-chip" onclick="filterProducts('console')" data-i18n="catConsole">منصات الألعاب</div>
+        <div class="filter-chip" onclick="filterProducts('pc')" data-i18n="catPc">ألعاب الكمبيوتر</div>
     </div>
 
-    <div class="products-wrapper" id="products-container"></div>
+    <!-- شبكة المنتجات -->
+    <main class="products-grid" id="products-container"></main>
 
-    <section class="how-it-works glass">
-        <h2 data-i18n="howToBuyTitle"><i class="fa-solid fa-circle-question"></i> كيف تشتري وتستلم طلبك؟</h2>
-        <div class="steps-grid">
-            <div class="step-card">
-                <div class="step-icon">
-                    <i class="fa-solid fa-user-pen"></i>
-                    <span class="step-num">1</span>
-                </div>
-                <h3 data-i18n="step1Title">اكتب اسمك</h3>
-                <p data-i18n="step1Desc">ليس شرطاً أن تضيف اسمك الحقيقي.</p>
-            </div>
-            <div class="step-card">
-                <div class="step-icon">
-                    <i class="fa-solid fa-mobile-screen"></i>
-                    <span class="step-num">2</span>
-                </div>
-                <h3 data-i18n="step2Title">رقم التحويل</h3>
-                <p data-i18n="step2Desc">اكتب الرقم الذي تم تحويل المبلغ من خلاله.</p>
-            </div>
-            <div class="step-card">
-                <div class="step-icon">
-                    <i class="fa-solid fa-file-image"></i>
-                    <span class="step-num">3</span>
-                </div>
-                <h3 data-i18n="step3Title">إثبات التحويل</h3>
-                <p data-i18n="step3Desc">ارفع صورة لإثبات التحويل (صورة لرسالة التحويل).</p>
-            </div>
-            <div class="step-card">
-                <div class="step-icon">
-                    <i class="fa-solid fa-paper-plane"></i>
-                    <span class="step-num">4</span>
-                </div>
-                <h3 data-i18n="step4Title">تأكيد الطلب</h3>
-                <p data-i18n="step4Desc">اضغط تأكيد، وسوف يرسل لك الكود عبر قسم الطلبات.</p>
-            </div>
-        </div>
-    </section>
-
-    <a href="https://t.me/HH0O_1" target="_blank" class="telegram-float">
-        <i class="fa-brands fa-telegram"></i>
-    </a>
-
+    <!-- شريط التنقل السفلي (Bottom Nav) -->
     <nav class="bottom-nav">
         <a class="nav-item active" onclick="setActiveNav(this); window.scrollTo({top: 0, behavior: 'smooth'});">
             <i class="fa-solid fa-house"></i>
             <span data-i18n="navHome">الرئيسية</span>
         </a>
-        <a href="#searchInput" class="nav-item" onclick="setActiveNav(this); document.getElementById('searchInput').focus();">
+        <a class="nav-item" onclick="setActiveNav(this); document.getElementById('searchInput').focus(); window.scrollTo(0, 0);">
             <i class="fa-solid fa-magnifying-glass"></i>
             <span data-i18n="navSearch">بحث</span>
         </a>
-        <a class="nav-item" onclick="setActiveNav(this); openMyOrdersModal();">
+        <a class="nav-item" onclick="setActiveNav(this); openSheet('ordersSheet'); renderMyOrders();">
             <i class="fa-solid fa-box-open"></i>
             <span data-i18n="navOrders">طلباتي</span>
         </a>
-        <a class="nav-item" onclick="setActiveNav(this); toggleSettings();">
+        <a class="nav-item" onclick="setActiveNav(this); openSheet('settingsSheet');">
             <i class="fa-solid fa-gear"></i>
-            <span data-i18n="navSettings">إعدادات</span>
+            <span data-i18n="navSettings">الإعدادات</span>
         </a>
     </nav>
 
-    <div class="modal" id="purchaseModal">
-        <div class="modal-content">
-            <i class="fa-solid fa-xmark close-btn" onclick="closeModal('purchaseModal')"></i>
+    <!-- غطاء النوافذ السفلية -->
+    <div class="sheet-overlay" id="sheetOverlay" onclick="closeAllSheets()"></div>
+
+    <!-- 1. نافذة إتمام الطلب -->
+    <div class="bottom-sheet" id="purchaseSheet">
+        <div class="sheet-drag-handle"></div>
+        <div class="sheet-content">
+            <h2 class="sheet-title" data-i18n="modalTitle">إتمام الطلب</h2>
             
             <div id="formSection">
-                <h2 class="modal-title" data-i18n="modalTitle">إتمام الطلب</h2>
-                
-                <div class="order-notice">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <div>
-                        <strong data-i18n="noticeImportant">ملاحظة هامة:</strong><br>
-                        <span data-i18n="noticeDesc">يحق لك إرسال (طلبين فقط) كل 30 دقيقة.</span>
-                    </div>
-                </div>
-
                 <form id="checkoutForm">
                     <input type="hidden" id="selectedCard">
                     
-                    <input type="text" id="userName" class="form-control" required placeholder="الاسم الكامل" data-i18n-placeholder="formName">
-                    <input type="tel" id="transferPhone" class="form-control" required placeholder="رقم الهاتف الذي تم تحويل المبلغ من خلاله" data-i18n-placeholder="formTransferPhone">
-                    
-                    <input type="text" id="targetAccount" class="form-control" placeholder="يوزر الحساب أو رابط القناة" data-i18n-placeholder="formTargetAccount" style="display: none; border-color: var(--warning);">
-                    
-                    <div class="file-upload">
-                        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 3rem; color: var(--primary); filter: drop-shadow(var(--neon-glow));"></i>
-                        <p style="font-weight: bold; margin-top: 15px; color: var(--text-main);" data-i18n="formUpload">اضغط هنا لرفع صورة إثبات التحويل</p>
-                        <input type="file" id="receiptImg" accept="image/png, image/jpeg, image/jpg" required onchange="previewImage(event)">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="formName">الاسم الكامل</label>
+                        <input type="text" id="userName" class="form-input" required>
                     </div>
-                    <img id="imagePreview">
+
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="formTransferPhone">رقم هاتف التحويل</label>
+                        <input type="tel" id="transferPhone" class="form-input" required>
+                    </div>
                     
-                    <button type="submit" class="btn" id="submitBtn" style="margin-top: 20px;">
-                        <span id="btnText" data-i18n="formSubmit">تأكيد وإرسال الطلب</span>
+                    <!-- حقل يوزر الرشق (يظهر فقط لخدمات الرشق) -->
+                    <div class="form-group" id="targetAccountGroup" style="display: none;">
+                        <label class="form-label" data-i18n="formTargetAccount">يوزر الحساب أو الرابط</label>
+                        <input type="text" id="targetAccount" class="form-input" style="border-color: var(--warning);">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="step3Title">إثبات التحويل</label>
+                        <div class="upload-area">
+                            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                            <p style="font-size: 0.9rem;" data-i18n="formUpload">اضغط لرفع صورة الإثبات</p>
+                            <input type="file" id="receiptImg" accept="image/png, image/jpeg, image/jpg" required onchange="previewImage(event)">
+                        </div>
+                        <img id="imagePreview" class="upload-preview">
+                    </div>
+                    
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span id="btnText" data-i18n="formSubmit">تأكيد الطلب</span>
                     </button>
                 </form>
             </div>
 
-            <div id="successSection" style="display: none; text-align: center;">
-                <i class="fa-solid fa-circle-check" style="font-size: 80px; color: var(--success); margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.4));"></i>
-                <h2 style="color: var(--success); font-weight: 900;" data-i18n="successTitle">تم استلام طلبك بنجاح!</h2>
-                
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px dashed var(--primary);">
-                    <span style="color: var(--text-muted); font-size: 0.9rem;" data-i18n="successDesc">سيتم التنفيذ وإرسال الكود لك فوراً. يرجى الاحتفاظ برقم الطلب:</span><br>
-                    <strong id="successOrderId" style="color: var(--primary); font-size: 1.4rem; letter-spacing: 1px; display: inline-block; margin-top: 5px;"></strong>
-                </div>
-
-                <button class="btn" onclick="closeModal('purchaseModal')" data-i18n="closeBtn">إغلاق النافذة</button>
+            <div id="successSection" style="display: none; text-align: center; padding: 20px 0;">
+                <i class="fa-solid fa-circle-check" style="font-size: 60px; color: var(--success); margin-bottom: 15px;"></i>
+                <h3 style="color: var(--success); font-weight: 900; margin-bottom: 10px;" data-i18n="successTitle">تم استلام طلبك!</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;" data-i18n="successDesc">سيتم التنفيذ قريباً. احتفظ برقم الطلب:</p>
+                <div id="successOrderId" style="font-size: 1.5rem; color: var(--primary); font-weight: 900; letter-spacing: 2px; margin-bottom: 20px;"></div>
+                <button class="btn-submit" onclick="closeAllSheets()" style="background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main);" data-i18n="closeBtn">إغلاق</button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="myOrdersModal">
-        <div class="modal-content">
-            <i class="fa-solid fa-xmark close-btn" onclick="closeModal('myOrdersModal')"></i>
-            <h2 class="modal-title" data-i18n="myOrdersTitle">سجل طلباتي</h2>
+    <!-- 2. نافذة طلباتي -->
+    <div class="bottom-sheet" id="ordersSheet">
+        <div class="sheet-drag-handle"></div>
+        <div class="sheet-content">
+            <h2 class="sheet-title" data-i18n="myOrdersTitle">سجل طلباتي</h2>
             <div id="myOrdersList"></div>
         </div>
     </div>
 
-    <div class="toast" id="toast" data-i18n="toastMsg">تم الإرسال بنجاح! ✅</div>
+    <!-- 3. نافذة الإعدادات والطلبات الخاصة -->
+    <div class="bottom-sheet" id="settingsSheet">
+        <div class="sheet-drag-handle"></div>
+        <div class="sheet-content">
+            <h2 class="sheet-title" data-i18n="settings">الإعدادات</h2>
+            
+            <div class="form-group">
+                <label class="form-label" data-i18n="language">اللغة / Language</label>
+                <select class="form-input" id="langSelect" onchange="changeLanguage(this.value)">
+                    <option value="ar">العربية</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" data-i18n="theme">المظهر / Theme</label>
+                <select class="form-input" id="themeSelect" onchange="changeTheme(this.value)">
+                    <option value="dark" data-i18n="dark">داكن</option>
+                    <option value="light" data-i18n="light">فاتح</option>
+                </select>
+            </div>
+
+            <hr style="border:0; border-top: 1px solid var(--border-color); margin: 25px 0;">
+
+            <h3 style="color: var(--warning); margin-bottom: 15px;" data-i18n="customOrderTitle">الطلبات الخاصة</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="customOrderDesc">لم تجد الخدمة المطلوبة؟ اطلبها من هنا:</p>
+            
+            <form id="customRequestForm">
+                <div class="form-group">
+                    <input type="text" id="customCardName" class="form-input" required placeholder="الخدمة المطلوبة والكمية" data-i18n-placeholder="customCardInput">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="customContact" class="form-input" required placeholder="رقم الهاتف أو المعرف" data-i18n-placeholder="formContact">
+                </div>
+                <button type="submit" class="btn-submit" id="customSubmitBtn">
+                    <i class="fa-solid fa-paper-plane"></i> <span data-i18n="customOrderBtn">إرسال الطلب</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- رسالة التنبيه العلوية -->
+    <div class="toast" id="toast" data-i18n="toastMsg">تم بنجاح! ✅</div>
 
     <script>
         const translations = {
             ar: {
-                welcomeTitle: "مرحباً بك في فولت كاردز", welcomeDesc: "وجهتك الأولى للبطاقات الرقمية والألعاب في العراق", enterSite: "ابدأ التصفح",
-                logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "الوضع الداكن", light: "الوضع الفاتح",
-                heroTitle: "متجرك الأول لأكواد الشحن في العراق", heroDesc: "أكواد شحن فورية وأمان تام لجميع مشترياتك", discount: "تخفيض 50% على جميع الأكواد لفترة محدودة!",
-                howToBuyTitle: "كيف تشتري وتستلم طلبك؟", step1Title: "اكتب اسمك", step1Desc: "ليس شرطاً أن تضيف اسمك الحقيقي.", step2Title: "رقم التحويل", step2Desc: "اكتب الرقم الذي تم تحويل المبلغ من خلاله.", step3Title: "إثبات التحويل", step3Desc: "ارفع صورة لإثبات التحويل (صورة لرسالة التحويل).", step4Title: "تأكيد الطلب", step4Desc: "اضغط تأكيد، وسوف يرسل لك الكود عبر قسم الطلبات.",
-                catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات الألعاب", catPc: "ألعاب الكمبيوتر", catStores: "متاجر واشتراكات",
+                logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
+                catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات", catPc: "ألعاب PC", catStores: "متاجر",
                 buyBtn: "شراء", currency: "د.ع", modalTitle: "إتمام الطلب",
-                noticeImportant: "ملاحظة هامة:", noticeDesc: "يحق لك إرسال (طلبين فقط) كل 30 دقيقة.",
-                formName: "الاسم الكامل", formContact: "رقم الهاتف أو معرف تيليجرام", 
-                formTransferPhone: "رقم الهاتف الذي تم تحويل المبلغ من خلاله", formTargetAccount: "يوزر الحساب أو رابط القناة",
-                formUpload: "اضغط هنا لرفع صورة إثبات التحويل", formSubmit: "تأكيد وإرسال الطلب",
-                successTitle: "تم استلام طلبك بنجاح!", successDesc: "سيتم التنفيذ وإرسال الكود لك فوراً. يرجى الاحتفاظ برقم الطلب:", closeBtn: "إغلاق", toastMsg: "تم الإرسال بنجاح! ✅", toastErrorSize: "عذراً، حجم الصورة يتجاوز 1.5 ميغابايت! ❌",
-                supportTitle: "الدعم الفني", customOrderTitle: "الطلبات الخاصة", customOrderDesc: "لم تجد كود البطاقة أو الخدمة التي تبحث عنها؟ أرسل طلبك الآن وسنقوم بتوفيرها لك بأفضل سعر ممكن",
-                customCardInput: "الخدمة المطلوبة والكمية", customOrderBtn: "إرسال الطلب الخاص",
-                myOrdersTitle: "سجل طلباتي", noOrders: "لا توجد طلبات سابقة حتى الآن.", orderPending: "قيد المراجعة ⏳", orderCustom: "طلب خاص",
-                navHome: "الرئيسية", navSearch: "بحث", navOrders: "طلباتي", navSettings: "إعدادات",
-                searchPlaceholder: "ابحث عن كود شحن، لعبة، أو خدمة..."
+                formName: "الاسم الكامل", formContact: "رقم الهاتف أو المعرف", 
+                formTransferPhone: "رقم هاتف التحويل", formTargetAccount: "يوزر الحساب أو الرابط",
+                formUpload: "اضغط لرفع صورة الإثبات", formSubmit: "تأكيد الطلب", step3Title: "إثبات التحويل",
+                successTitle: "تم استلام طلبك!", successDesc: "سيتم التنفيذ قريباً. احتفظ برقم الطلب:", closeBtn: "إغلاق", 
+                toastMsg: "تم الإرسال بنجاح! ✅", toastErrorSize: "حجم الصورة كبير جداً! ❌",
+                customOrderTitle: "الطلبات الخاصة", customOrderDesc: "لم تجد الخدمة المطلوبة؟ اطلبها من هنا:",
+                customCardInput: "الخدمة المطلوبة والكمية", customOrderBtn: "إرسال الطلب",
+                myOrdersTitle: "سجل طلباتي", noOrders: "لا توجد طلبات سابقة.", orderPending: "قيد المراجعة ⏳", orderCustom: "طلب خاص",
+                navHome: "الرئيسية", navSearch: "بحث", navOrders: "طلباتي", navSettings: "الإعدادات",
+                searchPlaceholder: "ابحث عن لعبة أو اشتراك...", noResultTitle: "عذراً!", noResultDesc: "لم نجد ما تبحث عنه."
             },
             en: {
-                welcomeTitle: "Welcome to Volt Cards", welcomeDesc: "Your ultimate destination for digital cards in Iraq", enterSite: "Start Browsing",
-                logo: "Volt Cards", settings: "Settings", language: "Language", theme: "Theme", dark: "Dark Mode", light: "Light Mode",
-                heroTitle: "Premium Redeem Codes Store in Iraq", heroDesc: "Instant codes and total security for all your purchases", discount: "50% OFF on all codes for a limited time!",
-                howToBuyTitle: "How to buy & receive order?", step1Title: "Enter Your Name", step1Desc: "(Doesn't have to be your real name).", step2Title: "Transfer Number", step2Desc: "Enter the number used for the transfer.", step3Title: "Payment Proof", step3Desc: "Upload a screenshot of the transfer message.", step4Title: "Confirm Order", step4Desc: "Click confirm, and your code will be sent via Orders section.",
-                catAll: "All", catMobile: "Mobile Games", catBoost: "Social Boost", catConsole: "Consoles", catPc: "PC Games", catStores: "Stores & Subs",
+                logo: "Volt Cards", settings: "Settings", language: "Language", theme: "Theme", dark: "Dark", light: "Light",
+                catAll: "All", catMobile: "Mobile", catBoost: "Social Boost", catConsole: "Console", catPc: "PC Games", catStores: "Stores",
                 buyBtn: "Buy", currency: "IQD", modalTitle: "Complete Order",
-                noticeImportant: "Important Note:", noticeDesc: "You can send only (2 orders) every 30 minutes.",
-                formName: "Full Name", formContact: "Phone Number or Telegram @", 
-                formTransferPhone: "Phone number used for the transfer", formTargetAccount: "Account Username or Channel Link",
-                formUpload: "Click here to upload payment receipt", formSubmit: "Confirm & Send Order",
-                successTitle: "Order Received Successfully!", successDesc: "Your order will be processed immediately. Please save your order ID:", closeBtn: "Close", toastMsg: "Sent Successfully! ✅", toastErrorSize: "Sorry, image size exceeds 1.5MB! ❌",
-                supportTitle: "Support", customOrderTitle: "Custom Orders", customOrderDesc: "Didn't find the service or game you're looking for? Send your request now and we'll provide it at the best price!",
-                customCardInput: "Requested Service & Quantity", customOrderBtn: "Send Custom Request",
-                myOrdersTitle: "My Orders History", noOrders: "No previous orders found.", orderPending: "Pending ⏳", orderCustom: "Custom Request",
+                formName: "Full Name", formContact: "Phone or Telegram @", 
+                formTransferPhone: "Transfer Phone Number", formTargetAccount: "Username or Link",
+                formUpload: "Tap to upload receipt", formSubmit: "Confirm Order", step3Title: "Payment Proof",
+                successTitle: "Order Received!", successDesc: "Processing soon. Save your ID:", closeBtn: "Close", 
+                toastMsg: "Sent Successfully! ✅", toastErrorSize: "Image is too large! ❌",
+                customOrderTitle: "Custom Request", customOrderDesc: "Didn't find it? Request here:",
+                customCardInput: "Service & Quantity", customOrderBtn: "Send Request",
+                myOrdersTitle: "My Orders", noOrders: "No orders yet.", orderPending: "Pending ⏳", orderCustom: "Custom Request",
                 navHome: "Home", navSearch: "Search", navOrders: "Orders", navSettings: "Settings",
-                searchPlaceholder: "Search for a redeem code, game, or service..."
+                searchPlaceholder: "Search games, subs...", noResultTitle: "Oops!", noResultDesc: "No results found."
             }
         };
 
         const proxy = "https://wsrv.nl/?url=";
         const products =[
-            { id: 1, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 10000, ar: { name: "كود شحن ببجي - 325 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 325 UC", cat: "Mobile Games" } },
-            { id: 2, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 20000, ar: { name: "كود شحن ببجي - 660 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 660 UC", cat: "Mobile Games" } },
-            { id: 3, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 50000, ar: { name: "كود شحن ببجي - 1800 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 1800 UC", cat: "Mobile Games" } },
-            { id: 4, category: "mobile", img: "https://i.ibb.co/Yq36bq6/image.png", price: 15000, ar: { name: "كود شحن فري فاير - 1080 جوهرة", cat: "ألعاب الجوال" }, en: { name: "Free Fire Code - 1080 Dia", cat: "Mobile Games" } },
-            { id: 5, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/3a/Roblox_player_icon_black.svg", price: 18000, ar: { name: "كود شحن روبلوكس - 800 روبوكس", cat: "ألعاب الجوال" }, en: { name: "Roblox Code - 800 Robux", cat: "Mobile Games" } },
-            { id: 6, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/4/4b/Playing_card_spade_A.svg", price: 10000, ar: { name: "كود شحن جواكر - 50,000 توكنز", cat: "ألعاب الجوال" }, en: { name: "Jawaker Code - 50k Tokens", cat: "Mobile Games" } },
-            { id: 7, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/2/22/Dice-4.svg", price: 15000, ar: { name: "كود شحن يلا لودو - 500 ألماس", cat: "ألعاب الجوال" }, en: { name: "Yalla Ludo Code - 500 Dia", cat: "Mobile Games" } },
+            { id: 1, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 10000, ar: { name: "كود شحن ببجي - 325 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 325 UC", cat: "Mobile" } },
+            { id: 2, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 20000, ar: { name: "كود شحن ببجي - 660 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 660 UC", cat: "Mobile" } },
+            { id: 3, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 50000, ar: { name: "كود شحن ببجي - 1800 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 1800 UC", cat: "Mobile" } },
+            { id: 4, category: "mobile", img: "https://i.ibb.co/Yq36bq6/image.png", price: 15000, ar: { name: "كود شحن فري فاير - 1080 جوهرة", cat: "ألعاب الجوال" }, en: { name: "Free Fire - 1080 Dia", cat: "Mobile" } },
+            { id: 5, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/3a/Roblox_player_icon_black.svg", price: 18000, ar: { name: "كود شحن روبلوكس - 800 روبوكس", cat: "ألعاب الجوال" }, en: { name: "Roblox - 800 Robux", cat: "Mobile" } },
+            { id: 6, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/4/4b/Playing_card_spade_A.svg", price: 10000, ar: { name: "كود شحن جواكر - 50,000 توكنز", cat: "ألعاب الجوال" }, en: { name: "Jawaker - 50k Tokens", cat: "Mobile" } },
+            { id: 7, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/2/22/Dice-4.svg", price: 15000, ar: { name: "كود شحن يلا لودو - 500 ألماس", cat: "ألعاب الجوال" }, en: { name: "Yalla Ludo - 500 Dia", cat: "Mobile" } },
             
-            { id: 22, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg", price: 10000, ar: { name: "1000 مشترك تيليجرام", cat: "رشق التطبيقات" }, en: { name: "1000 Telegram Subs", cat: "Social Boost" } },
-            { id: 23, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", price: 12000, ar: { name: "1000 متابع تيك توك", cat: "رشق التطبيقات" }, en: { name: "1000 TikTok Followers", cat: "Social Boost" } },
-            { id: 24, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg", price: 8000, ar: { name: "1000 متابع انستغرام", cat: "رشق التطبيقات" }, en: { name: "1000 Instagram Followers", cat: "Social Boost" } },
+            { id: 22, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg", price: 10000, ar: { name: "1000 مشترك تيليجرام", cat: "رشق" }, en: { name: "1000 TG Subs", cat: "Boost" } },
+            { id: 23, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", price: 12000, ar: { name: "1000 متابع تيك توك", cat: "رشق" }, en: { name: "1000 TikTok Foll", cat: "Boost" } },
+            { id: 24, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg", price: 8000, ar: { name: "1000 متابع انستغرام", cat: "رشق" }, en: { name: "1000 Insta Foll", cat: "Boost" } },
 
-            { id: 8, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "كود شحن بلايستيشن - 20$", cat: "منصات الألعاب" }, en: { name: "PSN Code - $20", cat: "Consoles" } },
-            { id: 9, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "كود شحن اكسبوكس - 25$", cat: "منصات الألعاب" }, en: { name: "Xbox Code - $25", cat: "Consoles" } },
-            { id: 10, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/0d/Nintendo_Switch_Logo.svg", price: 16000, ar: { name: "كود شحن نينتندو - 10$", cat: "منصات الألعاب" }, en: { name: "Nintendo Code - $10", cat: "Consoles" } },
+            { id: 8, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "كود شحن بلايستيشن - 20$", cat: "منصات" }, en: { name: "PSN Code - $20", cat: "Console" } },
+            { id: 9, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "كود شحن اكسبوكس - 25$", cat: "منصات" }, en: { name: "Xbox Code - $25", cat: "Console" } },
+            { id: 10, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/0d/Nintendo_Switch_Logo.svg", price: 16000, ar: { name: "كود شحن نينتندو - 10$", cat: "منصات" }, en: { name: "Nintendo - $10", cat: "Console" } },
             
-            { id: 13, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg", price: 16000, ar: { name: "كود شحن ستيم والت - 10$", cat: "ألعاب الكمبيوتر" }, en: { name: "Steam Code - $10", cat: "PC Games" } },
-            { id: 14, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/31/Epic_Games_logo.svg", price: 14000, ar: { name: "كود شحن ايبك قيمز - 1000 V-Bucks", cat: "ألعاب الكمبيوتر" }, en: { name: "Epic Games Code - 1000 V-Bucks", cat: "PC Games" } },
-            { id: 15, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg", price: 17000, ar: { name: "كود شحن فالورانت - 1000 نقطة", cat: "ألعاب الكمبيوتر" }, en: { name: "Valorant Code - 1000 VP", cat: "PC Games" } },
+            { id: 13, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg", price: 16000, ar: { name: "ستيم والت - 10$", cat: "PC" }, en: { name: "Steam - $10", cat: "PC" } },
+            { id: 14, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/31/Epic_Games_logo.svg", price: 14000, ar: { name: "ايبك قيمز - 1000 V-Bucks", cat: "PC" }, en: { name: "Epic - 1000 V-Bucks", cat: "PC" } },
+            { id: 15, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg", price: 17000, ar: { name: "فالورانت - 1000 نقطة", cat: "PC" }, en: { name: "Valorant - 1000 VP", cat: "PC" } },
             
-            { id: 17, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e0/Razer_Inc._Logo.svg", price: 16500, ar: { name: "كود شحن ريزر جولد - 10$", cat: "متاجر واشتراكات" }, en: { name: "Razer Gold Code - $10", cat: "Stores & Subs" } },
-            { id: 18, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/d/d0/Google_Play_Arrow_logo.svg", price: 15500, ar: { name: "كود شحن جوجل بلاي - 10$", cat: "متاجر واشتراكات" }, en: { name: "Google Play Code - $10", cat: "Stores & Subs" } },
-            { id: 19, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg", price: 16000, ar: { name: "كود شحن ابل ايتيونز - 10$", cat: "متاجر واشتراكات" }, en: { name: "Apple iTunes Code - $10", cat: "Stores & Subs" } },
-            { id: 20, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/c/c6/Discord_Logo_with_text.svg", price: 10000, ar: { name: "كود اشتراك ديسكورد نايترو - شهر", cat: "متاجر واشتراكات" }, en: { name: "Discord Nitro Code - 1 Month", cat: "Stores & Subs" } },
-            { id: 21, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/1/1b/Play_icon_black.svg", price: 12000, ar: { name: "كود اشتراك شاهد VIP - شهر", cat: "متاجر واشتراكات" }, en: { name: "Shahid VIP Code - 1 Month", cat: "Stores & Subs" } },
-            { id: 22, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", price: 47000, ar: { name: "كود شحن نتفليكس - 30$", cat: "متاجر واشتراكات" }, en: { name: "Netflix Code - $30", cat: "Stores & Subs" } }
+            { id: 17, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e0/Razer_Inc._Logo.svg", price: 16500, ar: { name: "ريزر جولد - 10$", cat: "متاجر" }, en: { name: "Razer Gold - $10", cat: "Stores" } },
+            { id: 18, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/d/d0/Google_Play_Arrow_logo.svg", price: 15500, ar: { name: "جوجل بلاي - 10$", cat: "متاجر" }, en: { name: "Google Play - $10", cat: "Stores" } },
+            { id: 19, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg", price: 16000, ar: { name: "ابل ايتيونز - 10$", cat: "متاجر" }, en: { name: "iTunes - $10", cat: "Stores" } },
+            { id: 20, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/c/c6/Discord_Logo_with_text.svg", price: 10000, ar: { name: "ديسكورد نايترو - شهر", cat: "متاجر" }, en: { name: "Discord Nitro - 1M", cat: "Stores" } },
+            { id: 22, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", price: 47000, ar: { name: "نتفليكس - 30$", cat: "متاجر" }, en: { name: "Netflix - $30", cat: "Stores" } }
         ];
 
         let currentLang = localStorage.getItem('lang') || 'ar';
@@ -481,75 +357,38 @@
         let selectedProductCategory = ''; 
         let clientIP = 'غير معروف';
 
-        // --- دالة تتبع الزوار (Analytics) ---
+        // Analytics
         function trackVisitor() {
             const lastVisit = localStorage.getItem('volt_last_visit');
             const now = new Date().getTime();
-            
-            // 12 hours cooldown (12 * 60 * 60 * 1000 = 43200000 ms)
-            // إذا كان قد زار الموقع خلال آخر 12 ساعة، لا ترسل إشعاراً جديداً لتجنب الإزعاج
-            if (lastVisit && (now - lastVisit < 43200000)) {
-                return; 
-            }
-
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    const ip = data.ip;
-                    const platform = navigator.platform || 'غير معروف';
-                    const userAgent = navigator.userAgent;
-                    const screen = `${window.screen.width}x${window.screen.height}`;
-                    const time = new Date().toLocaleString('ar-EG');
-                    
-                    const visitorInfo = `[زائر جديد للموقع] 👁️\nIP: ${ip}\nالجهاز: ${platform}\nالشاشة: ${screen}\nالوقت: ${time}\nالتفاصيل: ${userAgent}`;
-
-                    // إرسال البيانات إلى الخادم/البوت
-                    fetch('/api/send', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            type: 'visit', // نوع الطلب (زيارة) لكي يتعرف عليه الباك اند الخاص بك
-                            customName: visitorInfo 
-                        })
-                    }).then(() => {
-                        // تسجيل وقت الزيارة في المتصفح بعد نجاح الإرسال
-                        localStorage.setItem('volt_last_visit', now);
-                    }).catch(err => console.log('Analytics error', err));
-                })
-                .catch(error => console.error('Error fetching IP:', error));
-        }
-
-        function fetchUserIP() {
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => { clientIP = data.ip; })
-                .catch(error => console.error('Error fetching IP:', error));
+            if (lastVisit && (now - lastVisit < 43200000)) return; // 12 hours
+            fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => {
+                clientIP = data.ip;
+                const info = `[زائر للموبايل] 📱\nIP: ${data.ip}\nالجهاز: ${navigator.platform}\nالوقت: ${new Date().toLocaleString('ar-EG')}`;
+                fetch('/api/send', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({type:'visit', customName: info})})
+                .then(() => localStorage.setItem('volt_last_visit', now)).catch(e=>console.log(e));
+            }).catch(e=>console.log(e));
         }
 
         function generateOrderID() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = 'VOLT-';
-            for (let i = 0; i < 4; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
-            return result + '-' + Math.floor(1000 + Math.random() * 9000);
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let result = 'V-';
+            for (let i = 0; i < 5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            return result;
         }
 
         function setActiveNav(element) {
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if(element) element.classList.add('active');
         }
 
-        function enterSite() { document.getElementById('welcomeScreen').classList.add('hidden'); }
-        
         function init() { 
-            fetchUserIP(); 
-            trackVisitor(); // تفعيل نظام تتبع الزوار عند فتح الموقع
+            trackVisitor(); 
             document.getElementById('langSelect').value = currentLang; 
             document.getElementById('themeSelect').value = currentTheme; 
             applyTheme(currentTheme); 
             applyLanguage(currentLang); 
         }
 
-        function toggleSettings() { document.getElementById('settingsSidebar').classList.toggle('open'); }
         function changeTheme(theme) { currentTheme = theme; localStorage.setItem('theme', theme); applyTheme(theme); }
         function applyTheme(theme) { if(theme === 'light') document.body.classList.add('light-mode'); else document.body.classList.remove('light-mode'); }
         function changeLanguage(lang) { currentLang = lang; localStorage.setItem('lang', lang); applyLanguage(lang); }
@@ -558,93 +397,79 @@
             document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
             document.querySelectorAll('[data-i18n]').forEach(el => { el.innerText = translations[lang][el.getAttribute('data-i18n')]; });
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = translations[lang][el.getAttribute('data-i18n-placeholder')]; });
-            const enterSiteBtn = document.querySelector('.welcome-content .btn');
-            if(lang === 'en') enterSiteBtn.innerHTML = `<span data-i18n="enterSite">${translations.en.enterSite}</span> <i class="fa-solid fa-arrow-right"></i>`;
-            else enterSiteBtn.innerHTML = `<span data-i18n="enterSite">${translations.ar.enterSite}</span> <i class="fa-solid fa-arrow-left"></i>`;
             
-            const activeCategoryBtn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.classList.contains('active'));
+            const activeCategoryBtn = Array.from(document.querySelectorAll('.filter-chip')).find(b => b.classList.contains('active'));
             const category = activeCategoryBtn ? activeCategoryBtn.getAttribute('onclick').match(/'([^']+)'/)[1] : 'all';
-            const currentSearch = document.getElementById('searchInput').value;
-            renderProducts(category, currentSearch); 
-            renderMyOrders();
+            renderProducts(category, document.getElementById('searchInput').value); 
+        }
+
+        // Bottom Sheets Logic
+        function openSheet(id) {
+            document.getElementById('sheetOverlay').classList.add('active');
+            document.getElementById(id).classList.add('active');
+        }
+        function closeAllSheets() {
+            document.getElementById('sheetOverlay').classList.remove('active');
+            document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('active'));
         }
 
         function onSearchInput(event) {
             const query = event.target.value;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            const allBtn = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.getAttribute('onclick').includes("'all'"));
-            if(allBtn) allBtn.classList.add('active');
+            document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.filter-chip').classList.add('active'); // Activate 'All'
             renderProducts('all', query);
         }
 
         function filterProducts(category) { 
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
-            const btnToActivate = Array.from(document.querySelectorAll('.filter-btn')).find(b => b.getAttribute('onclick').includes(`'${category}'`));
-            if(btnToActivate) btnToActivate.classList.add('active');
-            
+            document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active')); 
+            event.target.classList.add('active');
+            // Scroll chip into view smoothly
+            event.target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             document.getElementById('searchInput').value = ''; 
             renderProducts(category, ''); 
         }
 
         function renderProducts(categoryFilter, searchQuery = '') {
             const container = document.getElementById('products-container'); container.innerHTML = ''; 
-            const categories = [
-                { id: 'mobile', key: 'catMobile' }, 
-                { id: 'boosting', key: 'catBoost' }, 
-                { id: 'stores', key: 'catStores' },
-                { id: 'console', key: 'catConsole' }, 
-                { id: 'pc', key: 'catPc' }
-            ];
+            let catProducts = products;
             
-            let htmlContent = '';
-            let totalFound = 0; 
+            if (categoryFilter !== 'all') catProducts = catProducts.filter(p => p.category === categoryFilter);
+            
+            if (searchQuery.trim() !== '') {
+                const query = searchQuery.toLowerCase();
+                catProducts = catProducts.filter(p => p[currentLang].name.toLowerCase().includes(query) || p[currentLang].cat.toLowerCase().includes(query));
+            }
 
-            categories.forEach(cat => {
-                if (categoryFilter !== 'all' && categoryFilter !== cat.id) return;
-                
-                let catProducts = products.filter(p => p.category === cat.id);
-                
-                if (searchQuery.trim() !== '') {
-                    const query = searchQuery.toLowerCase();
-                    catProducts = catProducts.filter(p => 
-                        p[currentLang].name.toLowerCase().includes(query) || 
-                        p[currentLang].cat.toLowerCase().includes(query)
-                    );
-                }
-
-                if (catProducts.length > 0) {
-                    totalFound += catProducts.length;
-                    const sectionTitle = translations[currentLang][cat.key];
-                    htmlContent += `<div class="category-group"><h2 class="category-section-title">${sectionTitle}</h2><div class="products-grid">`;
-                    catProducts.forEach(p => {
-                        const oldPrice = p.price; const newPrice = oldPrice / 2; 
-                        const name = p[currentLang].name; const catName = p[currentLang].cat;
-                        const curr = translations[currentLang].currency; const buyTxt = translations[currentLang].buyBtn;
-                        
-                        htmlContent += `
-                            <div class="card">
-                                <div class="card-img-container"><img src="${p.img}" alt="${name}"></div>
-                                <div class="card-content">
-                                    <p class="card-category-text">${catName}</p><h3 class="card-title">${name}</h3>
-                                    <div class="price-container"><span class="old-price">${oldPrice.toLocaleString()} ${curr}</span><span class="new-price">${newPrice.toLocaleString()} ${curr}</span></div>
-                                    <button class="btn" onclick="openModal('${name}', ${newPrice}, '${curr}', '${p.category}')"><i class="fa-solid fa-cart-shopping"></i> ${buyTxt}</button>
+            if (catProducts.length > 0) {
+                let htmlContent = '';
+                catProducts.forEach(p => {
+                    const oldPrice = p.price; const newPrice = oldPrice / 2; 
+                    const name = p[currentLang].name; const catName = p[currentLang].cat;
+                    const curr = translations[currentLang].currency; const buyTxt = translations[currentLang].buyBtn;
+                    
+                    htmlContent += `
+                        <div class="product-card">
+                            <div class="product-img"><img src="${p.img}" alt="${name}"></div>
+                            <div class="product-info">
+                                <span class="product-cat">${catName}</span>
+                                <h3 class="product-title">${name}</h3>
+                                <div class="price-wrap">
+                                    <span class="price-old">${oldPrice.toLocaleString()} ${curr}</span>
+                                    <span class="price-new">${newPrice.toLocaleString()} ${curr}</span>
                                 </div>
-                            </div>`;
-                    });
-                    htmlContent += `</div></div>`;
-                }
-            });
-
-            if (totalFound === 0) {
-                container.innerHTML = `
-                <div class="empty-search">
-                    <i class="fa-solid fa-ghost"></i>
-                    <h3 data-i18n="noResultTitle">${translations[currentLang].noResultTitle}</h3>
-                    <p data-i18n="noResultDesc">${translations[currentLang].noResultDesc}</p>
-                    <button class="btn" onclick="toggleSettings()" style="width: auto; padding: 10px 30px; margin: 20px auto 0; font-size: 1rem;"><i class="fa-solid fa-paper-plane"></i> ${translations[currentLang].customOrderBtn}</button>
-                </div>`;
-            } else {
+                                <button class="btn-buy" onclick="openPurchaseSheet('${name}', ${newPrice}, '${curr}', '${p.category}')">
+                                    <i class="fa-solid fa-cart-shopping"></i> ${buyTxt}
+                                </button>
+                            </div>
+                        </div>`;
+                });
                 container.innerHTML = htmlContent;
+            } else {
+                container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-box-open"></i>
+                    <h3 data-i18n="noResultTitle">${translations[currentLang].noResultTitle}</h3>
+                </div>`;
             }
         }
 
@@ -652,135 +477,105 @@
             const date = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US'); 
             myOrdersHistory.unshift({ name: orderName, id: orderId, date: date }); 
             localStorage.setItem('myVoltOrders', JSON.stringify(myOrdersHistory)); 
-            renderMyOrders(); 
         }
 
-        function openMyOrdersModal() { renderMyOrders(); document.getElementById('myOrdersModal').style.display = 'flex'; }
-        
         function renderMyOrders() {
             const listContainer = document.getElementById('myOrdersList');
-            if (myOrdersHistory.length === 0) { listContainer.innerHTML = `<p class="empty-orders"><i class="fa-solid fa-box-open" style="font-size: 30px; margin-bottom: 10px;"></i><br>${translations[currentLang].noOrders}</p>`; return; }
+            if (myOrdersHistory.length === 0) { 
+                listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>${translations[currentLang].noOrders}</p></div>`; 
+                return; 
+            }
             listContainer.innerHTML = myOrdersHistory.map(order => `
-                <div class="order-history-item">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span class="order-history-title">${order.name}</span>
-                        <span class="order-history-id">#${order.id}</span>
-                    </div>
-                    <span class="order-history-date"><i class="fa-regular fa-calendar"></i> ${order.date}</span>
+                <div class="order-item">
+                    <span class="order-id">#${order.id}</span>
+                    <div class="order-name">${order.name}</div>
+                    <div class="order-date"><i class="fa-regular fa-calendar"></i> ${order.date}</div>
                     <span class="order-status">${translations[currentLang].orderPending}</span>
                 </div>
             `).join('');
         }
 
-        function openModal(name, price, curr, category) { 
+        function openPurchaseSheet(name, price, curr, category) { 
             selectedProductCategory = category; 
-            document.getElementById('purchaseModal').style.display = 'flex'; 
             document.getElementById('selectedCard').value = `${name} - ${price.toLocaleString()} ${curr}`; 
+            
             document.getElementById('formSection').style.display = 'block'; 
             document.getElementById('successSection').style.display = 'none'; 
             document.getElementById('checkoutForm').reset(); 
             document.getElementById('imagePreview').style.display = 'none'; 
             
-            const targetAccountInput = document.getElementById('targetAccount');
+            const targetAccountGroup = document.getElementById('targetAccountGroup');
+            const targetInput = document.getElementById('targetAccount');
             if(category === 'boosting') {
-                targetAccountInput.style.display = 'block';
-                targetAccountInput.required = true;
+                targetAccountGroup.style.display = 'block';
+                targetInput.required = true;
             } else {
-                targetAccountInput.style.display = 'none';
-                targetAccountInput.required = false;
-                targetAccountInput.value = '';
+                targetAccountGroup.style.display = 'none';
+                targetInput.required = false;
             }
+            openSheet('purchaseSheet');
         }
-        
-        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
         
         function previewImage(event) { 
             const file = event.target.files[0];
             const img = document.getElementById("imagePreview");
-            
             if(!file) return;
             if(file.size > 1536000) {
                 showToast(translations[currentLang].toastErrorSize, 'error');
-                event.target.value = ""; 
-                img.style.display = "none";
-                return;
+                event.target.value = ""; img.style.display = "none"; return;
             }
-
             const reader = new FileReader(); 
-            reader.onload = () => { 
-                img.src = reader.result; 
-                img.style.display = "block"; 
-            }; 
+            reader.onload = () => { img.src = reader.result; img.style.display = "block"; }; 
             reader.readAsDataURL(file); 
         }
 
         function showToast(msg = null, type = 'success') { 
             const toast = document.getElementById('toast'); 
             toast.innerText = msg ? msg : translations[currentLang].toastMsg;
-            if(type === 'error') toast.classList.add('error');
-            else toast.classList.remove('error');
-            toast.classList.add('show'); 
-            setTimeout(() => toast.classList.remove('show'), 4000); 
+            toast.className = `toast show ${type === 'error' ? 'error' : ''}`;
+            setTimeout(() => toast.classList.remove('show'), 3000); 
         }
 
         document.getElementById('checkoutForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const btnSpan = document.getElementById('btnText');
             const originalText = btnSpan.innerText;
-            btnSpan.innerText = 'جاري الإرسال... ⏳';
+            btnSpan.innerText = '⏳...';
             
             const orderID = generateOrderID();
             let cardDetails = document.getElementById('selectedCard').value;
-            const userName = document.getElementById('userName').value;
-            const transferPhone = document.getElementById('transferPhone').value;
             const targetAccount = document.getElementById('targetAccount').value;
             const fileInput = document.getElementById('receiptImg');
 
-            if (selectedProductCategory === 'boosting') {
-                cardDetails += ` | اليوزر/الرابط: ${targetAccount}`;
-            }
-
-            const finalCardDetails = `[طلب: ${orderID}] ${cardDetails} | IP: ${clientIP}`;
-
-            if (fileInput.files.length === 0) return;
+            if (selectedProductCategory === 'boosting') cardDetails += ` | اليوزر/الرابط: ${targetAccount}`;
+            const finalCardDetails = `[${orderID}] ${cardDetails} | IP: ${clientIP}`;
 
             const reader = new FileReader();
             reader.onloadend = () => {
-                const base64String = reader.result;
                 fetch('/api/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        type: 'order',
-                        cardDetails: finalCardDetails,
-                        userName: userName,
-                        transferPhone: transferPhone, 
-                        imageBase64: base64String
+                        type: 'order', cardDetails: finalCardDetails,
+                        userName: document.getElementById('userName').value,
+                        transferPhone: document.getElementById('transferPhone').value, 
+                        imageBase64: reader.result
                     })
                 })
-                .then(response => {
-                    if (response.status === 429) {
-                        alert('عذراً، لقد تجاوزت الحد المسموح (طلبين كل 30 دقيقة)! يرجى الانتظار ثم المحاولة مجدداً. ⏳');
-                        throw new Error('Rate Limited');
-                    }
-                    return response.json();
+                .then(res => {
+                    if (res.status === 429) { alert('تجاوزت الحد (طلبين كل 30د)! ⏳'); throw new Error('Rate Limited'); }
+                    return res.json();
                 })
                 .then(data => {
-                    if(data && data.ok) {
+                    if(data?.ok) {
                         saveOrderToHistory(document.getElementById('selectedCard').value.split('-')[0].trim(), orderID);
                         document.getElementById('formSection').style.display = 'none';
                         document.getElementById('successSection').style.display = 'block';
                         document.getElementById('successOrderId').innerText = orderID;
-                        showToast();
-                    } else { alert('حدث خطأ أثناء الإرسال.'); }
+                    } else alert('خطأ أثناء الإرسال.');
                 })
-                .catch(err => { 
-                    if(err.message !== 'Rate Limited') {
-                        console.error(err); 
-                        alert('فشل الاتصال بالخادم.'); 
-                    }
-                })
-                .finally(() => { btnSpan.innerText = originalText; });
+                .catch(err => { if(err.message !== 'Rate Limited') alert('فشل الاتصال.'); })
+                .finally(() => btnSpan.innerText = originalText);
             };
             reader.readAsDataURL(fileInput.files[0]);
         });
@@ -789,45 +584,31 @@
             e.preventDefault();
             const btnSpan = document.querySelector('#customSubmitBtn span');
             const originalText = btnSpan.innerText;
-            btnSpan.innerText = 'جاري الإرسال... ⏳';
+            btnSpan.innerText = '⏳...';
             
             const orderID = generateOrderID();
             const customName = document.getElementById('customCardName').value;
-            const customContact = document.getElementById('customContact').value;
-            const finalCustomName = `[طلب خاص: ${orderID}] ${customName} | IP: ${clientIP}`;
+            const finalCustomName = `[خاص: ${orderID}] ${customName} | IP: ${clientIP}`;
             
             fetch('/api/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type: 'custom', customName: finalCustomName, customContact: customContact })
+                body: JSON.stringify({ type: 'custom', customName: finalCustomName, customContact: document.getElementById('customContact').value })
             })
-            .then(response => {
-                if (response.status === 429) {
-                    alert('عذراً، لقد تجاوزت الحد المسموح! يرجى الانتظار 30 دقيقة ثم المحاولة مجدداً. ⏳');
-                    throw new Error('Rate Limited');
-                }
-                return response.json();
+            .then(res => {
+                if (res.status === 429) { alert('تجاوزت الحد المسموح! ⏳'); throw new Error('Rate Limited'); }
+                return res.json();
             })
             .then(data => {
-                if(data && data.ok) {
-                    saveOrderToHistory(`${translations[currentLang].orderCustom}: ${customName}`, orderID);
-                    e.target.reset();
-                    showToast();
-                    toggleSettings();
-                } else { alert('حدث خطأ أثناء الإرسال.'); }
+                if(data?.ok) {
+                    saveOrderToHistory(`طلب خاص: ${customName}`, orderID);
+                    e.target.reset(); closeAllSheets(); showToast();
+                } else alert('خطأ أثناء الإرسال.');
             })
-            .catch(err => { 
-                if(err.message !== 'Rate Limited') {
-                    console.error(err); 
-                    alert('فشل الاتصال بالخادم.'); 
-                }
-            })
-            .finally(() => { btnSpan.innerText = originalText; });
+            .catch(err => { if(err.message !== 'Rate Limited') alert('فشل الاتصال.'); })
+            .finally(() => btnSpan.innerText = originalText);
         });
 
-        window.onclick = (e) => { if (e.target == document.getElementById('purchaseModal')) closeModal('purchaseModal'); if (e.target == document.getElementById('myOrdersModal')) closeModal('myOrdersModal'); }
-        
-        // تشغيل الوظائف عند التحميل
         init();
     </script>
 </body>
