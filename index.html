@@ -8,11 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <!-- أيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة تأثير الاحتفال -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         /* المتغيرات (ألوان التطبيق) */
         :root {
-            --bg-color: #0f172a; /* لون خلفية أغمق وأكثر راحة للعين */
+            --bg-color: #0f172a;
             --card-bg: #1e293b;
             --primary: #8b5cf6;
             --primary-hover: #7c3aed;
@@ -42,7 +44,7 @@
         
         body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; padding-bottom: 80px; transition: background-color 0.3s; }
 
-        /* الهيدر المدمج (Compact Header) */
+        /* الهيدر المدمج */
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo { font-size: 1.5rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 8px; }
         .logo i { color: var(--primary); }
@@ -58,18 +60,34 @@
         html[dir="ltr"] .search-input { padding: 14px 15px 14px 45px; }
         .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
 
-        /* شريط الأقسام الأفقي (Horizontal Scroll) */
+        /* السلايدر المتحرك (Hero Slider) */
+        .slider-wrapper { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 15px; padding: 10px 20px; margin-bottom: 10px; }
+        .slider-wrapper::-webkit-scrollbar { display: none; }
+        .slide { min-width: 100%; height: 150px; scroll-snap-align: center; border-radius: 16px; position: relative; overflow: hidden; background: linear-gradient(45deg, var(--primary), #ec4899); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        @media (min-width: 768px) { .slide { min-width: calc(50% - 7.5px); } }
+        .slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; mix-blend-mode: overlay; position: absolute;}
+        .slide-content { position: relative; z-index: 2; text-align: center; color: white; padding: 15px;}
+        .slide-content h3 { font-size: 1.4rem; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 5px;}
+        .slide-content p { font-size: 0.9rem; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+
+        /* شريط الأقسام الأفقي */
         .categories-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 20px 20px; scroll-behavior: smooth; background: var(--bg-color); position: sticky; top: 125px; z-index: 98; }
         .categories-scroll::-webkit-scrollbar { display: none; }
         .filter-chip { flex-shrink: 0; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 20px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
         .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* شبكة المنتجات (2-Column Grid) */
+        /* شبكة المنتجات */
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; margin-bottom: 30px; }
         @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(4, 1fr); } }
         
-        .product-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; }
-        .product-img { width: 100%; height: 120px; background: #ffffff; display: flex; justify-content: center; align-items: center; padding: 10px; border-bottom: 2px solid var(--primary); }
+        .product-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; }
+        
+        /* شارة الأكثر مبيعاً */
+        .badge-hot { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff4b2b, #ff416c); color: white; padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; z-index: 10; box-shadow: 0 4px 10px rgba(255, 65, 108, 0.4); animation: pulse 2s infinite; display: flex; align-items: center; gap: 4px;}
+        html[dir="ltr"] .badge-hot { right: auto; left: 8px; }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
+
+        .product-img { width: 100%; height: 120px; background: #ffffff; display: flex; justify-content: center; align-items: center; padding: 10px; border-bottom: 2px solid var(--primary); position: relative;}
         .product-img img { max-width: 90%; max-height: 90%; object-fit: contain; }
         .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
         .product-cat { color: var(--primary); font-size: 0.75rem; font-weight: 800; margin-bottom: 4px; }
@@ -81,13 +99,12 @@
         .btn-buy { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; }
         .btn-buy:active { transform: scale(0.95); }
 
-        /* رسالة فارغة */
         .empty-state { text-align: center; padding: 40px 20px; grid-column: 1 / -1; color: var(--text-muted); }
         .empty-state i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; opacity: 0.7; }
 
         /* شريط التنقل السفلي */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bottom-nav-bg); border-top: 1px solid var(--border-color); display: flex; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 1000; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: 800; gap: 5px; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: 800; gap: 5px; cursor: pointer;}
         .nav-item i { font-size: 1.3rem; transition: 0.2s; }
         .nav-item.active { color: var(--primary); }
         .nav-item.active i { transform: translateY(-3px); }
@@ -101,10 +118,8 @@
         
         .sheet-drag-handle { width: 40px; height: 5px; background: var(--border-color); border-radius: 5px; margin: 15px auto; }
         .sheet-content { padding: 0 20px 20px; overflow-y: auto; }
-        
         .sheet-title { font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin-bottom: 20px; }
         
-        /* عناصر الفورم */
         .form-group { margin-bottom: 15px; }
         .form-label { display: block; font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
         .form-input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 12px; outline: none; font-size: 1rem; transition: 0.3s; }
@@ -114,24 +129,21 @@
         .upload-area input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .upload-preview { max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 8px; display: none; }
 
-        .btn-submit { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; margin-top: 10px; }
+        .btn-submit { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; margin-top: 10px; cursor: pointer;}
 
-        /* سجل الطلبات */
         .order-item { background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
         .order-id { color: var(--primary); font-weight: 900; font-size: 1.1rem; display: block; margin-bottom: 5px; }
         .order-name { color: var(--text-main); font-weight: 700; font-size: 0.95rem; }
         .order-date { color: var(--text-muted); font-size: 0.8rem; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
         .order-status { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; background: rgba(245, 158, 11, 0.1); color: var(--warning); margin-top: 8px; }
 
-        /* التنبيهات */
-        .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -100px); background: var(--success); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 20000; transition: 0.4s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -100px); background: var(--success); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 20000; transition: 0.4s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); white-space: nowrap;}
         .toast.error { background: var(--danger); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
         .toast.show { transform: translate(-50%, 0); }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر المدمج -->
     <header>
         <a href="#" class="logo" onclick="window.scrollTo(0,0)"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
         <div class="header-actions">
@@ -139,7 +151,6 @@
         </div>
     </header>
 
-    <!-- شريط البحث -->
     <div class="search-container">
         <div class="search-box">
             <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن لعبة، باقة، أو اشتراك..." data-i18n-placeholder="searchPlaceholder" oninput="onSearchInput(event)">
@@ -147,7 +158,30 @@
         </div>
     </div>
 
-    <!-- شريط الأقسام الأفقي -->
+    <!-- السلايدر المتحرك -->
+    <div class="slider-wrapper" id="heroSlider">
+        <div class="slide">
+            <img src="https://i.ibb.co/wr7mHdYG/images-18.jpg" alt="ببجي">
+            <div class="slide-content">
+                <h3 data-i18n="slide1Title">عروض الشدات 🔥</h3>
+                <p data-i18n="slide1Desc">شحن فوري ومضمون 100%</p>
+            </div>
+        </div>
+        <div class="slide" style="background: linear-gradient(45deg, #f59e0b, #ef4444);">
+            <img src="https://i.ibb.co/V00xSCLc/image.png" alt="لودو">
+            <div class="slide-content">
+                <h3 data-i18n="slide2Title">ألماس يلا لودو 💎</h3>
+                <p data-i18n="slide2Desc">أرخص الأسعار في العراق</p>
+            </div>
+        </div>
+        <div class="slide" style="background: linear-gradient(45deg, #10b981, #3b82f6);">
+            <div class="slide-content">
+                <h3 data-i18n="slide3Title">خصم 50% 🏷️</h3>
+                <p data-i18n="slide3Desc">على جميع الخدمات لفترة محدودة</p>
+            </div>
+        </div>
+    </div>
+
     <div class="categories-scroll" id="categories-container">
         <div class="filter-chip active" onclick="filterProducts('all')" data-i18n="catAll">الكل</div>
         <div class="filter-chip" onclick="filterProducts('mobile')" data-i18n="catMobile">ألعاب الجوال</div>
@@ -157,10 +191,8 @@
         <div class="filter-chip" onclick="filterProducts('pc')" data-i18n="catPc">ألعاب الكمبيوتر</div>
     </div>
 
-    <!-- شبكة المنتجات -->
     <main class="products-grid" id="products-container"></main>
 
-    <!-- شريط التنقل السفلي (Bottom Nav) -->
     <nav class="bottom-nav">
         <a class="nav-item active" onclick="setActiveNav(this); window.scrollTo({top: 0, behavior: 'smooth'});">
             <i class="fa-solid fa-house"></i>
@@ -180,10 +212,9 @@
         </a>
     </nav>
 
-    <!-- غطاء النوافذ السفلية -->
     <div class="sheet-overlay" id="sheetOverlay" onclick="closeAllSheets()"></div>
 
-    <!-- 1. نافذة إتمام الطلب -->
+    <!-- نافذة الشراء -->
     <div class="bottom-sheet" id="purchaseSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -203,7 +234,6 @@
                         <input type="tel" id="transferPhone" class="form-input" required>
                     </div>
                     
-                    <!-- حقل يوزر الرشق (يظهر فقط لخدمات الرشق) -->
                     <div class="form-group" id="targetAccountGroup" style="display: none;">
                         <label class="form-label" data-i18n="formTargetAccount">يوزر الحساب أو الرابط</label>
                         <input type="text" id="targetAccount" class="form-input" style="border-color: var(--warning);">
@@ -235,7 +265,7 @@
         </div>
     </div>
 
-    <!-- 2. نافذة طلباتي -->
+    <!-- نافذة طلباتي -->
     <div class="bottom-sheet" id="ordersSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -244,7 +274,7 @@
         </div>
     </div>
 
-    <!-- 3. نافذة الإعدادات والطلبات الخاصة -->
+    <!-- نافذة الإعدادات -->
     <div class="bottom-sheet" id="settingsSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -285,7 +315,6 @@
         </div>
     </div>
 
-    <!-- رسالة التنبيه العلوية -->
     <div class="toast" id="toast" data-i18n="toastMsg">تم بنجاح! ✅</div>
 
     <script>
@@ -293,7 +322,8 @@
             ar: {
                 logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
                 catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات", catPc: "ألعاب PC", catStores: "متاجر",
-                buyBtn: "شراء", currency: "د.ع", modalTitle: "إتمام الطلب",
+                buyBtn: "شراء", currency: "د.ع", modalTitle: "إتمام الطلب", bestSeller: "الأكثر مبيعاً",
+                slide1Title: "عروض الشدات 🔥", slide1Desc: "شحن فوري ومضمون 100%", slide2Title: "ألماس يلا لودو 💎", slide2Desc: "أرخص الأسعار في العراق", slide3Title: "خصم 50% 🏷️", slide3Desc: "على جميع الخدمات لفترة محدودة",
                 formName: "الاسم الكامل", formContact: "رقم الهاتف أو المعرف", 
                 formTransferPhone: "رقم هاتف التحويل", formTargetAccount: "يوزر الحساب أو الرابط",
                 formUpload: "اضغط لرفع صورة الإثبات", formSubmit: "تأكيد الطلب", step3Title: "إثبات التحويل",
@@ -308,7 +338,8 @@
             en: {
                 logo: "Volt Cards", settings: "Settings", language: "Language", theme: "Theme", dark: "Dark", light: "Light",
                 catAll: "All", catMobile: "Mobile", catBoost: "Social Boost", catConsole: "Console", catPc: "PC Games", catStores: "Stores",
-                buyBtn: "Buy", currency: "IQD", modalTitle: "Complete Order",
+                buyBtn: "Buy", currency: "IQD", modalTitle: "Complete Order", bestSeller: "Best Seller",
+                slide1Title: "PUBG Offers 🔥", slide1Desc: "Instant & 100% Safe", slide2Title: "Yalla Ludo Gems 💎", slide2Desc: "Cheapest in Iraq", slide3Title: "50% OFF 🏷️", slide3Desc: "On all services for limited time",
                 formName: "Full Name", formContact: "Phone or Telegram @", 
                 formTransferPhone: "Transfer Phone Number", formTargetAccount: "Username or Link",
                 formUpload: "Tap to upload receipt", formSubmit: "Confirm Order", step3Title: "Payment Proof",
@@ -323,31 +354,29 @@
         };
 
         const proxy = "https://wsrv.nl/?url=";
+        // إضافة badge: true للمنتجات الأكثر مبيعاً + تعديل صورة لودو
         const products =[
             { id: 1, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 10000, ar: { name: "كود شحن ببجي - 325 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 325 UC", cat: "Mobile" } },
-            { id: 2, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 20000, ar: { name: "كود شحن ببجي - 660 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 660 UC", cat: "Mobile" } },
+            { id: 2, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 20000, badge: true, ar: { name: "كود شحن ببجي - 660 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 660 UC", cat: "Mobile" } },
             { id: 3, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 50000, ar: { name: "كود شحن ببجي - 1800 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 1800 UC", cat: "Mobile" } },
             { id: 4, category: "mobile", img: "https://i.ibb.co/Yq36bq6/image.png", price: 15000, ar: { name: "كود شحن فري فاير - 1080 جوهرة", cat: "ألعاب الجوال" }, en: { name: "Free Fire - 1080 Dia", cat: "Mobile" } },
             { id: 5, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/3a/Roblox_player_icon_black.svg", price: 18000, ar: { name: "كود شحن روبلوكس - 800 روبوكس", cat: "ألعاب الجوال" }, en: { name: "Roblox - 800 Robux", cat: "Mobile" } },
             { id: 6, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/4/4b/Playing_card_spade_A.svg", price: 10000, ar: { name: "كود شحن جواكر - 50,000 توكنز", cat: "ألعاب الجوال" }, en: { name: "Jawaker - 50k Tokens", cat: "Mobile" } },
-            { id: 7, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/2/22/Dice-4.svg", price: 15000, ar: { name: "كود شحن يلا لودو - 500 ألماس", cat: "ألعاب الجوال" }, en: { name: "Yalla Ludo - 500 Dia", cat: "Mobile" } },
+            { id: 7, category: "mobile", img: "https://i.ibb.co/V00xSCLc/image.png", price: 15000, badge: true, ar: { name: "كود شحن يلا لودو - 500 ألماس", cat: "ألعاب الجوال" }, en: { name: "Yalla Ludo - 500 Dia", cat: "Mobile" } },
             
             { id: 22, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg", price: 10000, ar: { name: "1000 مشترك تيليجرام", cat: "رشق" }, en: { name: "1000 TG Subs", cat: "Boost" } },
-            { id: 23, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", price: 12000, ar: { name: "1000 متابع تيك توك", cat: "رشق" }, en: { name: "1000 TikTok Foll", cat: "Boost" } },
+            { id: 23, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", price: 12000, badge: true, ar: { name: "1000 متابع تيك توك", cat: "رشق" }, en: { name: "1000 TikTok Foll", cat: "Boost" } },
             { id: 24, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg", price: 8000, ar: { name: "1000 متابع انستغرام", cat: "رشق" }, en: { name: "1000 Insta Foll", cat: "Boost" } },
 
             { id: 8, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "كود شحن بلايستيشن - 20$", cat: "منصات" }, en: { name: "PSN Code - $20", cat: "Console" } },
             { id: 9, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "كود شحن اكسبوكس - 25$", cat: "منصات" }, en: { name: "Xbox Code - $25", cat: "Console" } },
-            { id: 10, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/0d/Nintendo_Switch_Logo.svg", price: 16000, ar: { name: "كود شحن نينتندو - 10$", cat: "منصات" }, en: { name: "Nintendo - $10", cat: "Console" } },
             
             { id: 13, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg", price: 16000, ar: { name: "ستيم والت - 10$", cat: "PC" }, en: { name: "Steam - $10", cat: "PC" } },
             { id: 14, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/31/Epic_Games_logo.svg", price: 14000, ar: { name: "ايبك قيمز - 1000 V-Bucks", cat: "PC" }, en: { name: "Epic - 1000 V-Bucks", cat: "PC" } },
-            { id: 15, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg", price: 17000, ar: { name: "فالورانت - 1000 نقطة", cat: "PC" }, en: { name: "Valorant - 1000 VP", cat: "PC" } },
             
             { id: 17, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e0/Razer_Inc._Logo.svg", price: 16500, ar: { name: "ريزر جولد - 10$", cat: "متاجر" }, en: { name: "Razer Gold - $10", cat: "Stores" } },
             { id: 18, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/d/d0/Google_Play_Arrow_logo.svg", price: 15500, ar: { name: "جوجل بلاي - 10$", cat: "متاجر" }, en: { name: "Google Play - $10", cat: "Stores" } },
-            { id: 19, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg", price: 16000, ar: { name: "ابل ايتيونز - 10$", cat: "متاجر" }, en: { name: "iTunes - $10", cat: "Stores" } },
-            { id: 20, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/c/c6/Discord_Logo_with_text.svg", price: 10000, ar: { name: "ديسكورد نايترو - شهر", cat: "متاجر" }, en: { name: "Discord Nitro - 1M", cat: "Stores" } },
+            { id: 20, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/c/c6/Discord_Logo_with_text.svg", price: 10000, badge: true, ar: { name: "ديسكورد نايترو - شهر", cat: "متاجر" }, en: { name: "Discord Nitro - 1M", cat: "Stores" } },
             { id: 22, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", price: 47000, ar: { name: "نتفليكس - 30$", cat: "متاجر" }, en: { name: "Netflix - $30", cat: "Stores" } }
         ];
 
@@ -356,12 +385,35 @@
         let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
         let selectedProductCategory = ''; 
         let clientIP = 'غير معروف';
+        
+        // نظام السلايدر التلقائي
+        function initSlider() {
+            const slider = document.getElementById('heroSlider');
+            const slides = document.querySelectorAll('.slide');
+            let slideIndex = 0;
+            setInterval(() => {
+                slideIndex = (slideIndex + 1) % slides.length;
+                slides[slideIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }, 3500); // يتغير كل 3.5 ثوانٍ
+        }
+
+        // تأثير الاحتفال
+        function triggerConfetti() {
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#8b5cf6', '#10b981'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f59e0b', '#ef4444'] });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+        }
 
         // Analytics
         function trackVisitor() {
             const lastVisit = localStorage.getItem('volt_last_visit');
             const now = new Date().getTime();
-            if (lastVisit && (now - lastVisit < 43200000)) return; // 12 hours
+            if (lastVisit && (now - lastVisit < 43200000)) return; 
             fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => {
                 clientIP = data.ip;
                 const info = `[زائر للموبايل] 📱\nIP: ${data.ip}\nالجهاز: ${navigator.platform}\nالوقت: ${new Date().toLocaleString('ar-EG')}`;
@@ -383,6 +435,7 @@
 
         function init() { 
             trackVisitor(); 
+            initSlider();
             document.getElementById('langSelect').value = currentLang; 
             document.getElementById('themeSelect').value = currentTheme; 
             applyTheme(currentTheme); 
@@ -403,7 +456,6 @@
             renderProducts(category, document.getElementById('searchInput').value); 
         }
 
-        // Bottom Sheets Logic
         function openSheet(id) {
             document.getElementById('sheetOverlay').classList.add('active');
             document.getElementById(id).classList.add('active');
@@ -416,14 +468,13 @@
         function onSearchInput(event) {
             const query = event.target.value;
             document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
-            document.querySelector('.filter-chip').classList.add('active'); // Activate 'All'
+            document.querySelector('.filter-chip').classList.add('active');
             renderProducts('all', query);
         }
 
         function filterProducts(category) { 
             document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active')); 
             event.target.classList.add('active');
-            // Scroll chip into view smoothly
             event.target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             document.getElementById('searchInput').value = ''; 
             renderProducts(category, ''); 
@@ -447,8 +498,12 @@
                     const name = p[currentLang].name; const catName = p[currentLang].cat;
                     const curr = translations[currentLang].currency; const buyTxt = translations[currentLang].buyBtn;
                     
+                    // شارة الأكثر مبيعاً
+                    const badgeHtml = p.badge ? `<div class="badge-hot"><i class="fa-solid fa-fire"></i> ${translations[currentLang].bestSeller}</div>` : '';
+
                     htmlContent += `
                         <div class="product-card">
+                            ${badgeHtml}
                             <div class="product-img"><img src="${p.img}" alt="${name}"></div>
                             <div class="product-info">
                                 <span class="product-cat">${catName}</span>
@@ -572,6 +627,7 @@
                         document.getElementById('formSection').style.display = 'none';
                         document.getElementById('successSection').style.display = 'block';
                         document.getElementById('successOrderId').innerText = orderID;
+                        triggerConfetti(); // تشغيل تأثير الاحتفال
                     } else alert('خطأ أثناء الإرسال.');
                 })
                 .catch(err => { if(err.message !== 'Rate Limited') alert('فشل الاتصال.'); })
