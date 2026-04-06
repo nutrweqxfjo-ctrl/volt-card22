@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Volt Cards Iraq</title>
-    <!-- خطوط جوجل -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- أيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- مكتبة تأثير الاحتفال -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* المتغيرات (ألوان التطبيق) */
         :root {
             --bg-color: #0f172a;
             --card-bg: #1e293b;
@@ -44,14 +40,12 @@
         
         body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; padding-bottom: 80px; transition: background-color 0.3s; }
 
-        /* الهيدر المدمج */
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo { font-size: 1.5rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 8px; }
         .logo i { color: var(--primary); }
         .header-actions i { font-size: 1.5rem; color: var(--text-muted); cursor: pointer; margin-right: 15px; }
         html[dir="ltr"] .header-actions i { margin-right: 0; margin-left: 15px; }
 
-        /* شريط البحث */
         .search-container { padding: 10px 20px; background: var(--bg-color); position: sticky; top: 60px; z-index: 99; }
         .search-box { position: relative; width: 100%; }
         .search-box i { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem; }
@@ -60,7 +54,6 @@
         html[dir="ltr"] .search-input { padding: 14px 15px 14px 45px; }
         .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
 
-        /* السلايدر المتحرك (Hero Slider) */
         .slider-wrapper { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 15px; padding: 10px 20px; margin-bottom: 10px; }
         .slider-wrapper::-webkit-scrollbar { display: none; }
         .slide { min-width: 100%; height: 150px; scroll-snap-align: center; border-radius: 16px; position: relative; overflow: hidden; background: linear-gradient(45deg, var(--primary), #ec4899); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
@@ -70,19 +63,20 @@
         .slide-content h3 { font-size: 1.4rem; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-bottom: 5px;}
         .slide-content p { font-size: 0.9rem; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 
-        /* شريط الأقسام الأفقي */
         .categories-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 20px 20px; scroll-behavior: smooth; background: var(--bg-color); position: sticky; top: 125px; z-index: 98; }
         .categories-scroll::-webkit-scrollbar { display: none; }
         .filter-chip { flex-shrink: 0; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 20px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
         .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* شبكة المنتجات */
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; margin-bottom: 30px; }
+        /* تعديلات الشبكة والأقسام */
+        .products-container-wrapper { padding-bottom: 20px; }
+        .section-divider { font-size: 1.2rem; font-weight: 900; color: var(--text-main); margin: 15px 20px 15px; padding-right: 12px; border-right: 4px solid var(--primary); display: flex; align-items: center; gap: 8px;}
+        html[dir="ltr"] .section-divider { padding-right: 0; padding-left: 12px; border-right: none; border-left: 4px solid var(--primary); }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; margin-bottom: 25px; }
         @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(4, 1fr); } }
         
         .product-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; }
-        
-        /* شارة الأكثر مبيعاً */
         .badge-hot { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff4b2b, #ff416c); color: white; padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; z-index: 10; box-shadow: 0 4px 10px rgba(255, 65, 108, 0.4); animation: pulse 2s infinite; display: flex; align-items: center; gap: 4px;}
         html[dir="ltr"] .badge-hot { right: auto; left: 8px; }
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
@@ -99,17 +93,15 @@
         .btn-buy { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; }
         .btn-buy:active { transform: scale(0.95); }
 
-        .empty-state { text-align: center; padding: 40px 20px; grid-column: 1 / -1; color: var(--text-muted); }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
         .empty-state i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; opacity: 0.7; }
 
-        /* شريط التنقل السفلي */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bottom-nav-bg); border-top: 1px solid var(--border-color); display: flex; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 1000; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: 800; gap: 5px; cursor: pointer;}
         .nav-item i { font-size: 1.3rem; transition: 0.2s; }
         .nav-item.active { color: var(--primary); }
         .nav-item.active i { transform: translateY(-3px); }
 
-        /* نوافذ السحب السفلية (Bottom Sheets) */
         .sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; opacity: 0; visibility: hidden; transition: 0.3s; }
         .sheet-overlay.active { opacity: 1; visibility: visible; }
         
@@ -158,20 +150,13 @@
         </div>
     </div>
 
-    <!-- السلايدر المتحرك -->
+    <!-- السلايدر بدون حركة تلقائية -->
     <div class="slider-wrapper" id="heroSlider">
         <div class="slide">
             <img src="https://i.ibb.co/wr7mHdYG/images-18.jpg" alt="ببجي">
             <div class="slide-content">
                 <h3 data-i18n="slide1Title">عروض الشدات 🔥</h3>
-                <p data-i18n="slide1Desc">شحن فوري ومضمون 100%</p>
-            </div>
-        </div>
-        <div class="slide" style="background: linear-gradient(45deg, #f59e0b, #ef4444);">
-            <img src="https://i.ibb.co/V00xSCLc/image.png" alt="لودو">
-            <div class="slide-content">
-                <h3 data-i18n="slide2Title">ألماس يلا لودو 💎</h3>
-                <p data-i18n="slide2Desc">أرخص الأسعار في العراق</p>
+                <p data-i18n="slide1Desc">أكواد جاهزة للشحن</p>
             </div>
         </div>
         <div class="slide" style="background: linear-gradient(45deg, #10b981, #3b82f6);">
@@ -191,7 +176,8 @@
         <div class="filter-chip" onclick="filterProducts('pc')" data-i18n="catPc">ألعاب الكمبيوتر</div>
     </div>
 
-    <main class="products-grid" id="products-container"></main>
+    <!-- حاوية المنتجات المقسمة -->
+    <main class="products-container-wrapper" id="products-container"></main>
 
     <nav class="bottom-nav">
         <a class="nav-item active" onclick="setActiveNav(this); window.scrollTo({top: 0, behavior: 'smooth'});">
@@ -214,7 +200,6 @@
 
     <div class="sheet-overlay" id="sheetOverlay" onclick="closeAllSheets()"></div>
 
-    <!-- نافذة الشراء -->
     <div class="bottom-sheet" id="purchaseSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -265,7 +250,6 @@
         </div>
     </div>
 
-    <!-- نافذة طلباتي -->
     <div class="bottom-sheet" id="ordersSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -274,7 +258,6 @@
         </div>
     </div>
 
-    <!-- نافذة الإعدادات -->
     <div class="bottom-sheet" id="settingsSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -323,7 +306,7 @@
                 logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
                 catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات", catPc: "ألعاب PC", catStores: "متاجر",
                 buyBtn: "شراء", currency: "د.ع", modalTitle: "إتمام الطلب", bestSeller: "الأكثر مبيعاً",
-                slide1Title: "عروض الشدات 🔥", slide1Desc: "شحن فوري ومضمون 100%", slide2Title: "ألماس يلا لودو 💎", slide2Desc: "أرخص الأسعار في العراق", slide3Title: "خصم 50% 🏷️", slide3Desc: "على جميع الخدمات لفترة محدودة",
+                slide1Title: "عروض الشدات 🔥", slide1Desc: "أكواد جاهزة للشحن", slide3Title: "خصم 50% 🏷️", slide3Desc: "على جميع الخدمات لفترة محدودة",
                 formName: "الاسم الكامل", formContact: "رقم الهاتف أو المعرف", 
                 formTransferPhone: "رقم هاتف التحويل", formTargetAccount: "يوزر الحساب أو الرابط",
                 formUpload: "اضغط لرفع صورة الإثبات", formSubmit: "تأكيد الطلب", step3Title: "إثبات التحويل",
@@ -339,7 +322,7 @@
                 logo: "Volt Cards", settings: "Settings", language: "Language", theme: "Theme", dark: "Dark", light: "Light",
                 catAll: "All", catMobile: "Mobile", catBoost: "Social Boost", catConsole: "Console", catPc: "PC Games", catStores: "Stores",
                 buyBtn: "Buy", currency: "IQD", modalTitle: "Complete Order", bestSeller: "Best Seller",
-                slide1Title: "PUBG Offers 🔥", slide1Desc: "Instant & 100% Safe", slide2Title: "Yalla Ludo Gems 💎", slide2Desc: "Cheapest in Iraq", slide3Title: "50% OFF 🏷️", slide3Desc: "On all services for limited time",
+                slide1Title: "PUBG Offers 🔥", slide1Desc: "Ready to redeem codes", slide3Title: "50% OFF 🏷️", slide3Desc: "On all services for limited time",
                 formName: "Full Name", formContact: "Phone or Telegram @", 
                 formTransferPhone: "Transfer Phone Number", formTargetAccount: "Username or Link",
                 formUpload: "Tap to upload receipt", formSubmit: "Confirm Order", step3Title: "Payment Proof",
@@ -354,7 +337,6 @@
         };
 
         const proxy = "https://wsrv.nl/?url=";
-        // إضافة badge: true للمنتجات الأكثر مبيعاً + تعديل صورة لودو
         const products =[
             { id: 1, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 10000, ar: { name: "كود شحن ببجي - 325 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 325 UC", cat: "Mobile" } },
             { id: 2, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 20000, badge: true, ar: { name: "كود شحن ببجي - 660 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 660 UC", cat: "Mobile" } },
@@ -380,24 +362,20 @@
             { id: 22, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", price: 47000, ar: { name: "نتفليكس - 30$", cat: "متاجر" }, en: { name: "Netflix - $30", cat: "Stores" } }
         ];
 
+        const allCategoriesList = [
+            { id: 'mobile', key: 'catMobile' },
+            { id: 'boosting', key: 'catBoost' },
+            { id: 'stores', key: 'catStores' },
+            { id: 'console', key: 'catConsole' },
+            { id: 'pc', key: 'catPc' }
+        ];
+
         let currentLang = localStorage.getItem('lang') || 'ar';
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
         let selectedProductCategory = ''; 
         let clientIP = 'غير معروف';
         
-        // نظام السلايدر التلقائي
-        function initSlider() {
-            const slider = document.getElementById('heroSlider');
-            const slides = document.querySelectorAll('.slide');
-            let slideIndex = 0;
-            setInterval(() => {
-                slideIndex = (slideIndex + 1) % slides.length;
-                slides[slideIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }, 3500); // يتغير كل 3.5 ثوانٍ
-        }
-
-        // تأثير الاحتفال
         function triggerConfetti() {
             var duration = 3 * 1000;
             var end = Date.now() + duration;
@@ -409,7 +387,6 @@
             }());
         }
 
-        // Analytics
         function trackVisitor() {
             const lastVisit = localStorage.getItem('volt_last_visit');
             const now = new Date().getTime();
@@ -435,7 +412,6 @@
 
         function init() { 
             trackVisitor(); 
-            initSlider();
             document.getElementById('langSelect').value = currentLang; 
             document.getElementById('themeSelect').value = currentTheme; 
             applyTheme(currentTheme); 
@@ -480,44 +456,65 @@
             renderProducts(category, ''); 
         }
 
+        // دالة عرض المنتجات المقسمة
         function renderProducts(categoryFilter, searchQuery = '') {
-            const container = document.getElementById('products-container'); container.innerHTML = ''; 
-            let catProducts = products;
-            
-            if (categoryFilter !== 'all') catProducts = catProducts.filter(p => p.category === categoryFilter);
-            
-            if (searchQuery.trim() !== '') {
-                const query = searchQuery.toLowerCase();
-                catProducts = catProducts.filter(p => p[currentLang].name.toLowerCase().includes(query) || p[currentLang].cat.toLowerCase().includes(query));
-            }
+            const container = document.getElementById('products-container'); 
+            container.innerHTML = ''; 
+            let htmlContent = '';
+            let hasResults = false;
 
-            if (catProducts.length > 0) {
-                let htmlContent = '';
-                catProducts.forEach(p => {
-                    const oldPrice = p.price; const newPrice = oldPrice / 2; 
-                    const name = p[currentLang].name; const catName = p[currentLang].cat;
-                    const curr = translations[currentLang].currency; const buyTxt = translations[currentLang].buyBtn;
+            allCategoriesList.forEach(cat => {
+                // فلترة الفئة المحددة
+                if (categoryFilter !== 'all' && categoryFilter !== cat.id) return;
+
+                let catProducts = products.filter(p => p.category === cat.id);
+                
+                // فلترة البحث إن وجد
+                if (searchQuery.trim() !== '') {
+                    const query = searchQuery.toLowerCase();
+                    catProducts = catProducts.filter(p => p[currentLang].name.toLowerCase().includes(query) || p[currentLang].cat.toLowerCase().includes(query));
+                }
+
+                if (catProducts.length > 0) {
+                    hasResults = true;
                     
-                    // شارة الأكثر مبيعاً
-                    const badgeHtml = p.badge ? `<div class="badge-hot"><i class="fa-solid fa-fire"></i> ${translations[currentLang].bestSeller}</div>` : '';
+                    // إضافة عنوان القسم إذا كنا في واجهة "الكل"
+                    if (categoryFilter === 'all') {
+                        htmlContent += `<h2 class="section-divider"><i class="fa-solid fa-layer-group" style="font-size: 0.9rem; color: var(--primary);"></i> ${translations[currentLang][cat.key]}</h2>`;
+                    }
 
-                    htmlContent += `
-                        <div class="product-card">
-                            ${badgeHtml}
-                            <div class="product-img"><img src="${p.img}" alt="${name}"></div>
-                            <div class="product-info">
-                                <span class="product-cat">${catName}</span>
-                                <h3 class="product-title">${name}</h3>
-                                <div class="price-wrap">
-                                    <span class="price-old">${oldPrice.toLocaleString()} ${curr}</span>
-                                    <span class="price-new">${newPrice.toLocaleString()} ${curr}</span>
+                    htmlContent += `<div class="products-grid">`;
+
+                    catProducts.forEach(p => {
+                        const oldPrice = p.price; const newPrice = oldPrice / 2; 
+                        const name = p[currentLang].name; const catName = p[currentLang].cat;
+                        const curr = translations[currentLang].currency; const buyTxt = translations[currentLang].buyBtn;
+                        
+                        const badgeHtml = p.badge ? `<div class="badge-hot"><i class="fa-solid fa-fire"></i> ${translations[currentLang].bestSeller}</div>` : '';
+
+                        htmlContent += `
+                            <div class="product-card">
+                                ${badgeHtml}
+                                <div class="product-img"><img src="${p.img}" alt="${name}"></div>
+                                <div class="product-info">
+                                    <span class="product-cat">${catName}</span>
+                                    <h3 class="product-title">${name}</h3>
+                                    <div class="price-wrap">
+                                        <span class="price-old">${oldPrice.toLocaleString()} ${curr}</span>
+                                        <span class="price-new">${newPrice.toLocaleString()} ${curr}</span>
+                                    </div>
+                                    <button class="btn-buy" onclick="openPurchaseSheet('${name}', ${newPrice}, '${curr}', '${p.category}')">
+                                        <i class="fa-solid fa-cart-shopping"></i> ${buyTxt}
+                                    </button>
                                 </div>
-                                <button class="btn-buy" onclick="openPurchaseSheet('${name}', ${newPrice}, '${curr}', '${p.category}')">
-                                    <i class="fa-solid fa-cart-shopping"></i> ${buyTxt}
-                                </button>
-                            </div>
-                        </div>`;
-                });
+                            </div>`;
+                    });
+                    
+                    htmlContent += `</div>`;
+                }
+            });
+
+            if (hasResults) {
                 container.innerHTML = htmlContent;
             } else {
                 container.innerHTML = `
@@ -627,7 +624,7 @@
                         document.getElementById('formSection').style.display = 'none';
                         document.getElementById('successSection').style.display = 'block';
                         document.getElementById('successOrderId').innerText = orderID;
-                        triggerConfetti(); // تشغيل تأثير الاحتفال
+                        triggerConfetti(); 
                     } else alert('خطأ أثناء الإرسال.');
                 })
                 .catch(err => { if(err.message !== 'Rate Limited') alert('فشل الاتصال.'); })
