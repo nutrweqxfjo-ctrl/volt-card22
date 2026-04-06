@@ -8,36 +8,45 @@ export default async function handler(req, res) {
         return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
     }
 
+    const body = req.body;
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const currentTime = Date.now();
+
     // ==========================================
     //  نظام الحماية من المخربين (Anti-Spam)
     // ==========================================
     
-    // استخراج الـ IP الحقيقي للزائر
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    // أ- حماية طلبات الشراء والطلبات الخاصة (طلبين كل 30 دقيقة)
+    if (body.type === 'order' || body.type === 'custom') {
+        const orderKey = ip + '_order';
+        const MAX_REQUESTS = 2;
+        const TIME_WINDOW = 30 * 60 * 1000; // 30 دقيقة
 
-    // إعدادات الحماية: طلبين (2) فقط كل 30 دقيقة
-    const MAX_REQUESTS = 2;
-    const TIME_WINDOW = 30 * 60 * 1000; // 30 دقيقة
-    const currentTime = Date.now();
+        const userRequests = rateLimitMap.get(orderKey) || [];
+        const recentRequests = userRequests.filter(time => currentTime - time < TIME_WINDOW);
 
-    // جلب سجل أوقات الطلبات السابقة لهذا الـ IP
-    const userRequests = rateLimitMap.get(ip) || [];
-
-    // تصفية الطلبات: نحتفظ فقط بالطلبات التي حدثت خلال الـ 30 دقيقة الماضية
-    const recentRequests = userRequests.filter(time => currentTime - time < TIME_WINDOW);
-
-    // التحقق من الحظر: هل تجاوز الحد؟
-    if (recentRequests.length >= MAX_REQUESTS) {
-        console.warn(`[BLOCKED SPAM] IP: ${ip}`);
-        return res.status(429).json({ 
-            ok: false, 
-            error: 'تم إرسال طلبات كثيرة. يرجى الانتظار 30 دقيقة قبل المحاولة مرة أخرى.' 
-        });
+        if (recentRequests.length >= MAX_REQUESTS) {
+            console.warn(`[BLOCKED SPAM] IP: ${ip}`);
+            return res.status(429).json({ 
+                ok: false, 
+                error: 'تم إرسال طلبات كثيرة. يرجى الانتظار 30 دقيقة قبل المحاولة مرة أخرى.' 
+            });
+        }
+        recentRequests.push(currentTime);
+        rateLimitMap.set(orderKey, recentRequests);
+    } 
+    // ب- حماية إشعارات الزوار (إشعار واحد كل 12 ساعة لنفس الـ IP) لتجنب الإزعاج
+    else if (body.type === 'visit') {
+        const visitKey = ip + '_visit';
+        const VISIT_COOLDOWN = 12 * 60 * 60 * 1000; // 12 ساعة
+        
+        const lastVisit = rateLimitMap.get(visitKey) || 0;
+        if (currentTime - lastVisit < VISIT_COOLDOWN) {
+            // تجاهل الإشعار بصمت لأننا أرسلناه مسبقاً
+            return res.status(200).json({ ok: true, note: 'Visit already recorded recently' });
+        }
+        rateLimitMap.set(visitKey, currentTime);
     }
-
-    // السماح بالطلب: تحديث سجل الـ IP بالطلب الجديد
-    recentRequests.push(currentTime);
-    rateLimitMap.set(ip, recentRequests);
 
     // ==========================================
     //  كود إرسال الطلبات إلى بوت تيليجرام
@@ -45,12 +54,22 @@ export default async function handler(req, res) {
 
     const BOT_TOKEN = process.env.BOT_TOKEN;
     const CHAT_ID = process.env.CHAT_ID;
-    const body = req.body;
 
     try {
+        // حالة: زيارة الموقع (Analytics)
+        if (body.type === 'visit') {
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: body.customName }) // المتغير customName يحمل تفاصيل الزائر
+            });
+            const data = await response.json();
+            return res.status(200).json(data);
+        }
+
         // حالة: طلب خاص
         if (body.type === 'custom') {
-            const text = `🌟 طلب خاص جديد - Volt Cards 🌟\n\n📦 البطاقة المطلوبة: ${body.customName}\n📞 التواصل: ${body.customContact}`;
+            const text = `🌟 طلب خاص جديد - Volt Cards 🌟\n\n📦 الخدمة/البطاقة المطلوبة: ${body.customName}\n📞 التواصل: ${body.customContact}`;
             
             const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
@@ -58,13 +77,12 @@ export default async function handler(req, res) {
                 body: JSON.stringify({ chat_id: CHAT_ID, text: text })
             });
             const data = await response.json();
-            // الـ Telegram API يُرجع دائماً {ok: true} عند النجاح
             return res.status(200).json(data);
         }
 
         // حالة: طلب شراء بطاقة (مع صورة)
         if (body.type === 'order') {
-            const caption = `⚡ طلب جديد - Volt Cards ⚡\n\n📦 البطاقة/الخدمة: ${body.cardDetails}\n👤 الاسم: ${body.userName}\n📲 رقم التحويل: ${body.transferPhone}`;
+            const caption = `⚡ طلب جديد - Volt Cards ⚡\n\n📦 ${body.cardDetails}\n👤 الاسم: ${body.userName}\n📲 رقم التحويل: ${body.transferPhone}`;
             
             const formData = new FormData();
             formData.append('chat_id', CHAT_ID);
@@ -83,6 +101,10 @@ export default async function handler(req, res) {
             const data = await response.json();
             return res.status(200).json(data);
         }
+
+        // إذا كان النوع غير معروف
+        return res.status(400).json({ ok: false, error: 'نوع الطلب غير معروف' });
+
     } catch (error) {
         console.error('Telegram API Error:', error);
         return res.status(500).json({ ok: false, error: 'Internal Server Error' });
