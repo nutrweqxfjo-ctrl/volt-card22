@@ -44,12 +44,7 @@
         
         body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; padding-bottom: 80px; transition: background-color 0.3s; }
 
-        .loader-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); z-index: 99999;
-            display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 99999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease, visibility 0.5s ease; }
         .loader-overlay.hidden { opacity: 0; visibility: hidden; }
         .loader-content { text-align: center; color: var(--text-main); }
         .loader-icon { font-size: 4rem; color: var(--primary); margin-bottom: 15px; animation: pulse-glow 0.8s infinite alternate; filter: drop-shadow(0 0 15px var(--primary)); }
@@ -101,7 +96,7 @@
         .product-card:hover .product-img img { transform: scale(1.1); }
         .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
         .product-cat { color: var(--primary); font-size: 0.75rem; font-weight: 800; margin-bottom: 4px; }
-        .product-title { font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-title { font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.3; }
         .price-wrap { margin-top: auto; display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
         .price-old { text-decoration: line-through; color: var(--text-muted); font-size: 0.8rem; }
         .price-new { color: var(--danger); font-size: 1.1rem; font-weight: 900; }
@@ -134,13 +129,10 @@
         .sheet-content { padding: 0 20px 20px; overflow-y: auto; }
         .sheet-title { font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin-bottom: 15px; text-shadow: 0 0 5px rgba(255,255,255,0.1); }
         
-        .order-limit-note { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); color: var(--warning); padding: 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; text-align: center; box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.1); }
+        .order-limit-note { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); color: var(--warning); padding: 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; text-align: center; }
         .payment-instruction { background: rgba(139, 92, 246, 0.05); border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
-        .payment-instruction p { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
         .payment-number { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: var(--primary); color: white; padding: 10px 25px; border-radius: 8px; font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: 0.3s; direction: ltr; box-shadow: var(--neon-glow); border: 1px solid rgba(255,255,255,0.2); }
-        .payment-number:active { transform: scale(0.95); box-shadow: var(--neon-glow-strong); }
-        .payment-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; font-weight: 600;}
-
+        
         .form-group { margin-bottom: 15px; }
         .form-label { display: block; font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
         .form-input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 12px; outline: none; font-size: 1rem; transition: 0.3s; }
@@ -148,26 +140,24 @@
         
         .upload-area { border: 2px dashed var(--border-color); padding: 20px; text-align: center; border-radius: 12px; position: relative; background: var(--input-bg); transition: 0.3s;}
         .upload-area:hover { border-color: var(--primary); box-shadow: inset 0 0 15px rgba(139, 92, 246, 0.1); }
-        .upload-area i { filter: drop-shadow(0 0 5px var(--primary)); }
         .upload-area input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .upload-preview { max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 8px; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
 
         .btn-submit { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; margin-top: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: 0.3s;}
         .btn-submit:hover, .btn-submit:active { box-shadow: var(--neon-glow-strong); transform: translateY(-2px); }
 
-        .order-item { background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 10px; transition: 0.3s; }
-        .order-item:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(139, 92, 246, 0.1); }
-        .order-id { color: var(--primary); font-weight: 900; font-size: 1.1rem; display: block; margin-bottom: 5px; text-shadow: 0 0 3px rgba(139, 92, 246, 0.3); }
-        .order-name { color: var(--text-main); font-weight: 700; font-size: 0.95rem; }
+        /* ستايل صفحة الرسائل */
+        .inbox-container { padding: 20px; padding-bottom: 40px; }
+        .order-item { background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 15px; transition: 0.3s; }
+        .order-item:hover { border-color: var(--primary); box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
+        .order-id { color: var(--primary); font-weight: 900; font-size: 1.1rem; display: block; text-shadow: 0 0 3px rgba(139, 92, 246, 0.3); }
+        .order-name { color: var(--text-main); font-weight: 700; font-size: 1.05rem; margin-top: 8px;}
         .order-date { color: var(--text-muted); font-size: 0.8rem; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
-        .order-status { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; background: rgba(245, 158, 11, 0.1); color: var(--warning); margin-top: 8px; }
+        .order-status { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 
         .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -100px); background: var(--success); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 20000; transition: 0.4s; box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); white-space: nowrap;}
         .toast.error { background: var(--danger); box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
         .toast.show { transform: translate(-50%, 0); }
-        
-        #successSection i { filter: drop-shadow(0 0 15px var(--success)); }
-        #successOrderId { text-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
     </style>
 </head>
 <body>
@@ -180,66 +170,76 @@
     </div>
 
     <header>
-        <a href="#" class="logo" onclick="window.scrollTo(0,0)"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
+        <a href="#" class="logo" onclick="switchView('home'); window.scrollTo(0,0)"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
         <div class="header-actions">
             <i class="fa-brands fa-telegram" style="color: #24A1DE;" onclick="window.open('https://t.me/HH0O_1', '_blank')"></i>
         </div>
     </header>
 
-    <div class="search-container">
-        <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن لعبة، باقة، أو اشتراك..." data-i18n-placeholder="searchPlaceholder" oninput="onSearchInput(event)">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </div>
-    </div>
-
-    <div class="slider-wrapper" id="heroSlider">
-        <div class="slide">
-            <img src="https://i.ibb.co/wr7mHdYG/images-18.jpg" alt="ببجي">
-            <div class="slide-content">
-                <h3 data-i18n="slide1Title">عروض الشدات 🔥</h3>
-                <p data-i18n="slide1Desc">أكواد جاهزة للشحن</p>
+    <!-- القسم الرئيسي للموقع (الرئيسية) -->
+    <div id="home-section">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن لعبة، باقة، أو اشتراك..." data-i18n-placeholder="searchPlaceholder" oninput="onSearchInput(event)">
+                <i class="fa-solid fa-magnifying-glass"></i>
             </div>
         </div>
-        <div class="slide" style="background: linear-gradient(45deg, #10b981, #3b82f6);">
-            <div class="slide-content">
-                <h3 data-i18n="slide3Title">خصم 50% 🏷️</h3>
-                <p data-i18n="slide3Desc">على جميع الخدمات لفترة محدودة</p>
+
+        <div class="slider-wrapper" id="heroSlider">
+            <div class="slide">
+                <img src="https://i.ibb.co/wr7mHdYG/images-18.jpg" alt="ببجي">
+                <div class="slide-content">
+                    <h3 data-i18n="slide1Title">عروض الشدات 🔥</h3>
+                    <p data-i18n="slide1Desc">أكواد جاهزة للشحن</p>
+                </div>
+            </div>
+            <div class="slide" style="background: linear-gradient(45deg, #10b981, #3b82f6);">
+                <div class="slide-content">
+                    <h3 data-i18n="slide3Title">خصم 50% 🏷️</h3>
+                    <p data-i18n="slide3Desc">على جميع الخدمات لفترة محدودة</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="categories-scroll" id="categories-container">
-        <div class="filter-chip active" onclick="filterProducts('all')" data-i18n="catAll">الكل</div>
-        <div class="filter-chip" onclick="filterProducts('mobile')" data-i18n="catMobile">ألعاب الجوال</div>
-        <div class="filter-chip" onclick="filterProducts('boosting')" data-i18n="catBoost">رشق التطبيقات</div>
-        <div class="filter-chip" onclick="filterProducts('stores')" data-i18n="catStores">متاجر واشتراكات</div>
-        <div class="filter-chip" onclick="filterProducts('console')" data-i18n="catConsole">منصات الألعاب</div>
-        <div class="filter-chip" onclick="filterProducts('pc')" data-i18n="catPc">ألعاب الكمبيوتر</div>
-    </div>
-
-    <main class="products-container-wrapper" id="products-container"></main>
-
-    <section class="how-to-buy">
-        <h2><i class="fa-solid fa-circle-question"></i> <span data-i18n="howToBuy">خطوات كيفية الشراء؟</span></h2>
-        <div class="steps-container">
-            <div class="step-item"><i class="fa-solid fa-user-pen"></i><h4 data-i18n="step1">1. اكتب اسمك</h4></div>
-            <div class="step-item"><i class="fa-solid fa-phone-flip"></i><h4 data-i18n="step2">2. رقم التحويل</h4></div>
-            <div class="step-item"><i class="fa-solid fa-file-invoice-dollar"></i><h4 data-i18n="step3">3. ارفع رسالة التحويل</h4></div>
-            <div class="step-item"><i class="fa-solid fa-paper-plane"></i><h4 data-i18n="step4">4. استلم الكود</h4></div>
+        <div class="categories-scroll" id="categories-container">
+            <div class="filter-chip active" onclick="filterProducts('all')" data-i18n="catAll">الكل</div>
+            <div class="filter-chip" onclick="filterProducts('mobile')" data-i18n="catMobile">ألعاب الجوال</div>
+            <div class="filter-chip" onclick="filterProducts('boosting')" data-i18n="catBoost">رشق التطبيقات</div>
+            <div class="filter-chip" onclick="filterProducts('stores')" data-i18n="catStores">متاجر واشتراكات</div>
+            <div class="filter-chip" onclick="filterProducts('console')" data-i18n="catConsole">منصات الألعاب</div>
+            <div class="filter-chip" onclick="filterProducts('pc')" data-i18n="catPc">ألعاب الكمبيوتر</div>
         </div>
-    </section>
 
+        <main class="products-container-wrapper" id="products-container"></main>
+
+        <section class="how-to-buy">
+            <h2><i class="fa-solid fa-circle-question"></i> <span data-i18n="howToBuy">خطوات كيفية الشراء؟</span></h2>
+            <div class="steps-container">
+                <div class="step-item"><i class="fa-solid fa-user-pen"></i><h4 data-i18n="step1">1. اكتب اسمك</h4></div>
+                <div class="step-item"><i class="fa-solid fa-phone-flip"></i><h4 data-i18n="step2">2. رقم التحويل</h4></div>
+                <div class="step-item"><i class="fa-solid fa-file-invoice-dollar"></i><h4 data-i18n="step3">3. ارفع رسالة التحويل</h4></div>
+                <div class="step-item"><i class="fa-solid fa-paper-plane"></i><h4 data-i18n="step4">4. استلم الكود</h4></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- القسم الجديد: صندوق الرسائل بملء الشاشة -->
+    <div id="inbox-section" class="inbox-container" style="display: none;">
+        <h2 class="section-divider" style="margin-bottom: 25px;"><i class="fa-solid fa-envelope-open-text" style="color: var(--primary);"></i> <span data-i18n="myOrdersTitle">صندوق الرسائل والطلبات</span></h2>
+        <div id="myOrdersList"></div>
+    </div>
+
+    <!-- شريط التنقل السفلي -->
     <nav class="bottom-nav">
-        <a class="nav-item active" onclick="setActiveNav(this); window.scrollTo({top: 0, behavior: 'smooth'});">
+        <a class="nav-item active" onclick="setActiveNav(this); switchView('home');">
             <i class="fa-solid fa-house"></i>
             <span data-i18n="navHome">الرئيسية</span>
         </a>
-        <a class="nav-item" onclick="setActiveNav(this); document.getElementById('searchInput').focus(); window.scrollTo(0, 0);">
+        <a class="nav-item" onclick="setActiveNav(this); switchView('home'); document.getElementById('searchInput').focus();">
             <i class="fa-solid fa-magnifying-glass"></i>
             <span data-i18n="navSearch">بحث</span>
         </a>
-        <a class="nav-item" onclick="setActiveNav(this); openSheet('ordersSheet'); renderMyOrders();">
+        <a class="nav-item" onclick="setActiveNav(this); switchView('inbox'); renderMyOrders();">
             <i class="fa-solid fa-envelope"></i>
             <span data-i18n="navOrders">رسائلي</span>
         </a>
@@ -251,13 +251,13 @@
 
     <div class="sheet-overlay" id="sheetOverlay" onclick="closeAllSheets()"></div>
 
+    <!-- نافذة الشراء المنبثقة -->
     <div class="bottom-sheet" id="purchaseSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
             <h2 class="sheet-title" data-i18n="modalTitle">إتمام الطلب</h2>
             
             <div id="formSection">
-                
                 <div class="order-limit-note">
                     <i class="fa-solid fa-circle-exclamation"></i> <span data-i18n="orderLimitNote">ملاحظة: يمكنك إرسال طلبين فقط خلال 30 دقيقة</span>
                 </div>
@@ -282,7 +282,7 @@
                     <div class="form-group">
                         <label class="form-label" data-i18n="formTransferPhone">رقم هاتفك (الذي حولت منه)</label>
                         <input type="tel" id="transferPhone" class="form-input" placeholder="077XXXXXXXX" required dir="ltr" style="text-align: right;">
-                        <span id="phoneErrorMsg" style="color: var(--danger); font-size: 0.8rem; display: none; margin-top: 5px; font-weight: bold;" data-i18n="phoneErrorMsg">يرجى إدخال رقم آسياسيل صحيح (11 رقم يبدأ بـ 077).</span>
+                        <span id="phoneErrorMsg" style="color: var(--danger); font-size: 0.8rem; display: none; margin-top: 5px; font-weight: bold;" data-i18n="phoneErrorMsg">يرجى إدخال رقم آسياسيل صحيح (11 رقم).</span>
                     </div>
                     
                     <div class="form-group" id="targetAccountGroup" style="display: none;">
@@ -316,14 +316,7 @@
         </div>
     </div>
 
-    <div class="bottom-sheet" id="ordersSheet">
-        <div class="sheet-drag-handle"></div>
-        <div class="sheet-content">
-            <h2 class="sheet-title" data-i18n="myOrdersTitle">صندوق الرسائل والطلبات</h2>
-            <div id="myOrdersList"></div>
-        </div>
-    </div>
-
+    <!-- نافذة الإعدادات -->
     <div class="bottom-sheet" id="settingsSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -367,7 +360,6 @@
     <div class="toast" id="toast" data-i18n="toastMsg">تم بنجاح! ✅</div>
 
     <script>
-        // إخفاء مؤشر التحميل بعد ثانية واحدة
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('loader');
@@ -376,7 +368,6 @@
             }, 1000); 
         });
 
-        // تم تحديث النصوص هنا لتناسب صندوق الرسائل الجديد
         const translations = {
             ar: {
                 logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
@@ -384,16 +375,13 @@
                 buyBtn: "شراء", currency: "د.ع", modalTitle: "إتمام الطلب", bestSeller: "الأكثر مبيعاً",
                 slide1Title: "عروض الشدات 🔥", slide1Desc: "أكواد جاهزة للشحن", slide3Title: "خصم 50% 🏷️", slide3Desc: "على جميع الخدمات لفترة محدودة",
                 
-                paymentInstruction: "يرجى تحويل مبلغ الطلب إلى الرقم التالي:",
-                paymentNote: "(آسيا سيل فقط)",
-                copiedMsg: "تم نسخ الرقم بنجاح! 📋",
-                orderLimitNote: "ملاحظة: يمكنك إرسال طلبين فقط خلال 30 دقيقة",
-                phoneErrorMsg: "يرجى إدخال رقم آسياسيل صحيح (11 رقم يبدأ بـ 077).",
+                paymentInstruction: "يرجى تحويل مبلغ الطلب إلى الرقم التالي:", paymentNote: "(آسيا سيل فقط)",
+                copiedMsg: "تم نسخ الرقم بنجاح! 📋", orderLimitNote: "ملاحظة: يمكنك إرسال طلبين فقط خلال 30 دقيقة",
+                phoneErrorMsg: "يرجى إدخال رقم آسياسيل صحيح (11 رقم).",
 
                 howToBuy: "خطوات كيفية الشراء؟", step1: "1. اكتب اسمك", step2: "2. رقم التحويل", step3: "3. ارفع رسالة التحويل", step4: "4. استلم الكود",
 
-                formName: "الاسم الكامل", formContact: "رقم الهاتف أو المعرف", 
-                formTransferPhone: "رقم هاتفك (الذي حولت منه)", formTargetAccount: "يوزر الحساب أو الرابط",
+                formName: "الاسم الكامل", formContact: "رقم الهاتف أو المعرف", formTransferPhone: "رقم هاتفك (الذي حولت منه)", formTargetAccount: "يوزر الحساب أو الرابط",
                 formUpload: "اضغط لرفع صورة لرسالة التحويل", formSubmit: "تأكيد وإرسال الطلب", step3Title: "إثبات التحويل",
                 successTitle: "تم استلام طلبك!", successDesc: "سيتم التنفيذ قريباً. احتفظ برقم الطلب:", closeBtn: "إغلاق", 
                 toastMsg: "تم الإرسال بنجاح! ✅", toastErrorSize: "حجم الصورة كبير جداً! ❌",
@@ -410,16 +398,13 @@
                 buyBtn: "Buy", currency: "IQD", modalTitle: "Complete Order", bestSeller: "Best Seller",
                 slide1Title: "PUBG Offers 🔥", slide1Desc: "Ready to redeem codes", slide3Title: "50% OFF 🏷️", slide3Desc: "On all services for limited time",
                 
-                paymentInstruction: "Please transfer the order amount to:",
-                paymentNote: "(AsiaCell only)",
-                copiedMsg: "Number copied to clipboard! 📋",
-                orderLimitNote: "Note: You can only send 2 orders within 30 minutes",
-                phoneErrorMsg: "Please enter a valid AsiaCell number (11 digits starting with 077).",
+                paymentInstruction: "Please transfer the order amount to:", paymentNote: "(AsiaCell only)",
+                copiedMsg: "Number copied to clipboard! 📋", orderLimitNote: "Note: You can only send 2 orders within 30 minutes",
+                phoneErrorMsg: "Please enter a valid AsiaCell number (11 digits).",
 
                 howToBuy: "How to Buy?", step1: "1. Enter Name", step2: "2. Transfer Num", step3: "3. Upload Image", step4: "4. Get Code",
 
-                formName: "Full Name", formContact: "Phone or Telegram @", 
-                formTransferPhone: "Your phone number (Sender)", formTargetAccount: "Username or Link",
+                formName: "Full Name", formContact: "Phone or Telegram @", formTransferPhone: "Your phone number (Sender)", formTargetAccount: "Username or Link",
                 formUpload: "Tap to upload image of transfer message", formSubmit: "Confirm & Send Order", step3Title: "Payment Proof",
                 successTitle: "Order Received!", successDesc: "Processing soon. Save your ID:", closeBtn: "Close", 
                 toastMsg: "Sent Successfully! ✅", toastErrorSize: "Image is too large! ❌",
@@ -468,11 +453,8 @@
         ];
 
         const allCategoriesList = [
-            { id: 'mobile', key: 'catMobile' },
-            { id: 'boosting', key: 'catBoost' },
-            { id: 'stores', key: 'catStores' },
-            { id: 'console', key: 'catConsole' },
-            { id: 'pc', key: 'catPc' }
+            { id: 'mobile', key: 'catMobile' }, { id: 'boosting', key: 'catBoost' }, { id: 'stores', key: 'catStores' },
+            { id: 'console', key: 'catConsole' }, { id: 'pc', key: 'catPc' }
         ];
 
         let currentLang = localStorage.getItem('lang') || 'ar';
@@ -482,8 +464,7 @@
         let clientIP = 'غير معروف';
         
         function triggerConfetti() {
-            var duration = 3 * 1000;
-            var end = Date.now() + duration;
+            var duration = 3 * 1000; var end = Date.now() + duration;
             (function frame() {
                 confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#8b5cf6', '#10b981'] });
                 confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f59e0b', '#ef4444'] });
@@ -513,6 +494,20 @@
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let result = 'V-';
             for (let i = 0; i < 5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
             return result;
+        }
+
+        // ==========================================
+        // 🚀 دالة التنقل بين الصفحات (الرئيسية <-> رسائلي)
+        // ==========================================
+        function switchView(viewName) {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            if (viewName === 'home') {
+                document.getElementById('home-section').style.display = 'block';
+                document.getElementById('inbox-section').style.display = 'none';
+            } else if (viewName === 'inbox') {
+                document.getElementById('home-section').style.display = 'none';
+                document.getElementById('inbox-section').style.display = 'block';
+            }
         }
 
         function setActiveNav(element) {
@@ -568,9 +563,7 @@
 
         function renderProducts(categoryFilter, searchQuery = '') {
             const container = document.getElementById('products-container'); 
-            container.innerHTML = ''; 
-            let htmlContent = '';
-            let hasResults = false;
+            container.innerHTML = ''; let htmlContent = ''; let hasResults = false;
 
             allCategoriesList.forEach(cat => {
                 if (categoryFilter !== 'all' && categoryFilter !== cat.id) return;
@@ -582,9 +575,7 @@
 
                 if (catProducts.length > 0) {
                     hasResults = true;
-                    if (categoryFilter === 'all') {
-                        htmlContent += `<h2 class="section-divider"><i class="fa-solid fa-layer-group" style="font-size: 0.9rem; color: var(--primary);"></i> ${translations[currentLang][cat.key]}</h2>`;
-                    }
+                    if (categoryFilter === 'all') htmlContent += `<h2 class="section-divider"><i class="fa-solid fa-layer-group" style="font-size: 0.9rem; color: var(--primary);"></i> ${translations[currentLang][cat.key]}</h2>`;
                     htmlContent += `<div class="products-grid">`;
                     catProducts.forEach(p => {
                         const oldPrice = p.price; const newPrice = oldPrice / 2; 
@@ -623,9 +614,6 @@
             localStorage.setItem('myVoltOrders', JSON.stringify(myOrdersHistory)); 
         }
 
-        // ==========================================
-        // 🚀 دالة جلب وعرض الرسائل (محدثة بالكامل لتقرأ الحالة والرسائل)
-        // ==========================================
         async function renderMyOrders() {
             const listContainer = document.getElementById('myOrdersList');
             if (myOrdersHistory.length === 0) { 
@@ -648,18 +636,12 @@
 
                 listContainer.innerHTML = myOrdersHistory.map(order => {
                     const orderData = data[order.id] || { status: 'pending', message: '' };
-                    let statusHtml = '';
-                    let msgHtml = '';
+                    let statusHtml = ''; let msgHtml = '';
                     
-                    if (orderData.status === 'completed') {
-                        statusHtml = `<span class="order-status" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fa-solid fa-check-double"></i> مكتمل ✅</span>`;
-                    } else if (orderData.status === 'rejected') {
-                        statusHtml = `<span class="order-status" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fa-solid fa-xmark"></i> مرفوض ❌</span>`;
-                    } else {
-                        statusHtml = `<span class="order-status"><i class="fa-solid fa-hourglass-half"></i> قيد المراجعة ⏳</span>`;
-                    }
+                    if (orderData.status === 'completed') statusHtml = `<span class="order-status" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fa-solid fa-check-double"></i> مكتمل ✅</span>`;
+                    else if (orderData.status === 'rejected') statusHtml = `<span class="order-status" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fa-solid fa-xmark"></i> مرفوض ❌</span>`;
+                    else statusHtml = `<span class="order-status"><i class="fa-solid fa-hourglass-half"></i> قيد المراجعة ⏳</span>`;
 
-                    // عرض رسالة الإدارة إذا وجدت
                     if (orderData.message && orderData.message !== 'null' && orderData.message !== '') {
                         const cleanMsg = orderData.message.replace(/\n/g, '<br>');
                         msgHtml = `
@@ -675,7 +657,7 @@
                             <span class="order-id">#${order.id}</span>
                             ${statusHtml}
                         </div>
-                        <div class="order-name" style="margin-top:8px; font-size: 1.05rem;">${order.name}</div>
+                        <div class="order-name">${order.name}</div>
                         <div class="order-date"><i class="fa-regular fa-calendar"></i> ${order.date}</div>
                         ${msgHtml}
                     </div>
@@ -693,7 +675,6 @@
                 `).join('');
             }
         }
-        // ==========================================
 
         function openPurchaseSheet(name, price, curr, category) { 
             selectedProductCategory = category; 
@@ -707,24 +688,15 @@
             
             const targetAccountGroup = document.getElementById('targetAccountGroup');
             const targetInput = document.getElementById('targetAccount');
-            if(category === 'boosting') {
-                targetAccountGroup.style.display = 'block';
-                targetInput.required = true;
-            } else {
-                targetAccountGroup.style.display = 'none';
-                targetInput.required = false;
-            }
+            if(category === 'boosting') { targetAccountGroup.style.display = 'block'; targetInput.required = true; } 
+            else { targetAccountGroup.style.display = 'none'; targetInput.required = false; }
             openSheet('purchaseSheet');
         }
         
         function previewImage(event) { 
-            const file = event.target.files[0];
-            const img = document.getElementById("imagePreview");
+            const file = event.target.files[0]; const img = document.getElementById("imagePreview");
             if(!file) return;
-            if(file.size > 1536000) {
-                showToast(translations[currentLang].toastErrorSize, 'error');
-                event.target.value = ""; img.style.display = "none"; return;
-            }
+            if(file.size > 1536000) { showToast(translations[currentLang].toastErrorSize, 'error'); event.target.value = ""; img.style.display = "none"; return; }
             const reader = new FileReader(); 
             reader.onload = () => { img.src = reader.result; img.style.display = "block"; }; 
             reader.readAsDataURL(file); 
@@ -737,14 +709,12 @@
             setTimeout(() => toast.classList.remove('show'), 3000); 
         }
 
-        // تحقق حي من الرقم أثناء الكتابة
         document.getElementById('transferPhone').addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, ''); 
             if(this.value.length > 11) this.value = this.value.slice(0, 11); 
             
             if(this.value.length === 11 && /^077/.test(this.value)) {
-                this.style.borderColor = 'var(--success)';
-                document.getElementById('phoneErrorMsg').style.display = 'none';
+                this.style.borderColor = 'var(--success)'; document.getElementById('phoneErrorMsg').style.display = 'none';
             } else if (this.value.length > 0) {
                 this.style.borderColor = 'var(--primary)';
             }
@@ -753,52 +723,36 @@
         document.getElementById('checkoutForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
-            const btnSpan = document.getElementById('btnText');
-            const originalText = btnSpan.innerText;
-            const transferPhoneInput = document.getElementById('transferPhone');
-            const phoneErrorMsg = document.getElementById('phoneErrorMsg');
+            const btnSpan = document.getElementById('btnText'); const originalText = btnSpan.innerText;
+            const transferPhoneInput = document.getElementById('transferPhone'); const phoneErrorMsg = document.getElementById('phoneErrorMsg');
             
             const phoneRegex = /^077\d{8}$/;
             if (!phoneRegex.test(transferPhoneInput.value)) {
-                phoneErrorMsg.style.display = 'block';
-                transferPhoneInput.style.borderColor = 'var(--danger)';
+                phoneErrorMsg.style.display = 'block'; transferPhoneInput.style.borderColor = 'var(--danger)';
                 transferPhoneInput.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
                 return;
             }
 
             btnSpan.innerText = '⏳...';
             
-            const orderID = generateOrderID();
-            let cardDetails = document.getElementById('selectedCard').value;
-            const targetAccount = document.getElementById('targetAccount').value;
-            const fileInput = document.getElementById('receiptImg');
+            const orderID = generateOrderID(); let cardDetails = document.getElementById('selectedCard').value;
+            const targetAccount = document.getElementById('targetAccount').value; const fileInput = document.getElementById('receiptImg');
 
-            if (selectedProductCategory === 'boosting') cardDetails += ` | اليوزر/الرابط: ${targetAccount}`;
+            if (selectedProductCategory === 'boosting') cardDetails += ` | اليوزر: ${targetAccount}`;
             const finalCardDetails = `[${orderID}] ${cardDetails} | IP: ${clientIP}`;
 
             const reader = new FileReader();
             reader.onloadend = () => {
                 fetch('/api/send', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        type: 'order', cardDetails: finalCardDetails,
-                        userName: document.getElementById('userName').value,
-                        transferPhone: transferPhoneInput.value, 
-                        imageBase64: reader.result
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'order', cardDetails: finalCardDetails, userName: document.getElementById('userName').value, transferPhone: transferPhoneInput.value, imageBase64: reader.result })
                 })
-                .then(res => {
-                    if (res.status === 429) { alert('تجاوزت الحد (طلبين كل 30د)! ⏳'); throw new Error('Rate Limited'); }
-                    return res.json();
-                })
+                .then(res => { if (res.status === 429) { alert('تجاوزت الحد (طلبين كل 30د)! ⏳'); throw new Error('Rate Limited'); } return res.json(); })
                 .then(data => {
                     if(data?.ok) {
                         saveOrderToHistory(document.getElementById('selectedCard').value.split('-')[0].trim(), orderID);
-                        document.getElementById('formSection').style.display = 'none';
-                        document.getElementById('successSection').style.display = 'block';
-                        document.getElementById('successOrderId').innerText = orderID;
-                        triggerConfetti(); 
+                        document.getElementById('formSection').style.display = 'none'; document.getElementById('successSection').style.display = 'block';
+                        document.getElementById('successOrderId').innerText = orderID; triggerConfetti(); 
                     } else alert('خطأ أثناء الإرسال.');
                 })
                 .catch(err => { if(err.message !== 'Rate Limited') alert('فشل الاتصال.'); })
@@ -809,28 +763,19 @@
 
         document.getElementById('customRequestForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const btnSpan = document.querySelector('#customSubmitBtn span');
-            const originalText = btnSpan.innerText;
-            btnSpan.innerText = '⏳...';
+            const btnSpan = document.querySelector('#customSubmitBtn span'); const originalText = btnSpan.innerText; btnSpan.innerText = '⏳...';
             
-            const orderID = generateOrderID();
-            const customName = document.getElementById('customCardName').value;
+            const orderID = generateOrderID(); const customName = document.getElementById('customCardName').value;
             const finalCustomName = `[خاص: ${orderID}] ${customName} | IP: ${clientIP}`;
             
             fetch('/api/send', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type: 'custom', customName: finalCustomName, customContact: document.getElementById('customContact').value })
             })
-            .then(res => {
-                if (res.status === 429) { alert('تجاوزت الحد المسموح! ⏳'); throw new Error('Rate Limited'); }
-                return res.json();
-            })
+            .then(res => { if (res.status === 429) { alert('تجاوزت الحد المسموح! ⏳'); throw new Error('Rate Limited'); } return res.json(); })
             .then(data => {
-                if(data?.ok) {
-                    saveOrderToHistory(`طلب خاص: ${customName}`, orderID);
-                    e.target.reset(); closeAllSheets(); showToast();
-                } else alert('خطأ أثناء الإرسال.');
+                if(data?.ok) { saveOrderToHistory(`طلب خاص: ${customName}`, orderID); e.target.reset(); closeAllSheets(); showToast(); } 
+                else alert('خطأ أثناء الإرسال.');
             })
             .catch(err => { if(err.message !== 'Rate Limited') alert('فشل الاتصال.'); })
             .finally(() => btnSpan.innerText = originalText);
