@@ -2,23 +2,20 @@ const rateLimitMap = new Map();
 
 // 🚀 دالة لتحديث حالة الطلب في قاعدة البيانات 
 async function updateOrderStatus(orderId, status) {
-    // الكود الآن ذكي جداً ويبحث عن قاعدة البيانات بأي اسم وضعته Vercel
-    const dbUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.STORAGE_KV_REST_API_URL || process.env.STORAGE_UPSTASH_REDIS_REST_URL;
-    const dbToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN || process.env.STORAGE_UPSTASH_REDIS_REST_TOKEN;
+    const dbUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.STORAGE_KV_REST_API_URL;
+    const dbToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN;
 
-    if (!dbUrl || !dbToken) {
-        console.log("تنبيه: قاعدة البيانات غير متصلة بعد.");
-        return;
-    }
+    if (!dbUrl || !dbToken) return;
+    
     const url = `${dbUrl}/set/${orderId}`;
     try {
         await fetch(url, {
             method: 'POST',
             headers: { Authorization: `Bearer ${dbToken}` },
-            body: JSON.stringify(`"${status}"`) 
+            body: JSON.stringify(status) // 🔥 تم التعديل هنا لحفظ الحالة بشكل نظيف
         });
     } catch (e) {
-        console.error("خطأ في تحديث قاعدة البيانات:", e);
+        console.error("DB Error:", e);
     }
 }
 
@@ -124,7 +121,6 @@ export default async function handler(req, res) {
             const orderIdMatch = body.cardDetails.match(/\[(V-\w+)\]/);
             const orderID = orderIdMatch ? orderIdMatch[1] : 'Unknown';
 
-            // تسجيل الطلب كـ "قيد المراجعة"
             if(orderID !== 'Unknown') await updateOrderStatus(orderID, 'pending');
 
             const caption = `⚡ طلب جديد - Volt Cards ⚡\n\n📦 ${body.cardDetails}\n👤 الاسم: ${body.userName}\n📲 رقم التحويل: ${body.transferPhone}`;
