@@ -172,7 +172,6 @@
 </head>
 <body>
 
-    <!-- مؤشر التحميل -->
     <div id="loader" class="loader-overlay">
         <div class="loader-content">
             <i class="fa-solid fa-bolt loader-icon"></i>
@@ -241,8 +240,8 @@
             <span data-i18n="navSearch">بحث</span>
         </a>
         <a class="nav-item" onclick="setActiveNav(this); openSheet('ordersSheet'); renderMyOrders();">
-            <i class="fa-solid fa-box-open"></i>
-            <span data-i18n="navOrders">طلباتي</span>
+            <i class="fa-solid fa-envelope"></i>
+            <span data-i18n="navOrders">رسائلي</span>
         </a>
         <a class="nav-item" onclick="setActiveNav(this); openSheet('settingsSheet');">
             <i class="fa-solid fa-gear"></i>
@@ -320,7 +319,7 @@
     <div class="bottom-sheet" id="ordersSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
-            <h2 class="sheet-title" data-i18n="myOrdersTitle">سجل طلباتي</h2>
+            <h2 class="sheet-title" data-i18n="myOrdersTitle">صندوق الرسائل والطلبات</h2>
             <div id="myOrdersList"></div>
         </div>
     </div>
@@ -377,6 +376,7 @@
             }, 1000); 
         });
 
+        // تم تحديث النصوص هنا لتناسب صندوق الرسائل الجديد
         const translations = {
             ar: {
                 logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
@@ -399,8 +399,9 @@
                 toastMsg: "تم الإرسال بنجاح! ✅", toastErrorSize: "حجم الصورة كبير جداً! ❌",
                 customOrderTitle: "الطلبات الخاصة", customOrderDesc: "لم تجد الخدمة المطلوبة؟ اطلبها من هنا:",
                 customCardInput: "الخدمة المطلوبة والكمية", customOrderBtn: "إرسال الطلب",
-                myOrdersTitle: "سجل طلباتي", noOrders: "لا توجد طلبات سابقة.", orderPending: "قيد المراجعة ⏳", orderCustom: "طلب خاص",
-                navHome: "الرئيسية", navSearch: "بحث", navOrders: "طلباتي", navSettings: "الإعدادات",
+                
+                myOrdersTitle: "صندوق الرسائل والطلبات", noOrders: "لا توجد رسائل أو طلبات سابقة.", orderPending: "قيد المراجعة ⏳", orderCustom: "طلب خاص",
+                navHome: "الرئيسية", navSearch: "بحث", navOrders: "رسائلي", navSettings: "الإعدادات",
                 searchPlaceholder: "ابحث عن لعبة أو اشتراك...", noResultTitle: "عذراً!", noResultDesc: "لم نجد ما تبحث عنه."
             },
             en: {
@@ -424,8 +425,9 @@
                 toastMsg: "Sent Successfully! ✅", toastErrorSize: "Image is too large! ❌",
                 customOrderTitle: "Custom Request", customOrderDesc: "Didn't find it? Request here:",
                 customCardInput: "Service & Quantity", customOrderBtn: "Send Request",
-                myOrdersTitle: "My Orders", noOrders: "No orders yet.", orderPending: "Pending ⏳", orderCustom: "Custom Request",
-                navHome: "Home", navSearch: "Search", navOrders: "Orders", navSettings: "Settings",
+                
+                myOrdersTitle: "Inbox & Orders", noOrders: "No messages or orders yet.", orderPending: "Pending ⏳", orderCustom: "Custom Request",
+                navHome: "Home", navSearch: "Search", navOrders: "Inbox", navSettings: "Settings",
                 searchPlaceholder: "Search games, subs...", noResultTitle: "Oops!", noResultDesc: "No results found."
             }
         };
@@ -622,55 +624,65 @@
         }
 
         // ==========================================
-        // 🚀 دالة جلب وعرض الطلبات (محدثة بالكامل لتقرأ من قاعدة البيانات)
+        // 🚀 دالة جلب وعرض الرسائل (محدثة بالكامل لتقرأ الحالة والرسائل)
         // ==========================================
         async function renderMyOrders() {
             const listContainer = document.getElementById('myOrdersList');
             if (myOrdersHistory.length === 0) { 
-                listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>${translations[currentLang].noOrders}</p></div>`; 
+                listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-envelope-open"></i><p>${translations[currentLang].noOrders}</p></div>`; 
                 return; 
             }
             
-            // 1. إظهار أيقونة تحميل مؤقتة
             listContainer.innerHTML = '<div style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i></div>';
 
             const orderIds = myOrdersHistory.map(order => order.id);
 
             try {
-                // 2. إرسال أرقام الطلبات للـ API لجلب حالتها من الداتا بيس
                 const res = await fetch('/api/check-orders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ orderIds })
                 });
                 
-                const statuses = await res.json();
+                const data = await res.json();
 
-                // 3. عرض الطلبات مع الحالة الجديدة
                 listContainer.innerHTML = myOrdersHistory.map(order => {
-                    const statusStr = statuses[order.id] || 'pending';
+                    const orderData = data[order.id] || { status: 'pending', message: '' };
                     let statusHtml = '';
+                    let msgHtml = '';
                     
-                    if (statusStr === 'completed') {
+                    if (orderData.status === 'completed') {
                         statusHtml = `<span class="order-status" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fa-solid fa-check-double"></i> مكتمل ✅</span>`;
-                    } else if (statusStr === 'rejected') {
+                    } else if (orderData.status === 'rejected') {
                         statusHtml = `<span class="order-status" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fa-solid fa-xmark"></i> مرفوض ❌</span>`;
                     } else {
                         statusHtml = `<span class="order-status"><i class="fa-solid fa-hourglass-half"></i> قيد المراجعة ⏳</span>`;
                     }
 
+                    // عرض رسالة الإدارة إذا وجدت
+                    if (orderData.message && orderData.message !== 'null' && orderData.message !== '') {
+                        const cleanMsg = orderData.message.replace(/\n/g, '<br>');
+                        msgHtml = `
+                        <div style="margin-top: 12px; padding: 15px; background: rgba(139, 92, 246, 0.1); border-right: 4px solid var(--primary); border-radius: 8px; font-size: 0.95rem; color: var(--text-main);">
+                            <strong style="color: var(--primary);"><i class="fa-solid fa-envelope-open-text"></i> رسالة من الإدارة:</strong><br>
+                            <div style="margin-top: 8px; font-weight: bold; letter-spacing: 0.5px; line-height: 1.5; user-select: all;">${cleanMsg}</div>
+                        </div>`;
+                    }
+
                     return `
                     <div class="order-item">
-                        <span class="order-id">#${order.id}</span>
-                        <div class="order-name">${order.name}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="order-id">#${order.id}</span>
+                            ${statusHtml}
+                        </div>
+                        <div class="order-name" style="margin-top:8px; font-size: 1.05rem;">${order.name}</div>
                         <div class="order-date"><i class="fa-regular fa-calendar"></i> ${order.date}</div>
-                        ${statusHtml}
+                        ${msgHtml}
                     </div>
                     `;
                 }).join('');
             } catch (err) {
-                console.error("خطأ في جلب الطلبات:", err);
-                // في حال وجود مشكلة بالانترنت نعرضها كقيد المراجعة بدلا من صفحة فارغة
+                console.error("خطأ في جلب الرسائل:", err);
                 listContainer.innerHTML = myOrdersHistory.map(order => `
                     <div class="order-item">
                         <span class="order-id">#${order.id}</span>
@@ -746,7 +758,6 @@
             const transferPhoneInput = document.getElementById('transferPhone');
             const phoneErrorMsg = document.getElementById('phoneErrorMsg');
             
-            // تحقق نهائي قبل الإرسال
             const phoneRegex = /^077\d{8}$/;
             if (!phoneRegex.test(transferPhoneInput.value)) {
                 phoneErrorMsg.style.display = 'block';
