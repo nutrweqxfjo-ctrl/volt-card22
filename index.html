@@ -23,6 +23,8 @@
             --input-bg: #0f172a;
             --bottom-nav-bg: #1e293b;
             --sheet-bg: #1e293b;
+            --neon-glow: 0 0 10px rgba(139, 92, 246, 0.4), 0 0 20px rgba(139, 92, 246, 0.2);
+            --neon-glow-strong: 0 0 15px rgba(139, 92, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.4);
         }
 
         .light-mode {
@@ -34,16 +36,32 @@
             --input-bg: #f8fafc;
             --bottom-nav-bg: #ffffff;
             --sheet-bg: #ffffff;
+            --neon-glow: 0 0 10px rgba(139, 92, 246, 0.3), 0 0 20px rgba(139, 92, 246, 0.1);
+            --neon-glow-strong: 0 0 15px rgba(139, 92, 246, 0.5), 0 0 30px rgba(139, 92, 246, 0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; padding-bottom: 80px; transition: background-color 0.3s; }
 
+        /* ستايل مؤشر التحميل */
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 99999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loader-overlay.hidden { opacity: 0; visibility: hidden; }
+        .loader-content { text-align: center; color: var(--text-main); }
+        .loader-icon { font-size: 4rem; color: var(--primary); margin-bottom: 15px; animation: pulse-glow 0.8s infinite alternate; filter: drop-shadow(0 0 15px var(--primary)); }
+        @keyframes pulse-glow { 0% { transform: scale(1); filter: drop-shadow(0 0 10px var(--primary)); } 100% { transform: scale(1.1); filter: drop-shadow(0 0 25px var(--primary)); } }
+        .loader-content h2 { font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
+
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo { font-size: 1.5rem; font-weight: 900; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 8px; }
-        .logo i { color: var(--primary); }
-        .header-actions i { font-size: 1.5rem; color: var(--text-muted); cursor: pointer; margin-right: 15px; }
+        .logo i { color: var(--primary); filter: drop-shadow(0 0 8px var(--primary)); }
+        .header-actions i { font-size: 1.5rem; color: var(--text-muted); cursor: pointer; margin-right: 15px; transition: 0.3s; }
+        .header-actions i:hover { filter: drop-shadow(0 0 8px #24A1DE); }
         html[dir="ltr"] .header-actions i { margin-right: 0; margin-left: 15px; }
 
         .search-container { padding: 10px 20px; background: var(--bg-color); position: sticky; top: 60px; z-index: 99; }
@@ -52,7 +70,7 @@
         html[dir="ltr"] .search-box i { right: auto; left: 15px; }
         .search-input { width: 100%; padding: 14px 45px 14px 15px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); font-size: 1rem; outline: none; transition: 0.3s; }
         html[dir="ltr"] .search-input { padding: 14px 15px 14px 45px; }
-        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
+        .search-input:focus { border-color: var(--primary); box-shadow: var(--neon-glow); }
 
         .slider-wrapper { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 15px; padding: 10px 20px; margin-bottom: 10px; }
         .slider-wrapper::-webkit-scrollbar { display: none; }
@@ -65,76 +83,103 @@
 
         .categories-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 20px 20px; scroll-behavior: smooth; background: var(--bg-color); position: sticky; top: 125px; z-index: 98; }
         .categories-scroll::-webkit-scrollbar { display: none; }
-        .filter-chip { flex-shrink: 0; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 20px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
-        .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .filter-chip { flex-shrink: 0; background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 20px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+        .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: var(--neon-glow); }
 
-        /* تعديلات الشبكة والأقسام */
         .products-container-wrapper { padding-bottom: 20px; }
-        .section-divider { font-size: 1.2rem; font-weight: 900; color: var(--text-main); margin: 15px 20px 15px; padding-right: 12px; border-right: 4px solid var(--primary); display: flex; align-items: center; gap: 8px;}
+        .section-divider { font-size: 1.2rem; font-weight: 900; color: var(--text-main); margin: 15px 20px 15px; padding-right: 12px; border-right: 4px solid var(--primary); display: flex; align-items: center; gap: 8px; text-shadow: 0 0 5px rgba(139, 92, 246, 0.3);}
         html[dir="ltr"] .section-divider { padding-right: 0; padding-left: 12px; border-right: none; border-left: 4px solid var(--primary); }
         
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; margin-bottom: 25px; }
         @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(4, 1fr); } }
         
-        .product-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; }
-        .badge-hot { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff4b2b, #ff416c); color: white; padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; z-index: 10; box-shadow: 0 4px 10px rgba(255, 65, 108, 0.4); animation: pulse 2s infinite; display: flex; align-items: center; gap: 4px;}
+        .product-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; transition: all 0.3s ease; }
+        .product-card:hover, .product-card:active { transform: translateY(-5px); box-shadow: var(--neon-glow); border-color: var(--primary); }
+        .badge-hot { position: absolute; top: 8px; right: 8px; background: linear-gradient(45deg, #ff4b2b, #ff416c); color: white; padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 900; z-index: 10; box-shadow: 0 0 10px rgba(255, 65, 108, 0.6); animation: pulse 2s infinite; display: flex; align-items: center; gap: 4px;}
         html[dir="ltr"] .badge-hot { right: auto; left: 8px; }
-        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
-
         .product-img { width: 100%; height: 120px; background: #ffffff; display: flex; justify-content: center; align-items: center; padding: 10px; border-bottom: 2px solid var(--primary); position: relative;}
-        .product-img img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        .product-img img { max-width: 90%; max-height: 90%; object-fit: contain; transition: transform 0.3s; }
+        .product-card:hover .product-img img { transform: scale(1.1); }
         .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
         .product-cat { color: var(--primary); font-size: 0.75rem; font-weight: 800; margin-bottom: 4px; }
         .product-title { font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .price-wrap { margin-top: auto; display: flex; flex-direction: column; gap: 2px; margin-bottom: 10px; }
         .price-old { text-decoration: line-through; color: var(--text-muted); font-size: 0.8rem; }
         .price-new { color: var(--danger); font-size: 1.1rem; font-weight: 900; }
-        
-        .btn-buy { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        .btn-buy:active { transform: scale(0.95); }
+        .btn-buy { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3); }
+        .btn-buy:hover, .btn-buy:active { transform: scale(0.95); box-shadow: var(--neon-glow-strong); }
 
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
-        .empty-state i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; opacity: 0.7; }
+        .empty-state i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; opacity: 0.7; filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5)); }
+
+        .how-to-buy { padding: 30px 20px; background: var(--card-bg); margin: 0 20px 40px; border-radius: 20px; border: 1px solid var(--border-color); text-align: center; transition: 0.3s;}
+        .how-to-buy:hover { box-shadow: var(--neon-glow); border-color: var(--primary); }
+        .how-to-buy h2 { font-size: 1.3rem; margin-bottom: 20px; color: var(--text-main); font-weight: 900;}
+        .how-to-buy h2 i { filter: drop-shadow(0 0 5px var(--primary)); }
+        .steps-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .step-item { background: var(--bg-color); padding: 15px 10px; border-radius: 12px; border: 1px solid var(--border-color); color: var(--text-main); }
+        .step-item i { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; filter: drop-shadow(0 0 3px var(--primary)); }
+        .step-item h4 { font-size: 0.85rem; font-weight: 800; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bottom-nav-bg); border-top: 1px solid var(--border-color); display: flex; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 1000; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
         .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: 800; gap: 5px; cursor: pointer;}
-        .nav-item i { font-size: 1.3rem; transition: 0.2s; }
+        .nav-item i { font-size: 1.3rem; transition: 0.3s; }
         .nav-item.active { color: var(--primary); }
-        .nav-item.active i { transform: translateY(-3px); }
+        .nav-item.active i { transform: translateY(-3px); filter: drop-shadow(0 0 8px var(--primary)); }
 
         .sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; opacity: 0; visibility: hidden; transition: 0.3s; }
         .sheet-overlay.active { opacity: 1; visibility: visible; }
-        
-        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--sheet-bg); border-radius: 24px 24px 0 0; z-index: 10001; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); max-height: 90vh; display: flex; flex-direction: column; }
+        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--sheet-bg); border-radius: 24px 24px 0 0; z-index: 10001; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 -10px 30px rgba(0,0,0,0.3); }
         .bottom-sheet.active { transform: translateY(0); }
-        
         .sheet-drag-handle { width: 40px; height: 5px; background: var(--border-color); border-radius: 5px; margin: 15px auto; }
         .sheet-content { padding: 0 20px 20px; overflow-y: auto; }
-        .sheet-title { font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin-bottom: 20px; }
+        .sheet-title { font-size: 1.4rem; font-weight: 900; color: var(--text-main); margin-bottom: 15px; text-shadow: 0 0 5px rgba(255,255,255,0.1); }
         
+        .order-limit-note { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); color: var(--warning); padding: 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; text-align: center; box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.1); }
+        .payment-instruction { background: rgba(139, 92, 246, 0.05); border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+        .payment-instruction p { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
+        .payment-number { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: var(--primary); color: white; padding: 10px 25px; border-radius: 8px; font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: 0.3s; direction: ltr; box-shadow: var(--neon-glow); border: 1px solid rgba(255,255,255,0.2); }
+        .payment-number:active { transform: scale(0.95); box-shadow: var(--neon-glow-strong); }
+        .payment-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; font-weight: 600;}
+
         .form-group { margin-bottom: 15px; }
         .form-label { display: block; font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
         .form-input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 12px; outline: none; font-size: 1rem; transition: 0.3s; }
-        .form-input:focus { border-color: var(--primary); }
+        .form-input:focus { border-color: var(--primary); box-shadow: var(--neon-glow); }
         
-        .upload-area { border: 2px dashed var(--border-color); padding: 20px; text-align: center; border-radius: 12px; position: relative; background: var(--input-bg); }
+        .upload-area { border: 2px dashed var(--border-color); padding: 20px; text-align: center; border-radius: 12px; position: relative; background: var(--input-bg); transition: 0.3s;}
+        .upload-area:hover { border-color: var(--primary); box-shadow: inset 0 0 15px rgba(139, 92, 246, 0.1); }
+        .upload-area i { filter: drop-shadow(0 0 5px var(--primary)); }
         .upload-area input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .upload-preview { max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 8px; display: none; }
+        .upload-preview { max-width: 100%; max-height: 150px; margin-top: 10px; border-radius: 8px; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
 
-        .btn-submit { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; margin-top: 10px; cursor: pointer;}
+        .btn-submit { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; margin-top: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: 0.3s;}
+        .btn-submit:hover, .btn-submit:active { box-shadow: var(--neon-glow-strong); transform: translateY(-2px); }
 
-        .order-item { background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
-        .order-id { color: var(--primary); font-weight: 900; font-size: 1.1rem; display: block; margin-bottom: 5px; }
+        .order-item { background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 10px; transition: 0.3s; }
+        .order-item:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(139, 92, 246, 0.1); }
+        .order-id { color: var(--primary); font-weight: 900; font-size: 1.1rem; display: block; margin-bottom: 5px; text-shadow: 0 0 3px rgba(139, 92, 246, 0.3); }
         .order-name { color: var(--text-main); font-weight: 700; font-size: 0.95rem; }
         .order-date { color: var(--text-muted); font-size: 0.8rem; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
         .order-status { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; background: rgba(245, 158, 11, 0.1); color: var(--warning); margin-top: 8px; }
 
-        .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -100px); background: var(--success); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 20000; transition: 0.4s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); white-space: nowrap;}
-        .toast.error { background: var(--danger); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translate(-50%, -100px); background: var(--success); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; z-index: 20000; transition: 0.4s; box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); white-space: nowrap;}
+        .toast.error { background: var(--danger); box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
         .toast.show { transform: translate(-50%, 0); }
+        
+        #successSection i { filter: drop-shadow(0 0 15px var(--success)); }
+        #successOrderId { text-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
     </style>
 </head>
 <body>
+
+    <!-- مؤشر التحميل -->
+    <div id="loader" class="loader-overlay">
+        <div class="loader-content">
+            <i class="fa-solid fa-bolt loader-icon"></i>
+            <h2 data-i18n="logo">فولت كاردز</h2>
+        </div>
+    </div>
 
     <header>
         <a href="#" class="logo" onclick="window.scrollTo(0,0)"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
@@ -150,7 +195,6 @@
         </div>
     </div>
 
-    <!-- السلايدر بدون حركة تلقائية -->
     <div class="slider-wrapper" id="heroSlider">
         <div class="slide">
             <img src="https://i.ibb.co/wr7mHdYG/images-18.jpg" alt="ببجي">
@@ -176,8 +220,17 @@
         <div class="filter-chip" onclick="filterProducts('pc')" data-i18n="catPc">ألعاب الكمبيوتر</div>
     </div>
 
-    <!-- حاوية المنتجات المقسمة -->
     <main class="products-container-wrapper" id="products-container"></main>
+
+    <section class="how-to-buy">
+        <h2><i class="fa-solid fa-circle-question"></i> <span data-i18n="howToBuy">خطوات كيفية الشراء؟</span></h2>
+        <div class="steps-container">
+            <div class="step-item"><i class="fa-solid fa-user-pen"></i><h4 data-i18n="step1">1. اكتب اسمك</h4></div>
+            <div class="step-item"><i class="fa-solid fa-phone-flip"></i><h4 data-i18n="step2">2. رقم التحويل</h4></div>
+            <div class="step-item"><i class="fa-solid fa-file-invoice-dollar"></i><h4 data-i18n="step3">3. ارفع رسالة التحويل</h4></div>
+            <div class="step-item"><i class="fa-solid fa-paper-plane"></i><h4 data-i18n="step4">4. استلم الكود</h4></div>
+        </div>
+    </section>
 
     <nav class="bottom-nav">
         <a class="nav-item active" onclick="setActiveNav(this); window.scrollTo({top: 0, behavior: 'smooth'});">
@@ -206,6 +259,20 @@
             <h2 class="sheet-title" data-i18n="modalTitle">إتمام الطلب</h2>
             
             <div id="formSection">
+                
+                <div class="order-limit-note">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span data-i18n="orderLimitNote">ملاحظة: يمكنك إرسال طلبين فقط خلال 30 دقيقة</span>
+                </div>
+
+                <div class="payment-instruction">
+                    <p data-i18n="paymentInstruction">يرجى تحويل مبلغ الطلب إلى الرقم التالي:</p>
+                    <div class="payment-number" onclick="copyPaymentNumber()" title="اضغط لنسخ الرقم">
+                        <span>07723859907</span>
+                        <i class="fa-regular fa-copy"></i>
+                    </div>
+                    <p class="payment-note" data-i18n="paymentNote">(آسيا سيل فقط)</p>
+                </div>
+
                 <form id="checkoutForm">
                     <input type="hidden" id="selectedCard">
                     
@@ -215,8 +282,10 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" data-i18n="formTransferPhone">رقم هاتف التحويل</label>
-                        <input type="tel" id="transferPhone" class="form-input" required>
+                        <label class="form-label" data-i18n="formTransferPhone">رقم هاتفك (الذي حولت منه)</label>
+                        <input type="tel" id="transferPhone" class="form-input" placeholder="077XXXXXXXX" required dir="ltr" style="text-align: right;">
+                        <!-- رسالة الخطأ للرقم -->
+                        <span id="phoneErrorMsg" style="color: var(--danger); font-size: 0.8rem; display: none; margin-top: 5px; font-weight: bold;" data-i18n="phoneErrorMsg">يرجى إدخال رقم آسياسيل صحيح (11 رقم يبدأ بـ 077).</span>
                     </div>
                     
                     <div class="form-group" id="targetAccountGroup" style="display: none;">
@@ -228,14 +297,14 @@
                         <label class="form-label" data-i18n="step3Title">إثبات التحويل</label>
                         <div class="upload-area">
                             <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
-                            <p style="font-size: 0.9rem;" data-i18n="formUpload">اضغط لرفع صورة الإثبات</p>
+                            <p style="font-size: 0.9rem;" data-i18n="formUpload">اضغط لرفع صورة لرسالة التحويل</p>
                             <input type="file" id="receiptImg" accept="image/png, image/jpeg, image/jpg" required onchange="previewImage(event)">
                         </div>
                         <img id="imagePreview" class="upload-preview">
                     </div>
                     
                     <button type="submit" class="btn-submit" id="submitBtn">
-                        <span id="btnText" data-i18n="formSubmit">تأكيد الطلب</span>
+                        <span id="btnText" data-i18n="formSubmit">تأكيد وإرسال الطلب</span>
                     </button>
                 </form>
             </div>
@@ -301,15 +370,33 @@
     <div class="toast" id="toast" data-i18n="toastMsg">تم بنجاح! ✅</div>
 
     <script>
+        // إخفاء مؤشر التحميل بعد ثانية واحدة من تحميل الصفحة
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.classList.add('hidden');
+                setTimeout(() => loader.style.display = 'none', 500); // إزالة العنصر بعد التلاشي
+            }, 1000); 
+        });
+
         const translations = {
             ar: {
                 logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
                 catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات", catPc: "ألعاب PC", catStores: "متاجر",
                 buyBtn: "شراء", currency: "د.ع", modalTitle: "إتمام الطلب", bestSeller: "الأكثر مبيعاً",
                 slide1Title: "عروض الشدات 🔥", slide1Desc: "أكواد جاهزة للشحن", slide3Title: "خصم 50% 🏷️", slide3Desc: "على جميع الخدمات لفترة محدودة",
+                
+                paymentInstruction: "يرجى تحويل مبلغ الطلب إلى الرقم التالي:",
+                paymentNote: "(آسيا سيل فقط)",
+                copiedMsg: "تم نسخ الرقم بنجاح! 📋",
+                orderLimitNote: "ملاحظة: يمكنك إرسال طلبين فقط خلال 30 دقيقة",
+                phoneErrorMsg: "يرجى إدخال رقم آسياسيل صحيح (11 رقم يبدأ بـ 077).", // ترجمة رسالة الخطأ
+
+                howToBuy: "خطوات كيفية الشراء؟", step1: "1. اكتب اسمك", step2: "2. رقم التحويل", step3: "3. ارفع رسالة التحويل", step4: "4. استلم الكود",
+
                 formName: "الاسم الكامل", formContact: "رقم الهاتف أو المعرف", 
-                formTransferPhone: "رقم هاتف التحويل", formTargetAccount: "يوزر الحساب أو الرابط",
-                formUpload: "اضغط لرفع صورة الإثبات", formSubmit: "تأكيد الطلب", step3Title: "إثبات التحويل",
+                formTransferPhone: "رقم هاتفك (الذي حولت منه)", formTargetAccount: "يوزر الحساب أو الرابط",
+                formUpload: "اضغط لرفع صورة لرسالة التحويل", formSubmit: "تأكيد وإرسال الطلب", step3Title: "إثبات التحويل",
                 successTitle: "تم استلام طلبك!", successDesc: "سيتم التنفيذ قريباً. احتفظ برقم الطلب:", closeBtn: "إغلاق", 
                 toastMsg: "تم الإرسال بنجاح! ✅", toastErrorSize: "حجم الصورة كبير جداً! ❌",
                 customOrderTitle: "الطلبات الخاصة", customOrderDesc: "لم تجد الخدمة المطلوبة؟ اطلبها من هنا:",
@@ -323,9 +410,18 @@
                 catAll: "All", catMobile: "Mobile", catBoost: "Social Boost", catConsole: "Console", catPc: "PC Games", catStores: "Stores",
                 buyBtn: "Buy", currency: "IQD", modalTitle: "Complete Order", bestSeller: "Best Seller",
                 slide1Title: "PUBG Offers 🔥", slide1Desc: "Ready to redeem codes", slide3Title: "50% OFF 🏷️", slide3Desc: "On all services for limited time",
+                
+                paymentInstruction: "Please transfer the order amount to:",
+                paymentNote: "(AsiaCell only)",
+                copiedMsg: "Number copied to clipboard! 📋",
+                orderLimitNote: "Note: You can only send 2 orders within 30 minutes",
+                phoneErrorMsg: "Please enter a valid AsiaCell number (11 digits starting with 077).",
+
+                howToBuy: "How to Buy?", step1: "1. Enter Name", step2: "2. Transfer Num", step3: "3. Upload Image", step4: "4. Get Code",
+
                 formName: "Full Name", formContact: "Phone or Telegram @", 
-                formTransferPhone: "Transfer Phone Number", formTargetAccount: "Username or Link",
-                formUpload: "Tap to upload receipt", formSubmit: "Confirm Order", step3Title: "Payment Proof",
+                formTransferPhone: "Your phone number (Sender)", formTargetAccount: "Username or Link",
+                formUpload: "Tap to upload image of transfer message", formSubmit: "Confirm & Send Order", step3Title: "Payment Proof",
                 successTitle: "Order Received!", successDesc: "Processing soon. Save your ID:", closeBtn: "Close", 
                 toastMsg: "Sent Successfully! ✅", toastErrorSize: "Image is too large! ❌",
                 customOrderTitle: "Custom Request", customOrderDesc: "Didn't find it? Request here:",
@@ -345,21 +441,30 @@
             { id: 5, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/3a/Roblox_player_icon_black.svg", price: 18000, ar: { name: "كود شحن روبلوكس - 800 روبوكس", cat: "ألعاب الجوال" }, en: { name: "Roblox - 800 Robux", cat: "Mobile" } },
             { id: 6, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/4/4b/Playing_card_spade_A.svg", price: 10000, ar: { name: "كود شحن جواكر - 50,000 توكنز", cat: "ألعاب الجوال" }, en: { name: "Jawaker - 50k Tokens", cat: "Mobile" } },
             { id: 7, category: "mobile", img: "https://i.ibb.co/V00xSCLc/image.png", price: 15000, badge: true, ar: { name: "كود شحن يلا لودو - 500 ألماس", cat: "ألعاب الجوال" }, en: { name: "Yalla Ludo - 500 Dia", cat: "Mobile" } },
+            { id: 25, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/en/b/b3/Call_of_Duty_Mobile_logo.png", price: 15000, ar: { name: "شحن كول اوف ديوتي - 420 CP", cat: "ألعاب الجوال" }, en: { name: "CoD Mobile - 420 CP", cat: "Mobile" } },
             
             { id: 22, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg", price: 10000, ar: { name: "1000 مشترك تيليجرام", cat: "رشق" }, en: { name: "1000 TG Subs", cat: "Boost" } },
             { id: 23, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", price: 12000, badge: true, ar: { name: "1000 متابع تيك توك", cat: "رشق" }, en: { name: "1000 TikTok Foll", cat: "Boost" } },
             { id: 24, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg", price: 8000, ar: { name: "1000 متابع انستغرام", cat: "رشق" }, en: { name: "1000 Insta Foll", cat: "Boost" } },
 
-            { id: 8, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "كود شحن بلايستيشن - 20$", cat: "منصات" }, en: { name: "PSN Code - $20", cat: "Console" } },
-            { id: 9, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "كود شحن اكسبوكس - 25$", cat: "منصات" }, en: { name: "Xbox Code - $25", cat: "Console" } },
+            { id: 81, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "بلايستيشن 20$ (أمريكي)", cat: "منصات" }, en: { name: "PSN $20 (US)", cat: "Console" } },
+            { id: 82, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "بلايستيشن 20$ (إماراتي)", cat: "منصات" }, en: { name: "PSN $20 (UAE)", cat: "Console" } },
+            { id: 83, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "بلايستيشن 20$ (سعودي)", cat: "منصات" }, en: { name: "PSN $20 (KSA)", cat: "Console" } },
+
+            { id: 91, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "اكسبوكس 25$ (أمريكي)", cat: "منصات" }, en: { name: "Xbox $25 (US)", cat: "Console" } },
+            { id: 92, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "اكسبوكس 25$ (إماراتي)", cat: "منصات" }, en: { name: "Xbox $25 (UAE)", cat: "Console" } },
+            { id: 93, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "اكسبوكس 25$ (سعودي)", cat: "منصات" }, en: { name: "Xbox $25 (KSA)", cat: "Console" } },
             
             { id: 13, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg", price: 16000, ar: { name: "ستيم والت - 10$", cat: "PC" }, en: { name: "Steam - $10", cat: "PC" } },
             { id: 14, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/31/Epic_Games_logo.svg", price: 14000, ar: { name: "ايبك قيمز - 1000 V-Bucks", cat: "PC" }, en: { name: "Epic - 1000 V-Bucks", cat: "PC" } },
+            { id: 26, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg", price: 16500, ar: { name: "شحن فالورانت - 1000 VP", cat: "PC" }, en: { name: "Valorant - 1000 VP", cat: "PC" } },
             
             { id: 17, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e0/Razer_Inc._Logo.svg", price: 16500, ar: { name: "ريزر جولد - 10$", cat: "متاجر" }, en: { name: "Razer Gold - $10", cat: "Stores" } },
-            { id: 18, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/d/d0/Google_Play_Arrow_logo.svg", price: 15500, ar: { name: "جوجل بلاي - 10$", cat: "متاجر" }, en: { name: "Google Play - $10", cat: "Stores" } },
-            { id: 20, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/c/c6/Discord_Logo_with_text.svg", price: 10000, badge: true, ar: { name: "ديسكورد نايترو - شهر", cat: "متاجر" }, en: { name: "Discord Nitro - 1M", cat: "Stores" } },
-            { id: 22, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", price: 47000, ar: { name: "نتفليكس - 30$", cat: "متاجر" }, en: { name: "Netflix - $30", cat: "Stores" } }
+            { id: 18, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/d/d0/Google_Play_Arrow_logo.svg", price: 15500, badge: true, ar: { name: "جوجل بلاي - 10$", cat: "متاجر" }, en: { name: "Google Play - $10", cat: "Stores" } },
+            { id: 20, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/c/c6/Discord_Logo_with_text.svg", price: 10000, ar: { name: "ديسكورد نايترو - شهر", cat: "متاجر" }, en: { name: "Discord Nitro - 1M", cat: "Stores" } },
+            { id: 22, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", price: 47000, ar: { name: "نتفليكس - 30$", cat: "متاجر" }, en: { name: "Netflix - $30", cat: "Stores" } },
+            { id: 27, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/2/2a/Apple_Music_logo.svg", price: 15500, ar: { name: "بطاقة ايتونز - 10$", cat: "متاجر" }, en: { name: "iTunes Card - $10", cat: "Stores" } },
+            { id: 28, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", price: 25000, ar: { name: "عملات تيك توك - 1400 عملة", cat: "متاجر" }, en: { name: "TikTok - 1400 Coins", cat: "Stores" } }
         ];
 
         const allCategoriesList = [
@@ -379,12 +484,17 @@
         function triggerConfetti() {
             var duration = 3 * 1000;
             var end = Date.now() + duration;
-
             (function frame() {
                 confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#8b5cf6', '#10b981'] });
                 confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#f59e0b', '#ef4444'] });
                 if (Date.now() < end) { requestAnimationFrame(frame); }
             }());
+        }
+
+        function copyPaymentNumber() {
+            navigator.clipboard.writeText('07723859907').then(() => {
+                showToast(translations[currentLang].copiedMsg, 'success');
+            }).catch(err => { console.error('Failed to copy!', err); });
         }
 
         function trackVisitor() {
@@ -456,7 +566,6 @@
             renderProducts(category, ''); 
         }
 
-        // دالة عرض المنتجات المقسمة
         function renderProducts(categoryFilter, searchQuery = '') {
             const container = document.getElementById('products-container'); 
             container.innerHTML = ''; 
@@ -464,12 +573,8 @@
             let hasResults = false;
 
             allCategoriesList.forEach(cat => {
-                // فلترة الفئة المحددة
                 if (categoryFilter !== 'all' && categoryFilter !== cat.id) return;
-
                 let catProducts = products.filter(p => p.category === cat.id);
-                
-                // فلترة البحث إن وجد
                 if (searchQuery.trim() !== '') {
                     const query = searchQuery.toLowerCase();
                     catProducts = catProducts.filter(p => p[currentLang].name.toLowerCase().includes(query) || p[currentLang].cat.toLowerCase().includes(query));
@@ -477,19 +582,14 @@
 
                 if (catProducts.length > 0) {
                     hasResults = true;
-                    
-                    // إضافة عنوان القسم إذا كنا في واجهة "الكل"
                     if (categoryFilter === 'all') {
                         htmlContent += `<h2 class="section-divider"><i class="fa-solid fa-layer-group" style="font-size: 0.9rem; color: var(--primary);"></i> ${translations[currentLang][cat.key]}</h2>`;
                     }
-
                     htmlContent += `<div class="products-grid">`;
-
                     catProducts.forEach(p => {
                         const oldPrice = p.price; const newPrice = oldPrice / 2; 
                         const name = p[currentLang].name; const catName = p[currentLang].cat;
                         const curr = translations[currentLang].currency; const buyTxt = translations[currentLang].buyBtn;
-                        
                         const badgeHtml = p.badge ? `<div class="badge-hot"><i class="fa-solid fa-fire"></i> ${translations[currentLang].bestSeller}</div>` : '';
 
                         htmlContent += `
@@ -509,20 +609,12 @@
                                 </div>
                             </div>`;
                     });
-                    
                     htmlContent += `</div>`;
                 }
             });
 
-            if (hasResults) {
-                container.innerHTML = htmlContent;
-            } else {
-                container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fa-solid fa-box-open"></i>
-                    <h3 data-i18n="noResultTitle">${translations[currentLang].noResultTitle}</h3>
-                </div>`;
-            }
+            if (hasResults) container.innerHTML = htmlContent;
+            else container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box-open"></i><h3 data-i18n="noResultTitle">${translations[currentLang].noResultTitle}</h3></div>`;
         }
 
         function saveOrderToHistory(orderName, orderId) { 
@@ -550,11 +642,12 @@
         function openPurchaseSheet(name, price, curr, category) { 
             selectedProductCategory = category; 
             document.getElementById('selectedCard').value = `${name} - ${price.toLocaleString()} ${curr}`; 
-            
             document.getElementById('formSection').style.display = 'block'; 
             document.getElementById('successSection').style.display = 'none'; 
             document.getElementById('checkoutForm').reset(); 
             document.getElementById('imagePreview').style.display = 'none'; 
+            document.getElementById('phoneErrorMsg').style.display = 'none';
+            document.getElementById('transferPhone').style.borderColor = 'var(--border-color)';
             
             const targetAccountGroup = document.getElementById('targetAccountGroup');
             const targetInput = document.getElementById('targetAccount');
@@ -588,10 +681,37 @@
             setTimeout(() => toast.classList.remove('show'), 3000); 
         }
 
+        // تحقق حي من الرقم أثناء الكتابة
+        document.getElementById('transferPhone').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, ''); // السماح بالأرقام فقط
+            if(this.value.length > 11) this.value = this.value.slice(0, 11); // منع كتابة أكثر من 11 رقم
+            
+            if(this.value.length === 11 && /^077/.test(this.value)) {
+                this.style.borderColor = 'var(--success)';
+                document.getElementById('phoneErrorMsg').style.display = 'none';
+            } else if (this.value.length > 0) {
+                this.style.borderColor = 'var(--primary)';
+            }
+        });
+
         document.getElementById('checkoutForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            
             const btnSpan = document.getElementById('btnText');
             const originalText = btnSpan.innerText;
+            const transferPhoneInput = document.getElementById('transferPhone');
+            const phoneErrorMsg = document.getElementById('phoneErrorMsg');
+            
+            // تحقق نهائي قبل الإرسال (يبدأ بـ 077 ويتكون من 11 رقم)
+            const phoneRegex = /^077\d{8}$/;
+            if (!phoneRegex.test(transferPhoneInput.value)) {
+                phoneErrorMsg.style.display = 'block';
+                transferPhoneInput.style.borderColor = 'var(--danger)';
+                // هز الحقل لجذب الانتباه (اختياري)
+                transferPhoneInput.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
+                return; // إيقاف الإرسال
+            }
+
             btnSpan.innerText = '⏳...';
             
             const orderID = generateOrderID();
@@ -610,7 +730,7 @@
                     body: JSON.stringify({
                         type: 'order', cardDetails: finalCardDetails,
                         userName: document.getElementById('userName').value,
-                        transferPhone: document.getElementById('transferPhone').value, 
+                        transferPhone: transferPhoneInput.value, 
                         imageBase64: reader.result
                     })
                 })
