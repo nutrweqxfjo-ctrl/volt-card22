@@ -44,7 +44,6 @@
         
         body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; padding-bottom: 80px; transition: background-color 0.3s; }
 
-        /* ستايل مؤشر التحميل */
         .loader-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); z-index: 99999;
@@ -284,7 +283,6 @@
                     <div class="form-group">
                         <label class="form-label" data-i18n="formTransferPhone">رقم هاتفك (الذي حولت منه)</label>
                         <input type="tel" id="transferPhone" class="form-input" placeholder="077XXXXXXXX" required dir="ltr" style="text-align: right;">
-                        <!-- رسالة الخطأ للرقم -->
                         <span id="phoneErrorMsg" style="color: var(--danger); font-size: 0.8rem; display: none; margin-top: 5px; font-weight: bold;" data-i18n="phoneErrorMsg">يرجى إدخال رقم آسياسيل صحيح (11 رقم يبدأ بـ 077).</span>
                     </div>
                     
@@ -370,12 +368,12 @@
     <div class="toast" id="toast" data-i18n="toastMsg">تم بنجاح! ✅</div>
 
     <script>
-        // إخفاء مؤشر التحميل بعد ثانية واحدة من تحميل الصفحة
+        // إخفاء مؤشر التحميل بعد ثانية واحدة
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('loader');
                 loader.classList.add('hidden');
-                setTimeout(() => loader.style.display = 'none', 500); // إزالة العنصر بعد التلاشي
+                setTimeout(() => loader.style.display = 'none', 500);
             }, 1000); 
         });
 
@@ -390,7 +388,7 @@
                 paymentNote: "(آسيا سيل فقط)",
                 copiedMsg: "تم نسخ الرقم بنجاح! 📋",
                 orderLimitNote: "ملاحظة: يمكنك إرسال طلبين فقط خلال 30 دقيقة",
-                phoneErrorMsg: "يرجى إدخال رقم آسياسيل صحيح (11 رقم يبدأ بـ 077).", // ترجمة رسالة الخطأ
+                phoneErrorMsg: "يرجى إدخال رقم آسياسيل صحيح (11 رقم يبدأ بـ 077).",
 
                 howToBuy: "خطوات كيفية الشراء؟", step1: "1. اكتب اسمك", step2: "2. رقم التحويل", step3: "3. ارفع رسالة التحويل", step4: "4. استلم الكود",
 
@@ -623,21 +621,67 @@
             localStorage.setItem('myVoltOrders', JSON.stringify(myOrdersHistory)); 
         }
 
-        function renderMyOrders() {
+        // ==========================================
+        // 🚀 دالة جلب وعرض الطلبات (محدثة بالكامل لتقرأ من قاعدة البيانات)
+        // ==========================================
+        async function renderMyOrders() {
             const listContainer = document.getElementById('myOrdersList');
             if (myOrdersHistory.length === 0) { 
                 listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>${translations[currentLang].noOrders}</p></div>`; 
                 return; 
             }
-            listContainer.innerHTML = myOrdersHistory.map(order => `
-                <div class="order-item">
-                    <span class="order-id">#${order.id}</span>
-                    <div class="order-name">${order.name}</div>
-                    <div class="order-date"><i class="fa-regular fa-calendar"></i> ${order.date}</div>
-                    <span class="order-status">${translations[currentLang].orderPending}</span>
-                </div>
-            `).join('');
+            
+            // 1. إظهار أيقونة تحميل مؤقتة
+            listContainer.innerHTML = '<div style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i></div>';
+
+            const orderIds = myOrdersHistory.map(order => order.id);
+
+            try {
+                // 2. إرسال أرقام الطلبات للـ API لجلب حالتها من الداتا بيس
+                const res = await fetch('/api/check-orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderIds })
+                });
+                
+                const statuses = await res.json();
+
+                // 3. عرض الطلبات مع الحالة الجديدة
+                listContainer.innerHTML = myOrdersHistory.map(order => {
+                    const statusStr = statuses[order.id] || 'pending';
+                    let statusHtml = '';
+                    
+                    if (statusStr === 'completed') {
+                        statusHtml = `<span class="order-status" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fa-solid fa-check-double"></i> مكتمل ✅</span>`;
+                    } else if (statusStr === 'rejected') {
+                        statusHtml = `<span class="order-status" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fa-solid fa-xmark"></i> مرفوض ❌</span>`;
+                    } else {
+                        statusHtml = `<span class="order-status"><i class="fa-solid fa-hourglass-half"></i> قيد المراجعة ⏳</span>`;
+                    }
+
+                    return `
+                    <div class="order-item">
+                        <span class="order-id">#${order.id}</span>
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-date"><i class="fa-regular fa-calendar"></i> ${order.date}</div>
+                        ${statusHtml}
+                    </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("خطأ في جلب الطلبات:", err);
+                // في حال وجود مشكلة بالانترنت نعرضها كقيد المراجعة بدلا من صفحة فارغة
+                listContainer.innerHTML = myOrdersHistory.map(order => `
+                    <div class="order-item">
+                        <span class="order-id">#${order.id}</span>
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-date"><i class="fa-regular fa-calendar"></i> ${order.date}</div>
+                        <span class="order-status"><i class="fa-solid fa-hourglass-half"></i> قيد المراجعة ⏳</span>
+                    </div>
+                `).join('');
+            }
         }
+        // ==========================================
 
         function openPurchaseSheet(name, price, curr, category) { 
             selectedProductCategory = category; 
@@ -683,8 +727,8 @@
 
         // تحقق حي من الرقم أثناء الكتابة
         document.getElementById('transferPhone').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, ''); // السماح بالأرقام فقط
-            if(this.value.length > 11) this.value = this.value.slice(0, 11); // منع كتابة أكثر من 11 رقم
+            this.value = this.value.replace(/[^0-9]/g, ''); 
+            if(this.value.length > 11) this.value = this.value.slice(0, 11); 
             
             if(this.value.length === 11 && /^077/.test(this.value)) {
                 this.style.borderColor = 'var(--success)';
@@ -702,14 +746,13 @@
             const transferPhoneInput = document.getElementById('transferPhone');
             const phoneErrorMsg = document.getElementById('phoneErrorMsg');
             
-            // تحقق نهائي قبل الإرسال (يبدأ بـ 077 ويتكون من 11 رقم)
+            // تحقق نهائي قبل الإرسال
             const phoneRegex = /^077\d{8}$/;
             if (!phoneRegex.test(transferPhoneInput.value)) {
                 phoneErrorMsg.style.display = 'block';
                 transferPhoneInput.style.borderColor = 'var(--danger)';
-                // هز الحقل لجذب الانتباه (اختياري)
                 transferPhoneInput.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 300 });
-                return; // إيقاف الإرسال
+                return;
             }
 
             btnSpan.innerText = '⏳...';
