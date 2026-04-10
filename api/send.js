@@ -5,13 +5,13 @@ async function updateOrderStatus(key, value) {
     const dbToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN;
 
     if (!dbUrl || !dbToken) return;
-    
-    const url = `${dbUrl}/set/${key}`;
+
     try {
-        await fetch(url, {
+        // استخدام الصيغة الأصلية المضمونة لقواعد البيانات
+        await fetch(dbUrl, {
             method: 'POST',
-            headers: { Authorization: `Bearer ${dbToken}` },
-            body: JSON.stringify(value) 
+            headers: { Authorization: `Bearer ${dbToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify()
         });
     } catch (e) {
         console.error("DB Error:", e);
@@ -29,26 +29,24 @@ export default async function handler(req, res) {
     const CHAT_ID = process.env.CHAT_ID;
 
     // ==========================================
-    // 0. استقبال رسائل الإدارة (عندما تقوم بالرد على الطلب في تيليجرام)
+    // 0. استقبال رسائل الإدارة (الرد من تيليجرام)
     // ==========================================
     if (body && body.message && body.message.reply_to_message) {
         const originalText = body.message.reply_to_message.caption || body.message.reply_to_message.text || "";
-        const orderIdMatch = originalText.match(/\[(V-\w+)\]/);
+        const orderIdMatch = originalText.match(/\/);
         
         if (orderIdMatch) {
-            const orderId = orderIdMatch[1];
-            const adminReply = body.message.text; // الرسالة التي كتبتها أنت (الكود أو سبب الرفض)
+            const orderId = orderIdMatch;
+            const adminReply = body.message.text;
             
-            // حفظ الرسالة في قاعدة البيانات بمفتاح خاص (msg_ID)
             await updateOrderStatus(`msg_${orderId}`, adminReply);
             
-            // إرسال تأكيد لك في تيليجرام
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chat_id: CHAT_ID,
-                    text: `✅ تم إرسال الرسالة للعميل بنجاح للطلب [${orderId}]\nالرسالة: ${adminReply}`,
+                    text: `✅ تم إرسال الرسالة للعميل بنجاح للطلب\nالرسالة: ${adminReply}`,
                     reply_to_message_id: body.message.message_id
                 })
             });
@@ -67,13 +65,13 @@ export default async function handler(req, res) {
         let responseText = "";
         
         if (callbackData.startsWith('accept_')) {
-            const orderId = callbackData.split('_')[1];
+            const orderId = callbackData.split('_');
             await updateOrderStatus(orderId, 'completed'); 
-            responseText = `✅ تم قبول الطلب [${orderId}].\n(الآن قم بعمل "رد Reply" على هذه الرسالة واكتب كود البطاقة للعميل)`;
+            responseText = `✅ تم قبول الطلب.\n(الآن قم بعمل "رد Reply" على هذه الرسالة واكتب كود البطاقة للعميل)`;
         } else if (callbackData.startsWith('reject_')) {
-            const orderId = callbackData.split('_')[1];
+            const orderId = callbackData.split('_');
             await updateOrderStatus(orderId, 'rejected'); 
-            responseText = `❌ تم رفض الطلب [${orderId}].\n(يمكنك عمل "رد Reply" وكتابة سبب الرفض ليراه العميل)`;
+            responseText = `❌ تم رفض الطلب.\n(يمكنك عمل "رد Reply" وكتابة سبب الرفض ليراه العميل)`;
         }
 
         try {
@@ -99,16 +97,15 @@ export default async function handler(req, res) {
     // ==========================================
     try {
         if (body.type === 'order') {
-            const orderIdMatch = body.cardDetails.match(/\[(V-\w+)\]/);
-            const orderID = orderIdMatch ? orderIdMatch[1] : 'Unknown';
+            const orderIdMatch = body.cardDetails.match(/\/);
+            const orderID = orderIdMatch ? orderIdMatch : 'Unknown';
 
             if(orderID !== 'Unknown') await updateOrderStatus(orderID, 'pending');
 
             const caption = `⚡ طلب جديد - Volt Cards ⚡\n\n📦 ${body.cardDetails}\n👤 الاسم: ${body.userName}\n📲 رقم التحويل: ${body.transferPhone}`;
             const replyMarkup = JSON.stringify({
-                inline_keyboard: [
-                    [{ text: "✅ قبول الطلب", callback_data: `accept_${orderID}` }],
-                    [{ text: "❌ رفض (وصل وهمي)", callback_data: `reject_${orderID}` }]
+                inline_keyboard:,
+                   
                 ]
             });
 
@@ -117,9 +114,9 @@ export default async function handler(req, res) {
             formData.append('caption', caption);
             formData.append('reply_markup', replyMarkup); 
             
-            const base64Data = body.imageBase64.split(',')[1];
+            const base64Data = body.imageBase64.split(',');
             const buffer = Buffer.from(base64Data, 'base64');
-            const blob = new Blob([buffer], { type: 'image/jpeg' });
+            const blob = new Blob(, { type: 'image/jpeg' });
             formData.append('photo', blob, 'receipt.jpg');
 
             const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
@@ -127,7 +124,6 @@ export default async function handler(req, res) {
             return res.status(200).json(data);
         }
         
-        // (زيارات وطلبات خاصة للتبسيط موجودة في الكود الأصلي)
         return res.status(200).json({ ok: true });
     } catch (error) { return res.status(500).json({ ok: false }); }
 }
