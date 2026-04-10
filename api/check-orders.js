@@ -12,28 +12,18 @@ export default async function handler(req, res) {
 
     const fetchPromises = orderIds.map(async (id) => {
         try {
-            const reqOpts = { 
-                method: 'POST',
-                headers: { 
-                    Authorization: `Bearer ${dbToken}`,
-                    'Content-Type': 'application/json'
-                } 
-            };
-            
-            // استخدام صيغة المصفوفة لجلب البيانات
-            const = await Promise.all() }),
-                fetch(dbUrl, { ...reqOpts, body: JSON.stringify() })
+            const reqOpts = { headers: { Authorization: `Bearer ${dbToken}` } };
+            const [resStatus, resMsg] = await Promise.all([
+                fetch(`${dbUrl}/get/${id}`, reqOpts).then(r => r.json()),
+                fetch(`${dbUrl}/get/msg_${id}`, reqOpts).then(r => r.json())
             ]);
 
-            const resStatus = await resStatusReq.json();
-            const resMsg = await resMsgReq.json();
-
-            results = {
-                status: resStatus.result ? String(resStatus.result).replace(//g, '') : 'pending',
-                message: resMsg.result ? String(resMsg.result).replace(//g, '') : ''
+            results[id] = {
+                status: resStatus.result ? String(resStatus.result).replace(/['"]/g, '') : 'pending',
+                message: resMsg.result ? String(resMsg.result).replace(/['"]/g, '') : ''
             };
         } catch (e) {
-            results = { status: 'pending', message: '' };
+            results[id] = { status: 'pending', message: '' };
         }
     });
 
