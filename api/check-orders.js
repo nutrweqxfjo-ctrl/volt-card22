@@ -8,31 +8,22 @@ export default async function handler(req, res) {
     const dbUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.STORAGE_KV_REST_API_URL;
     const dbToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN;
     
+    if (!dbUrl) return res.status(200).json({});
+
     const fetchPromises = orderIds.map(async (id) => {
-        if(!dbUrl) {
-            results = { status: 'pending', message: '' };
-            return;
-        }
         try {
-            // جلب الحالة والرسالة بنفس طريقة الحفظ المضمونة
-            const = await Promise.all()
-                }),
-                fetch(dbUrl, {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${dbToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify()
-                })
+            const reqOpts = { headers: { Authorization: `Bearer ${dbToken}` } };
+            const [resStatus, resMsg] = await Promise.all([
+                fetch(`${dbUrl}/get/${id}`, reqOpts).then(r => r.json()),
+                fetch(`${dbUrl}/get/msg_${id}`, reqOpts).then(r => r.json())
             ]);
 
-            const resStatus = await reqStatus.json();
-            const resMsg = await reqMsg.json();
-
-            let statusVal = resStatus.result ? String(resStatus.result) : 'pending';
-            let msgVal = resMsg.result ? String(resMsg.result) : '';
-
-            results = { status: statusVal, message: msgVal };
+            results[id] = {
+                status: resStatus.result ? String(resStatus.result).replace(/['"]/g, '') : 'pending',
+                message: resMsg.result ? String(resMsg.result).replace(/['"]/g, '') : ''
+            };
         } catch (e) {
-            results = { status: 'pending', message: '' };
+            results[id] = { status: 'pending', message: '' };
         }
     });
 
