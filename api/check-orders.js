@@ -5,7 +5,7 @@ function getDbCredentials() {
     if (!url && process.env.KV_REDIS_URL) {
         try {
             const parsedUrl = new URL(process.env.KV_REDIS_URL);
-            url = `https://${parsedUrl.hostname}`;
+            url = "https://" + parsedUrl.hostname;
             token = parsedUrl.password;
         } catch(e) {}
     }
@@ -25,12 +25,12 @@ export default async function handler(req, res) {
 
     const fetchPromises = orderIds.map(async (id) => {
         try {
-            const reqOpts = { headers: { Authorization: `Bearer ${creds.token}` } };
+            const reqOpts = { headers: { Authorization: "Bearer " + creds.token } };
             
             const responses = await Promise.all();
 
-            const resStatus = await responses.json();
-            const resMsg = await responses.json();
+            const resStatus = responses;
+            const resMsg = responses;
 
             results = {
                 status: resStatus.result ? String(resStatus.result).replace(//g, '') : 'pending',
