@@ -1,6 +1,6 @@
 const rateLimitMap = new Map();
 
-// 🚀 دالة تحديث الحالة (بالطريقة الرسمية المباشرة لـ Vercel KV)
+// 🚀 دالة تحديث الحالة والرسائل في قاعدة البيانات
 async function updateOrderStatus(key, value) {
     const dbUrl = process.env.KV_REST_API_URL || process.env.STORAGE_KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
     const dbToken = process.env.KV_REST_API_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -8,17 +8,13 @@ async function updateOrderStatus(key, value) {
     if (!dbUrl || !dbToken) return;
 
     try {
-        await fetch(dbUrl, {
+        await fetch(`${dbUrl}/set/${key}`, {
             method: 'POST',
-            headers: { 
-                Authorization: `Bearer ${dbToken}`,
-                'Content-Type': 'application/json'
-            },
-            // استخدام صيغة المصفوفة الإجبارية لقواعد البيانات
-            body: JSON.stringify() 
+            headers: { Authorization: `Bearer ${dbToken}` },
+            body: JSON.stringify(value)
         });
     } catch (e) {
-        console.error("DB Error:", e);
+        console.error("خطأ في قاعدة البيانات:", e);
     }
 }
 
@@ -32,15 +28,14 @@ export default async function handler(req, res) {
     const BOT_TOKEN = process.env.BOT_TOKEN;
     const CHAT_ID = process.env.CHAT_ID;
 
-    // 1. استقبال ردود الإدارة من تيليجرام (Reply)
+    // 1. استقبال ردودك (Reply) من تيليجرام لإرسال رسالة للعميل
     if (body && body.message && body.message.reply_to_message) {
         const originalText = body.message.reply_to_message.caption || body.message.reply_to_message.text || "";
-        const orderIdMatch = originalText.match(/\/);
+        const orderIdMatch = originalText.match(/\[(V-\w+)\]/);
         
         if (orderIdMatch) {
-            const orderId = orderIdMatch;
+            const orderId = orderIdMatch[1];
             const adminReply = body.message.text;
-            
             await updateOrderStatus(`msg_${orderId}`, adminReply);
             
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -48,7 +43,7 @@ export default async function handler(req, res) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chat_id: CHAT_ID,
-                    text: `✅ تم إرسال رسالتك للعميل بنجاح للطلب`,
+                    text: `✅ تم إرسال رسالتك للعميل بنجاح للطلب [${orderId}]`,
                     reply_to_message_id: body.message.message_id
                 })
             });
@@ -56,7 +51,7 @@ export default async function handler(req, res) {
         }
     }
 
-    // 2. استقبال أزرار التحكم (قبول / رفض)
+    // 2. استقبال أزرار القبول والرفض من تيليجرام
     if (body && body.callback_query) {
         const callbackData = body.callback_query.data;
         const messageId = body.callback_query.message.message_id;
@@ -64,7 +59,7 @@ export default async function handler(req, res) {
 
         if (callbackData.startsWith('accept_') || callbackData.startsWith('reject_')) {
             const status = callbackData.startsWith('accept_') ? 'completed' : 'rejected';
-            const orderId = callbackData.split('_');
+            const orderId = callbackData.split('_')[1];
             
             await updateOrderStatus(orderId, status); 
 
@@ -83,14 +78,15 @@ export default async function handler(req, res) {
     // 3. استقبال الطلبات من الموقع
     try {
         if (body.type === 'order') {
-            const orderIdMatch = body.cardDetails.match(/\/);
-            const orderID = orderIdMatch ? orderIdMatch : 'Unknown';
+            const orderIdMatch = body.cardDetails.match(/\[(V-\w+)\]/);
+            const orderID = orderIdMatch ? orderIdMatch[1] : 'Unknown';
 
             if(orderID !== 'Unknown') await updateOrderStatus(orderID, 'pending');
 
-            const caption = `⚡ طلب جديد - Volt Cards ⚡\n\n📦 ${body.cardDetails}\n👤 الاسم: ${body.userName}\n📲 رقم التحويل: ${body.transferPhone}`;
+            const caption = `⚡ طلب جديد - Volt Cards ⚡\n\n📦 ${body.cardDetails}\n👤 الاسم: ${body.userName}\n📲 رقم الهاتف: ${body.transferPhone}`;
             const replyMarkup = JSON.stringify({
-                inline_keyboard:
+                inline_keyboard: [
+                    [{ text: "✅ قبول الطلب", callback_data: `accept_${orderID}` }, { text: "❌ رفض الطلب", callback_data: `reject_${orderID}` }]
                 ]
             });
 
@@ -99,14 +95,15 @@ export default async function handler(req, res) {
             formData.append('caption', caption);
             formData.append('reply_markup', replyMarkup); 
             
-            const base64Data = body.imageBase64.split(',');
+            const base64Data = body.imageBase64.split(',')[1];
             const buffer = Buffer.from(base64Data, 'base64');
-            const blob = new Blob(, { type: 'image/jpeg' });
+            const blob = new Blob([buffer], { type: 'image/jpeg' });
             formData.append('photo', blob, 'receipt.jpg');
 
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
             return res.status(200).json({ ok: true });
         }
+        
         return res.status(200).json({ ok: true });
     } catch (error) {
         console.error("Error:", error);
