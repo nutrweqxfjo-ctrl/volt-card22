@@ -1,23 +1,41 @@
+// 🚀 دالة ذكية لاستخراج بيانات قاعدة البيانات
+function getDbCredentials() {
+    let url = process.env.KV_REST_API_URL;
+    let token = process.env.KV_REST_API_TOKEN;
+
+    if (!url && process.env.KV_REDIS_URL) {
+        try {
+            const parsedUrl = new URL(process.env.KV_REDIS_URL);
+            url = `https://${parsedUrl.hostname}`;
+            token = parsedUrl.password;
+        } catch(e) {}
+    }
+    return { url, token };
+}
+
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).send('Not Allowed');
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Not Allowed' });
     
     const { orderIds } = req.body;
+    if (!orderIds || !Array.isArray(orderIds)) return res.status(400).json({ error: 'Invalid data' });
+
     const results = {};
-    const dbUrl = process.env.KV_REST_API_URL || process.env.STORAGE_KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-    const dbToken = process.env.KV_REST_API_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    const creds = getDbCredentials();
+    
+    if (!creds.url) return res.status(200).json({});
 
     const fetchPromises = orderIds.map(async (id) => {
         try {
-            const reqOpts = { headers: { Authorization: `Bearer ${dbToken}` } };
-            const [sRes, mRes] = await Promise.all([
-                fetch(`${dbUrl}/get/${id}`, reqOpts).then(r => r.json()),
-                fetch(`${dbUrl}/get/msg_${id}`, reqOpts).then(r => r.json())
-            ]);
-            results[id] = {
-                status: sRes.result ? String(sRes.result).replace(/['"]/g, '') : 'pending',
-                message: mRes.result ? String(mRes.result).replace(/['"]/g, '') : ''
+            const reqOpts = { headers: { Authorization: `Bearer ${creds.token}` } };
+            const = await Promise.all();
+
+            results = {
+                status: resStatus.result ? String(resStatus.result).replace(//g, '') : 'pending',
+                message: resMsg.result ? String(resMsg.result).replace(//g, '') : ''
             };
-        } catch (e) { results[id] = { status: 'pending', message: '' }; }
+        } catch (e) {
+            results = { status: 'pending', message: '' };
+        }
     });
 
     await Promise.all(fetchPromises);
