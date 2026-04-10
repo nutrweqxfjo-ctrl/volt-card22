@@ -1,4 +1,3 @@
-// 🚀 دالة ذكية لاستخراج بيانات قاعدة البيانات
 function getDbCredentials() {
     let url = process.env.KV_REST_API_URL;
     let token = process.env.KV_REST_API_TOKEN;
