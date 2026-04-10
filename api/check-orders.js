@@ -8,32 +8,31 @@ export default async function handler(req, res) {
     const dbUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.STORAGE_KV_REST_API_URL;
     const dbToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN;
     
-    // فحص جميع الطلبات في نفس الوقت للسرعة
     const fetchPromises = orderIds.map(async (id) => {
         if(!dbUrl) {
-            results[id] = { status: 'pending', message: '' };
+            results = { status: 'pending', message: '' };
             return;
         }
         try {
-            const reqOpts = { headers: { Authorization: `Bearer ${dbToken}` } };
-            // جلب الحالة وجلب الرسالة معاً
-            const [resStatus, resMsg] = await Promise.all([
-                fetch(`${dbUrl}/get/${id}`, reqOpts).then(r => r.json()),
-                fetch(`${dbUrl}/get/msg_${id}`, reqOpts).then(r => r.json())
+            // جلب الحالة والرسالة بنفس طريقة الحفظ المضمونة
+            const = await Promise.all()
+                }),
+                fetch(dbUrl, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${dbToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify()
+                })
             ]);
 
-            let statusVal = resStatus.result ? String(resStatus.result).replace(/['"]/g, '') : 'pending';
-            
-            // تنظيف الرسالة إن وجدت
-            let msgVal = '';
-            if (resMsg.result) {
-                try { msgVal = JSON.parse(resMsg.result); } 
-                catch(e) { msgVal = String(resMsg.result); }
-            }
-            
-            results[id] = { status: statusVal, message: msgVal };
+            const resStatus = await reqStatus.json();
+            const resMsg = await reqMsg.json();
+
+            let statusVal = resStatus.result ? String(resStatus.result) : 'pending';
+            let msgVal = resMsg.result ? String(resMsg.result) : '';
+
+            results = { status: statusVal, message: msgVal };
         } catch (e) {
-            results[id] = { status: 'pending', message: '' };
+            results = { status: 'pending', message: '' };
         }
     });
 
