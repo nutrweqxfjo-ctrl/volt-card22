@@ -1,28 +1,22 @@
-const rateLimitMap = new Map();
-
-// 🚀 دالة ذكية لاستخراج بيانات قاعدة البيانات
+// 🚀 استخراج بيانات قاعدة البيانات
 function getDbCredentials() {
     let url = process.env.KV_REST_API_URL;
     let token = process.env.KV_REST_API_TOKEN;
 
-    // إذا وجدنا KV_REDIS_URL نقوم بفك تشفيره واستخراج الرابط والتوكن
     if (!url && process.env.KV_REDIS_URL) {
         try {
             const parsedUrl = new URL(process.env.KV_REDIS_URL);
             url = `https://${parsedUrl.hostname}`;
             token = parsedUrl.password;
-        } catch(e) { console.error("Error parsing URL"); }
+        } catch(e) {}
     }
     return { url, token };
 }
 
-// 🚀 دالة تحديث الحالة
+// 🚀 تحديث الطلب
 async function updateOrderStatus(key, value) {
     const creds = getDbCredentials();
-    if (!creds.url || !creds.token) {
-        console.error("بيانات قاعدة البيانات غير موجودة!");
-        return;
-    }
+    if (!creds.url || !creds.token) return;
 
     try {
         await fetch(`${creds.url}/set/${key}`, {
@@ -31,7 +25,7 @@ async function updateOrderStatus(key, value) {
             body: JSON.stringify(value)
         });
     } catch (e) {
-        console.error("خطأ في الاتصال بقاعدة البيانات:", e);
+        console.error("DB Error:", e);
     }
 }
 
@@ -45,56 +39,60 @@ export default async function handler(req, res) {
     const BOT_TOKEN = process.env.BOT_TOKEN;
     const CHAT_ID = process.env.CHAT_ID;
 
-    // 1. استقبال الردود (رسائل الإدارة للعميل)
-    if (body && body.message && body.message.reply_to_message) {
-        const originalText = body.message.reply_to_message.caption || body.message.reply_to_message.text || "";
-        const orderIdMatch = originalText.match(/\/);
-        
-        if (orderIdMatch) {
-            const orderId = orderIdMatch;
-            await updateOrderStatus(`msg_${orderId}`, body.message.text);
-            
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: `✅ تم إرسال رسالتك للعميل بنجاح (طلب ${orderId})`, reply_to_message_id: body.message.message_id })
-            });
-            return res.status(200).json({ ok: true });
-        }
-    }
-
-    // 2. استقبال أزرار القبول والرفض
-    if (body && body.callback_query) {
-        const cbData = body.callback_query.data;
-        const msgId = body.callback_query.message.message_id;
-
-        if (cbData.startsWith('accept_') || cbData.startsWith('reject_')) {
-            const status = cbData.startsWith('accept_') ? 'completed' : 'rejected';
-            const orderId = cbData.split('_');
-            
-            await updateOrderStatus(orderId, status); 
-
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageCaption`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: CHAT_ID, message_id: msgId,
-                    caption: (body.callback_query.message.caption || "") + `\n\n--- الحالة: ${status === 'completed' ? 'تم القبول ✅' : 'تم الرفض ❌'} ---`,
-                    reply_markup: { inline_keyboard: [] }
-                })
-            });
-            return res.status(200).json({ ok: true });
-        }
-    }
-
-    // 3. استقبال الطلبات الجديدة
     try {
-        if (body.type === 'order') {
+        // 1. استقبال الردود (رسائل الإدارة للعميل)
+        if (body && body.message && body.message.reply_to_message) {
+            const originalText = body.message.reply_to_message.caption || body.message.reply_to_message.text || "";
+            const orderIdMatch = originalText.match(/\/);
+            
+            if (orderIdMatch) {
+                const orderId = orderIdMatch;
+                await updateOrderStatus(`msg_${orderId}`, body.message.text);
+                
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: `✅ تم إرسال رسالتك للعميل (طلب ${orderId})`, reply_to_message_id: body.message.message_id })
+                });
+                return res.status(200).json({ ok: true });
+            }
+        }
+
+        // 2. استقبال أزرار القبول والرفض
+        if (body && body.callback_query) {
+            const cbData = body.callback_query.data;
+            const msgId = body.callback_query.message.message_id;
+
+            if (cbData.startsWith('accept_') || cbData.startsWith('reject_')) {
+                const status = cbData.startsWith('accept_') ? 'completed' : 'rejected';
+                const orderId = cbData.split('_');
+                
+                await updateOrderStatus(orderId, status); 
+
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageCaption`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID, message_id: msgId,
+                        caption: (body.callback_query.message.caption || "") + `\n\n--- الحالة: ${status === 'completed' ? 'تم القبول ✅' : 'تم الرفض ❌'} ---`,
+                        reply_markup: { inline_keyboard: [] }
+                    })
+                });
+                return res.status(200).json({ ok: true });
+            }
+        }
+
+        // 3. استقبال الطلبات الجديدة
+        if (body && body.type === 'order') {
             const idMatch = body.cardDetails.match(/\/);
             const orderID = idMatch ? idMatch : 'Unknown';
 
             if(orderID !== 'Unknown') await updateOrderStatus(orderID, 'pending');
 
             const caption = `⚡ طلب جديد - Volt Cards ⚡\n\n📦 ${body.cardDetails}\n👤 الاسم: ${body.userName}\n📲 رقم الهاتف: ${body.transferPhone}`;
-            const replyMarkup = JSON.stringify({ inline_keyboard:] });
+            const replyMarkup = JSON.stringify({
+                inline_keyboard: [
+                   
+                ]
+            });
 
             const formData = new FormData();
             formData.append('chat_id', CHAT_ID);
@@ -109,6 +107,10 @@ export default async function handler(req, res) {
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
             return res.status(200).json({ ok: true });
         }
+
         return res.status(200).json({ ok: true });
-    } catch (error) { return res.status(500).json({ ok: false }); }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ ok: false, error: error.message });
+    }
 }
