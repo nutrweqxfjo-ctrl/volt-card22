@@ -1,4 +1,3 @@
-// 🚀 استخراج بيانات قاعدة البيانات
 function getDbCredentials() {
     let url = process.env.KV_REST_API_URL;
     let token = process.env.KV_REST_API_TOKEN;
@@ -27,7 +26,7 @@ export default async function handler(req, res) {
     const fetchPromises = orderIds.map(async (id) => {
         try {
             const reqOpts = { headers: { Authorization: `Bearer ${creds.token}` } };
-            // جلب البيانات بشكل سليم
+            
             const responses = await Promise.all();
 
             const resStatus = await responses.json();
