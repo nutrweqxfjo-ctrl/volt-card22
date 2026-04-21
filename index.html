@@ -366,9 +366,7 @@
     <div class="toast" id="toast" data-i18n="toastMsg">تم بنجاح! ✅</div>
 
     <script>
-        // ==========================================
-        // 🚀 إعدادات Firebase و ImgBB
-        // ==========================================
+        // إعدادات Firebase و ImgBB
         const firebaseConfig = {
             apiKey: "AIzaSyB6bqBKnoRbFGMHJfs47av3ikUE3AIEb74",
             authDomain: "volt-763e6.firebaseapp.com",
@@ -554,28 +552,19 @@
             renderProducts(category, document.getElementById('searchInput').value); 
         }
 
-        function openSheet(id) {
-            document.getElementById('sheetOverlay').classList.add('active');
-            document.getElementById(id).classList.add('active');
-        }
-        function closeAllSheets() {
-            document.getElementById('sheetOverlay').classList.remove('active');
-            document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('active'));
-        }
+        function openSheet(id) { document.getElementById('sheetOverlay').classList.add('active'); document.getElementById(id).classList.add('active'); }
+        function closeAllSheets() { document.getElementById('sheetOverlay').classList.remove('active'); document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('active')); }
 
         // ==========================================
         // 🚪 الباب السري من مربع البحث 🚪
         // ==========================================
         function onSearchInput(event) {
             const query = event.target.value;
-            
-            // تفعيل الباب السري بالكلمة المعقدة
             if (query === "volt-cmd-88") { 
                 event.target.value = ""; 
                 adminLogin(); 
                 return; 
             }
-
             document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.filter-chip').classList.add('active');
             renderProducts('all', query.toLowerCase());
@@ -642,9 +631,6 @@
             localStorage.setItem('myVoltOrders', JSON.stringify(myOrdersHistory)); 
         }
 
-        // ==========================================
-        // 🚀 عرض طلبات الزبون (مربوط بفايربيس)
-        // ==========================================
         async function renderMyOrders() {
             const listContainer = document.getElementById('myOrdersList');
             if (myOrdersHistory.length === 0) { 
@@ -744,9 +730,6 @@
             }
         });
 
-        // ==========================================
-        // 🚀 إرسال الطلب الأساسي لـ ImgBB + Firebase
-        // ==========================================
         document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btnSpan = document.getElementById('btnText'); const originalText = btnSpan.innerText;
@@ -768,7 +751,6 @@
             const finalCardDetails = `[${orderID}] ${cardDetails} | IP: ${clientIP}`;
 
             try {
-                // 1. رفع الصورة
                 const formData = new FormData();
                 formData.append('image', fileInput.files[0]);
                 const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
@@ -776,7 +758,6 @@
                 if (!imgData.success) throw new Error('ImgBB Failed');
                 const imageUrl = imgData.data.url;
 
-                // 2. حفظ الطلب بـ Firebase
                 await db.collection("orders").doc(orderID).set({
                     id: orderID, type: 'order', cardDetails: finalCardDetails,
                     userName: document.getElementById('userName').value, transferPhone: transferPhoneInput.value,
@@ -794,9 +775,6 @@
             }
         });
 
-        // ==========================================
-        // 🚀 إرسال الطلب الخاص لـ Firebase
-        // ==========================================
         document.getElementById('customRequestForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btnSpan = document.querySelector('#customSubmitBtn span'); const originalText = btnSpan.innerText; btnSpan.innerText = '⏳ جاري الإرسال...';
@@ -820,11 +798,10 @@
             }
         });
 
-        // ==========================================
-        // 🛡️ لوحة التحكم السرية للمدير (بكلمة المرور القوية)
-        // ==========================================
+        // 🛡️ لوحة التحكم المخفية (كلمة مرور مشفرة)
         function adminLogin() {
-            if(prompt("أدخل كلمة المرور الخاصة بالمدير:") === "V0lt_C@rds#2026!") {
+            const pass = atob("VjBsdF9DQHJkcyMyMDI2IQ=="); 
+            if(prompt("أدخل كلمة المرور الخاصة بالمدير:") === pass) {
                 closeAllSheets(); switchView('admin'); loadAdminOrders();
             } else { 
                 alert("كلمة المرور خاطئة! تم رفض الوصول."); 
