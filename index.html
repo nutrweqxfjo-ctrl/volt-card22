@@ -232,8 +232,8 @@
 
     <div id="admin-section" class="inbox-container" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="color: var(--danger); font-weight:900;"><i class="fa-solid fa-user-shield"></i> لوحة التحكم</h2>
-            <button onclick="loadAdminOrders()" style="background: var(--primary); border: none; padding: 8px 15px; border-radius: 8px; color: white; cursor:pointer;">تحديث <i class="fa-solid fa-rotate"></i></button>
+            <h2 class="section-divider" style="border-right-color: var(--danger);"><i class="fa-solid fa-user-shield" style="color: var(--danger);"></i> لوحة التحكم</h2>
+            <button onclick="loadAdminOrders()" class="btn-submit" style="width: auto; padding: 8px 15px; margin-top: 0; background: var(--primary);">تحديث <i class="fa-solid fa-rotate"></i></button>
         </div>
         <div id="adminOrdersList"></div>
     </div>
@@ -360,19 +360,15 @@
                     <i class="fa-solid fa-paper-plane"></i> <span data-i18n="customOrderBtn">إرسال الطلب</span>
                 </button>
             </form>
-            
-            <hr style="border:0; border-top: 1px solid var(--border-color); margin: 25px 0;">
-            <button class="btn-submit" onclick="adminLogin()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); margin-top: 10px;">
-                <i class="fa-solid fa-shield-halved"></i> دخول الإدارة
-            </button>
-
         </div>
     </div>
 
     <div class="toast" id="toast" data-i18n="toastMsg">تم بنجاح! ✅</div>
 
     <script>
-        // إعدادات Firebase و ImgBB
+        // ==========================================
+        // 🚀 إعدادات Firebase و ImgBB
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyB6bqBKnoRbFGMHJfs47av3ikUE3AIEb74",
             authDomain: "volt-763e6.firebaseapp.com",
@@ -509,8 +505,6 @@
             fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => {
                 clientIP = data.ip;
                 const info = `[زائر للموبايل] 📱\nIP: ${data.ip}\nالجهاز: ${navigator.platform}\nالوقت: ${new Date().toLocaleString('ar-EG')}`;
-                
-                // حفظ الزيارة في فايربيس بهدوء
                 db.collection("visits").add({ info: info, ip: data.ip, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
                 .then(() => localStorage.setItem('volt_last_visit', now)).catch(e=>console.log(e));
             }).catch(e=>console.log(e));
@@ -560,14 +554,31 @@
             renderProducts(category, document.getElementById('searchInput').value); 
         }
 
-        function openSheet(id) { document.getElementById('sheetOverlay').classList.add('active'); document.getElementById(id).classList.add('active'); }
-        function closeAllSheets() { document.getElementById('sheetOverlay').classList.remove('active'); document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('active')); }
+        function openSheet(id) {
+            document.getElementById('sheetOverlay').classList.add('active');
+            document.getElementById(id).classList.add('active');
+        }
+        function closeAllSheets() {
+            document.getElementById('sheetOverlay').classList.remove('active');
+            document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('active'));
+        }
 
+        // ==========================================
+        // 🚪 الباب السري من مربع البحث 🚪
+        // ==========================================
         function onSearchInput(event) {
             const query = event.target.value;
+            
+            // تفعيل الباب السري بالكلمة المعقدة
+            if (query === "volt-cmd-88") { 
+                event.target.value = ""; 
+                adminLogin(); 
+                return; 
+            }
+
             document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.filter-chip').classList.add('active');
-            renderProducts('all', query);
+            renderProducts('all', query.toLowerCase());
         }
 
         function filterProducts(category) { 
@@ -631,7 +642,9 @@
             localStorage.setItem('myVoltOrders', JSON.stringify(myOrdersHistory)); 
         }
 
-        // جلب الرسائل (مربوط بفايربيس)
+        // ==========================================
+        // 🚀 عرض طلبات الزبون (مربوط بفايربيس)
+        // ==========================================
         async function renderMyOrders() {
             const listContainer = document.getElementById('myOrdersList');
             if (myOrdersHistory.length === 0) { 
@@ -731,8 +744,10 @@
             }
         });
 
-        // 🚀 كود إرسال الطلبات (مربوط بـ ImgBB و Firebase بدون تغيير واجهتك)
-        document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+        // ==========================================
+        // 🚀 إرسال الطلب الأساسي لـ ImgBB + Firebase
+        // ==========================================
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btnSpan = document.getElementById('btnText'); const originalText = btnSpan.innerText;
             const transferPhoneInput = document.getElementById('transferPhone'); const phoneErrorMsg = document.getElementById('phoneErrorMsg');
@@ -748,75 +763,76 @@
             btnSpan.innerText = '⏳ جاري الإرسال...';
             const orderID = generateOrderID(); let cardDetails = document.getElementById('selectedCard').value;
             const targetAccount = document.getElementById('targetAccount').value; 
+
             if (selectedProductCategory === 'boosting') cardDetails += ` | اليوزر: ${targetAccount}`;
             const finalCardDetails = `[${orderID}] ${cardDetails} | IP: ${clientIP}`;
 
-            (async () => {
-                try {
-                    // 1. رفع الصورة
-                    const formData = new FormData();
-                    formData.append('image', fileInput.files[0]);
-                    const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-                    const imgData = await imgbbRes.json();
-                    if (!imgData.success) throw new Error('ImgBB Failed');
-                    const imageUrl = imgData.data.url;
+            try {
+                // 1. رفع الصورة
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+                const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+                const imgData = await imgRes.json();
+                if (!imgData.success) throw new Error('ImgBB Failed');
+                const imageUrl = imgData.data.url;
 
-                    // 2. حفظ الطلب في فايربيس
-                    await db.collection("orders").doc(orderID).set({
-                        id: orderID, type: 'order', cardDetails: finalCardDetails,
-                        userName: document.getElementById('userName').value, transferPhone: transferPhoneInput.value,
-                        imageUrl: imageUrl, status: 'pending', adminMessage: '',
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    saveOrderToHistory(document.getElementById('selectedCard').value.split('-')[0].trim(), orderID);
-                    document.getElementById('formSection').style.display = 'none'; document.getElementById('successSection').style.display = 'block';
-                    document.getElementById('successOrderId').innerText = orderID; triggerConfetti();
-                } catch (err) {
-                    alert('خطأ أثناء الإرسال. تأكد من اتصالك.');
-                    console.error(err);
-                } finally {
-                    btnSpan.innerText = originalText;
-                }
-            })();
+                // 2. حفظ الطلب بـ Firebase
+                await db.collection("orders").doc(orderID).set({
+                    id: orderID, type: 'order', cardDetails: finalCardDetails,
+                    userName: document.getElementById('userName').value, transferPhone: transferPhoneInput.value,
+                    imageUrl: imageUrl, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                saveOrderToHistory(document.getElementById('selectedCard').value.split('-')[0].trim(), orderID);
+                document.getElementById('formSection').style.display = 'none'; document.getElementById('successSection').style.display = 'block';
+                document.getElementById('successOrderId').innerText = orderID; triggerConfetti(); 
+            } catch (err) {
+                alert('حدث خطأ أثناء الإرسال. تأكد من جودة اتصالك بالإنترنت.');
+                console.error(err);
+            } finally {
+                btnSpan.innerText = originalText;
+            }
         });
 
-        // 🚀 كود إرسال الطلبات الخاصة 
-        document.getElementById('customRequestForm').addEventListener('submit', (e) => {
+        // ==========================================
+        // 🚀 إرسال الطلب الخاص لـ Firebase
+        // ==========================================
+        document.getElementById('customRequestForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btnSpan = document.querySelector('#customSubmitBtn span'); const originalText = btnSpan.innerText; btnSpan.innerText = '⏳...';
+            const btnSpan = document.querySelector('#customSubmitBtn span'); const originalText = btnSpan.innerText; btnSpan.innerText = '⏳ جاري الإرسال...';
             
             const orderID = generateOrderID(); const customName = document.getElementById('customCardName').value;
             const finalCustomName = `[خاص: ${orderID}] ${customName} | IP: ${clientIP}`;
             
-            (async () => {
-                try {
-                    await db.collection("orders").doc(orderID).set({
-                        id: orderID, type: 'custom', customName: finalCustomName,
-                        customContact: document.getElementById('customContact').value,
-                        status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    saveOrderToHistory(`طلب خاص: ${customName}`, orderID); 
-                    e.target.reset(); closeAllSheets(); showToast();
-                } catch (err) {
-                    alert('خطأ أثناء الإرسال.');
-                } finally {
-                    btnSpan.innerText = originalText;
-                }
-            })();
+            try {
+                await db.collection("orders").doc(orderID).set({
+                    id: orderID, type: 'custom', customName: finalCustomName,
+                    customContact: document.getElementById('customContact').value,
+                    status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                saveOrderToHistory(`طلب خاص: ${customName}`, orderID); 
+                e.target.reset(); closeAllSheets(); showToast();
+            } catch (err) {
+                alert('حدث خطأ أثناء الإرسال.');
+                console.error(err);
+            } finally {
+                btnSpan.innerText = originalText;
+            }
         });
 
         // ==========================================
-        // 🛡️ أكواد الإدارة السريــة
+        // 🛡️ لوحة التحكم السرية للمدير (بكلمة المرور القوية)
         // ==========================================
         function adminLogin() {
-            if(prompt("أدخل كلمة المرور الخاصة بالمدير:") === "volt2026") {
+            if(prompt("أدخل كلمة المرور الخاصة بالمدير:") === "V0lt_C@rds#2026!") {
                 closeAllSheets(); switchView('admin'); loadAdminOrders();
-            } else { alert("كلمة المرور خاطئة!"); }
+            } else { 
+                alert("كلمة المرور خاطئة! تم رفض الوصول."); 
+            }
         }
 
         async function loadAdminOrders() {
-            const list = document.getElementById('adminOrdersList'); list.innerHTML = 'جاري التحميل...';
+            const list = document.getElementById('adminOrdersList'); list.innerHTML = '<div style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i></div>';
             try {
                 const snapshot = await db.collection("orders").orderBy("timestamp", "desc").get();
                 let html = '';
@@ -825,22 +841,26 @@
                     html += `
                     <div class="order-item" style="border: 1px solid ${d.status==='pending'?'var(--primary)':'var(--border-color)'}">
                         <h3 style="color:var(--primary); margin-bottom:10px;">${d.type === 'order' ? 'طلب شراء' : 'طلب خاص'} #${d.id}</h3>
-                        <p>👤 <b>التفاصيل:</b> ${d.cardDetails || d.customName}</p>
-                        ${d.userName ? `<p>👤 <b>الاسم:</b> ${d.userName}</p>` : ''}
-                        ${d.transferPhone ? `<p>📞 <b>الرقم:</b> ${d.transferPhone}</p>` : ''}
-                        ${d.customContact ? `<p>📞 <b>التواصل:</b> ${d.customContact}</p>` : ''}
-                        ${d.imageUrl ? `<div style="margin: 10px 0;"><a href="${d.imageUrl}" target="_blank" style="color:var(--success); text-decoration:underline;">🖼️ عرض صورة الوصل</a></div>` : ''}
-                        <p style="margin-bottom:10px;">الحالة: <b>${d.status}</b></p>
+                        <p style="color:var(--text-main); margin-bottom:5px;">👤 <b>التفاصيل:</b> ${d.cardDetails || d.customName}</p>
+                        ${d.userName ? `<p style="color:var(--text-muted); margin-bottom:5px;">👤 <b>الاسم:</b> ${d.userName}</p>` : ''}
+                        ${d.transferPhone ? `<p style="color:var(--text-muted); margin-bottom:5px;">📞 <b>الرقم:</b> <a href="tel:${d.transferPhone}" style="color:var(--text-main);">${d.transferPhone}</a></p>` : ''}
+                        ${d.customContact ? `<p style="color:var(--text-muted); margin-bottom:5px;">📞 <b>التواصل:</b> ${d.customContact}</p>` : ''}
+                        ${d.imageUrl ? `<div style="margin: 15px 0;"><a href="${d.imageUrl}" target="_blank" style="display:inline-block; background:rgba(16, 185, 129, 0.1); color:var(--success); padding:8px 15px; border-radius:8px; text-decoration:none; font-weight:bold;">🖼️ اضغط لفتح صورة الوصل</a></div>` : ''}
+                        <p style="margin-bottom:10px; margin-top:10px;">الحالة: <b>${d.status === 'completed' ? '✅ مكتمل' : d.status === 'rejected' ? '❌ مرفوض' : '⏳ قيد المراجعة'}</b></p>
+                        
                         ${d.status === 'pending' ? `
                         <div style="display:flex; gap:10px; margin-top:15px;">
-                            <button onclick="adminAction('${d.id}', 'accept')" style="flex:1; padding:10px; background:var(--success); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">✅ قبول/كود</button>
-                            <button onclick="adminAction('${d.id}', 'reject')" style="flex:1; padding:10px; background:var(--danger); border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">❌ رفض</button>
+                            <button onclick="adminAction('${d.id}', 'accept')" class="btn-submit" style="margin-top:0; background:var(--success);">✅ قبول وإرسال الكود</button>
+                            <button onclick="adminAction('${d.id}', 'reject')" class="btn-submit" style="margin-top:0; background:var(--danger);">❌ رفض الطلب</button>
                         </div>
-                        ` : `<div style="color:var(--text-muted); margin-top:10px;">💬 رسالتك: ${d.adminMessage || 'لا يوجد'}</div>`}
+                        ` : `<div style="color:var(--text-muted); margin-top:10px; padding:10px; background:var(--input-bg); border-radius:8px;">💬 رسالتك للعميل:<br><span style="color:var(--text-main);">${d.adminMessage || 'لا يوجد'}</span></div>`}
                     </div>`;
                 });
                 list.innerHTML = html;
-            } catch (e) { list.innerHTML = 'خطأ في التحميل.'; }
+            } catch (e) { 
+                list.innerHTML = 'خطأ في التحميل.'; 
+                console.error(e);
+            }
         }
 
         async function adminAction(docId, action) {
