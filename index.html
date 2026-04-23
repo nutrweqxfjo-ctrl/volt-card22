@@ -242,7 +242,14 @@
     </div>
 
     <div id="admin-section" class="inbox-container" style="display: none;">
-        <h2 class="section-divider" style="border-right-color: var(--danger); margin-bottom:15px;"><i class="fa-solid fa-user-shield" style="color: var(--danger);"></i> الإدارة الذكية</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 class="section-divider" style="border-right-color: var(--danger); margin: 0;">
+                <i class="fa-solid fa-user-shield" style="color: var(--danger);"></i> الإدارة الذكية
+            </h2>
+            <button onclick="adminLogout()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); border-radius: 8px; padding: 5px 12px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.3s;">
+                <i class="fa-solid fa-lock"></i> قفل
+            </button>
+        </div>
         
         <div class="admin-nav">
             <button onclick="switchAdminTab('orders')" style="background: var(--primary);">📦 الطلبات</button>
@@ -324,6 +331,11 @@
         <a class="nav-item" onclick="setActiveNav(this); openSheet('settingsSheet');">
             <i class="fa-solid fa-gear"></i>
             <span data-i18n="navSettings">الإعدادات</span>
+        </a>
+        
+        <a class="nav-item" id="adminNavBtn" style="display: none; color: var(--danger);" onclick="setActiveNav(this); switchView('admin'); switchAdminTab('orders');">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>الإدارة</span>
         </a>
     </nav>
 
@@ -473,17 +485,15 @@
                 const data = await r.json();
                 clientIP = data.ip;
 
-                // 1. فحص الحظر أولاً
                 const banDoc = await db.collection("banned_ips").doc(clientIP).get();
                 if (banDoc.exists) {
                     document.getElementById('bannedScreen').classList.remove('hidden');
-                    return false; // توقف عن التحميل
+                    return false; 
                 }
 
-                // 2. تتبع الزيارة (الرادار)
                 const lastVisit = localStorage.getItem('volt_last_visit');
                 const now = new Date().getTime();
-                if (!lastVisit || (now - lastVisit > 43200000)) { // كل 12 ساعة
+                if (!lastVisit || (now - lastVisit > 43200000)) { 
                     const info = `جهاز: ${navigator.platform} | المتصفح: ${navigator.userAgent.substring(0, 40)}... | الشاشة: ${window.screen.width}x${window.screen.height}`;
                     await db.collection("visits").doc(clientIP).set({
                         ip: clientIP, info: info, date: new Date().toLocaleString('ar-EG'), timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -491,7 +501,7 @@
                     localStorage.setItem('volt_last_visit', now);
                 }
                 return true;
-            } catch(e) { console.log(e); return true; } // في حال فشل جلب الـ IP، نسمح بالدخول
+            } catch(e) { console.log(e); return true; } 
         }
 
         async function loadProductsFromFirebase() {
@@ -542,13 +552,28 @@
             if(element) element.classList.add('active');
         }
 
+        // ==========================================
+        // فحص جلسة الإدارة المخزنة 
+        // ==========================================
+        function checkAdminSession() {
+            if(localStorage.getItem('volt_admin_logged') === 'true') {
+                document.getElementById('adminNavBtn').style.display = 'flex';
+            } else {
+                document.getElementById('adminNavBtn').style.display = 'none';
+            }
+        }
+
         async function init() { 
             const isAllowed = await checkBanAndTrack();
-            if (!isAllowed) return; // توقف هنا إذا كان المستخدم محظوراً
+            if (!isAllowed) return; 
 
             document.getElementById('langSelect').value = currentLang; 
             document.getElementById('themeSelect').value = currentTheme; 
             applyTheme(currentTheme); 
+            
+            // فحص هل المدير مسجل دخول مسبقاً؟
+            checkAdminSession();
+
             await loadProductsFromFirebase();
             applyLanguage(currentLang); 
             
@@ -633,13 +658,34 @@
         }
 
         // ==========================================
-        // 🛡️ لوحة الإدارة المتطورة
+        // 🛡️ لوحة الإدارة المتطورة (مع حفظ الجلسة)
         // ==========================================
         function adminLogin() {
+            // إذا كان مسجل دخول مسبقاً، ادخل مباشرة
+            if(localStorage.getItem('volt_admin_logged') === 'true') {
+                closeAllSheets(); switchView('admin'); switchAdminTab('orders');
+                return;
+            }
+
             const pass = atob("VjBsdF9DQHJkcyMyMDI2IQ=="); 
             if(prompt("أدخل كلمة المرور الخاصة بالمدير:") === pass) {
+                // حفظ الجلسة
+                localStorage.setItem('volt_admin_logged', 'true');
+                checkAdminSession(); // لإظهار الزر السفلي
+                
                 closeAllSheets(); switchView('admin'); switchAdminTab('orders');
+                showToast("تم تسجيل الدخول بنجاح!");
             } else { alert("كلمة المرور خاطئة!"); }
+        }
+
+        function adminLogout() {
+            if(confirm("هل تريد تسجيل الخروج وقفل لوحة الإدارة؟")) {
+                localStorage.removeItem('volt_admin_logged');
+                checkAdminSession();
+                switchView('home');
+                setActiveNav(document.querySelectorAll('.nav-item')[0]);
+                showToast("تم قفل لوحة الإدارة 🔒");
+            }
         }
 
         function switchAdminTab(tab) {
