@@ -169,6 +169,7 @@
         <div class="loader-content">
             <i class="fa-solid fa-bolt loader-icon"></i>
             <h2 data-i18n="logo">فولت كاردز</h2>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);">جاري تحميل المنتجات...</p>
         </div>
     </div>
 
@@ -232,10 +233,56 @@
 
     <div id="admin-section" class="inbox-container" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 class="section-divider" style="border-right-color: var(--danger);"><i class="fa-solid fa-user-shield" style="color: var(--danger);"></i> لوحة التحكم</h2>
-            <button onclick="loadAdminOrders()" class="btn-submit" style="width: auto; padding: 8px 15px; margin-top: 0; background: var(--primary);">تحديث <i class="fa-solid fa-rotate"></i></button>
+            <h2 class="section-divider" style="border-right-color: var(--danger); margin:0;"><i class="fa-solid fa-user-shield" style="color: var(--danger);"></i> الإدارة</h2>
+            <div style="display: flex; gap: 5px;">
+                <button onclick="switchAdminTab('orders')" class="btn-submit" style="width: auto; padding: 8px 12px; margin-top: 0; background: var(--primary); font-size:0.9rem;">الطلبات</button>
+                <button onclick="switchAdminTab('cards')" class="btn-submit" style="width: auto; padding: 8px 12px; margin-top: 0; background: var(--warning); font-size:0.9rem;">البطاقات</button>
+            </div>
         </div>
-        <div id="adminOrdersList"></div>
+        
+        <div id="adminOrdersTab">
+            <button onclick="loadAdminOrders()" class="btn-submit" style="background: var(--input-bg); color: var(--primary); border: 1px solid var(--primary); margin-bottom: 15px;">تحديث الطلبات <i class="fa-solid fa-rotate"></i></button>
+            <div id="adminOrdersList"></div>
+        </div>
+
+        <div id="adminCardsTab" style="display: none;">
+            <div style="background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+                <h3 style="color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-plus"></i> إضافة بطاقة جديدة</h3>
+                <form id="addCardForm">
+                    <div class="form-group">
+                        <label class="form-label">القسم</label>
+                        <select id="newCardCat" class="form-input" required>
+                            <option value="mobile">ألعاب الجوال</option>
+                            <option value="boosting">رشق التطبيقات</option>
+                            <option value="console">منصات الألعاب</option>
+                            <option value="pc">ألعاب الكمبيوتر</option>
+                            <option value="stores">متاجر واشتراكات</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">اسم البطاقة (عربي)</label>
+                        <input type="text" id="newCardNameAr" class="form-input" placeholder="مثال: شدات ببجي 325" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">اسم البطاقة (إنجليزي)</label>
+                        <input type="text" id="newCardNameEn" class="form-input" placeholder="Example: PUBG 325 UC" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">السعر قبل الخصم (اكتب الضعف ليظهر كنصف السعر)</label>
+                        <input type="number" id="newCardPrice" class="form-input" placeholder="مثال: 20000 (سيظهر 10000 للزبون)" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">صورة البطاقة</label>
+                        <input type="file" id="newCardImg" class="form-input" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn-submit" id="addCardBtn">➕ نشر البطاقة في المتجر</button>
+                </form>
+            </div>
+
+            <h3 class="section-divider" style="margin-bottom: 15px;"><i class="fa-solid fa-box"></i> البطاقات الحالية</h3>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:15px;">اضغط على أيقونة السلة لحذف البطاقة من المتجر نهائياً.</p>
+            <div id="adminCardsList" style="display: grid; grid-template-columns: 1fr; gap: 10px;"></div>
+        </div>
     </div>
 
     <nav class="bottom-nav">
@@ -263,12 +310,10 @@
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
             <h2 class="sheet-title" data-i18n="modalTitle">إتمام الطلب</h2>
-            
             <div id="formSection">
                 <div class="order-limit-note">
                     <i class="fa-solid fa-circle-exclamation"></i> <span data-i18n="orderLimitNote">ملاحظة: يمكنك إرسال طلبين فقط خلال 30 دقيقة</span>
                 </div>
-
                 <div class="payment-instruction">
                     <p data-i18n="paymentInstruction">يرجى تحويل مبلغ الطلب إلى الرقم التالي:</p>
                     <div class="payment-number" onclick="copyPaymentNumber()" title="اضغط لنسخ الرقم">
@@ -280,23 +325,19 @@
 
                 <form id="checkoutForm">
                     <input type="hidden" id="selectedCard">
-                    
                     <div class="form-group">
                         <label class="form-label" data-i18n="formName">الاسم الكامل</label>
                         <input type="text" id="userName" class="form-input" required>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label" data-i18n="formTransferPhone">رقم هاتفك (الذي حولت منه)</label>
                         <input type="tel" id="transferPhone" class="form-input" placeholder="077XXXXXXXX" required dir="ltr" style="text-align: right;">
                         <span id="phoneErrorMsg" style="color: var(--danger); font-size: 0.8rem; display: none; margin-top: 5px; font-weight: bold;" data-i18n="phoneErrorMsg">يرجى إدخال رقم آسياسيل صحيح (11 رقم).</span>
                     </div>
-                    
                     <div class="form-group" id="targetAccountGroup" style="display: none;">
                         <label class="form-label" data-i18n="formTargetAccount">يوزر الحساب أو الرابط</label>
                         <input type="text" id="targetAccount" class="form-input" style="border-color: var(--warning);">
                     </div>
-                    
                     <div class="form-group">
                         <label class="form-label" data-i18n="step3Title">إثبات التحويل</label>
                         <div class="upload-area">
@@ -306,7 +347,6 @@
                         </div>
                         <img id="imagePreview" class="upload-preview">
                     </div>
-                    
                     <button type="submit" class="btn-submit" id="submitBtn">
                         <span id="btnText" data-i18n="formSubmit">تأكيد وإرسال الطلب</span>
                     </button>
@@ -327,7 +367,6 @@
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
             <h2 class="sheet-title" data-i18n="settings">الإعدادات</h2>
-            
             <div class="form-group">
                 <label class="form-label" data-i18n="language">اللغة / Language</label>
                 <select class="form-input" id="langSelect" onchange="changeLanguage(this.value)">
@@ -335,7 +374,6 @@
                     <option value="en">English</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label class="form-label" data-i18n="theme">المظهر / Theme</label>
                 <select class="form-input" id="themeSelect" onchange="changeTheme(this.value)">
@@ -343,12 +381,9 @@
                     <option value="light" data-i18n="light">فاتح</option>
                 </select>
             </div>
-
             <hr style="border:0; border-top: 1px solid var(--border-color); margin: 25px 0;">
-
             <h3 style="color: var(--warning); margin-bottom: 15px;" data-i18n="customOrderTitle">الطلبات الخاصة</h3>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="customOrderDesc">لم تجد الخدمة المطلوبة؟ اطلبها من هنا:</p>
-            
             <form id="customRequestForm">
                 <div class="form-group">
                     <input type="text" id="customCardName" class="form-input" required placeholder="الخدمة المطلوبة والكمية" data-i18n-placeholder="customCardInput">
@@ -378,34 +413,22 @@
         const db = firebase.firestore();
         const IMGBB_API_KEY = "58ffaf3be2f46af1d7bd3c67fd08986f";
 
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loader');
-                loader.classList.add('hidden');
-                setTimeout(() => loader.style.display = 'none', 500);
-            }, 1000); 
-        });
-
         const translations = {
             ar: {
                 logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
                 catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات", catPc: "ألعاب PC", catStores: "متاجر",
                 buyBtn: "شراء", currency: "د.ع", modalTitle: "إتمام الطلب", bestSeller: "الأكثر مبيعاً",
                 slide1Title: "عروض الشدات 🔥", slide1Desc: "أكواد جاهزة للشحن", slide3Title: "خصم 50% 🏷️", slide3Desc: "على جميع الخدمات لفترة محدودة",
-                
                 paymentInstruction: "يرجى تحويل مبلغ الطلب إلى الرقم التالي:", paymentNote: "(آسيا سيل فقط)",
                 copiedMsg: "تم نسخ الرقم بنجاح! 📋", orderLimitNote: "ملاحظة: يمكنك إرسال طلبين فقط خلال 30 دقيقة",
                 phoneErrorMsg: "يرجى إدخال رقم آسياسيل صحيح (11 رقم).",
-
                 howToBuy: "خطوات كيفية الشراء؟", step1: "1. اكتب اسمك", step2: "2. رقم التحويل", step3: "3. ارفع رسالة التحويل", step4: "4. استلم الكود",
-
                 formName: "الاسم الكامل", formContact: "رقم الهاتف أو المعرف", formTransferPhone: "رقم هاتفك (الذي حولت منه)", formTargetAccount: "يوزر الحساب أو الرابط",
                 formUpload: "اضغط لرفع صورة لرسالة التحويل", formSubmit: "تأكيد وإرسال الطلب", step3Title: "إثبات التحويل",
                 successTitle: "تم استلام طلبك!", successDesc: "سيتم التنفيذ قريباً. احتفظ برقم الطلب:", closeBtn: "إغلاق", 
                 toastMsg: "تم الإرسال بنجاح! ✅", toastErrorSize: "حجم الصورة كبير جداً! ❌",
                 customOrderTitle: "الطلبات الخاصة", customOrderDesc: "لم تجد الخدمة المطلوبة؟ اطلبها من هنا:",
                 customCardInput: "الخدمة المطلوبة والكمية", customOrderBtn: "إرسال الطلب",
-                
                 myOrdersTitle: "صندوق الرسائل والطلبات", noOrders: "لا توجد رسائل أو طلبات سابقة.", orderPending: "قيد المراجعة ⏳", orderCustom: "طلب خاص",
                 navHome: "الرئيسية", navSearch: "بحث", navOrders: "رسائلي", navSettings: "الإعدادات",
                 searchPlaceholder: "ابحث عن لعبة أو اشتراك...", noResultTitle: "عذراً!", noResultDesc: "لم نجد ما تبحث عنه."
@@ -415,20 +438,16 @@
                 catAll: "All", catMobile: "Mobile", catBoost: "Social Boost", catConsole: "Console", catPc: "PC Games", catStores: "Stores",
                 buyBtn: "Buy", currency: "IQD", modalTitle: "Complete Order", bestSeller: "Best Seller",
                 slide1Title: "PUBG Offers 🔥", slide1Desc: "Ready to redeem codes", slide3Title: "50% OFF 🏷️", slide3Desc: "On all services for limited time",
-                
                 paymentInstruction: "Please transfer the order amount to:", paymentNote: "(AsiaCell only)",
                 copiedMsg: "Number copied to clipboard! 📋", orderLimitNote: "Note: You can only send 2 orders within 30 minutes",
                 phoneErrorMsg: "Please enter a valid AsiaCell number (11 digits).",
-
                 howToBuy: "How to Buy?", step1: "1. Enter Name", step2: "2. Transfer Num", step3: "3. Upload Image", step4: "4. Get Code",
-
                 formName: "Full Name", formContact: "Phone or Telegram @", formTransferPhone: "Your phone number (Sender)", formTargetAccount: "Username or Link",
                 formUpload: "Tap to upload image of transfer message", formSubmit: "Confirm & Send Order", step3Title: "Payment Proof",
                 successTitle: "Order Received!", successDesc: "Processing soon. Save your ID:", closeBtn: "Close", 
                 toastMsg: "Sent Successfully! ✅", toastErrorSize: "Image is too large! ❌",
                 customOrderTitle: "Custom Request", customOrderDesc: "Didn't find it? Request here:",
                 customCardInput: "Service & Quantity", customOrderBtn: "Send Request",
-                
                 myOrdersTitle: "Inbox & Orders", noOrders: "No messages or orders yet.", orderPending: "Pending ⏳", orderCustom: "Custom Request",
                 navHome: "Home", navSearch: "Search", navOrders: "Inbox", navSettings: "Settings",
                 searchPlaceholder: "Search games, subs...", noResultTitle: "Oops!", noResultDesc: "No results found."
@@ -436,7 +455,8 @@
         };
 
         const proxy = "https://wsrv.nl/?url=";
-        const products =[
+        // القائمة الافتراضية إذا كانت الداتا بيس فارغة
+        const defaultProducts =[
             { id: 1, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 10000, ar: { name: "كود شحن ببجي - 325 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 325 UC", cat: "Mobile" } },
             { id: 2, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 20000, badge: true, ar: { name: "كود شحن ببجي - 660 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 660 UC", cat: "Mobile" } },
             { id: 3, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 50000, ar: { name: "كود شحن ببجي - 1800 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 1800 UC", cat: "Mobile" } },
@@ -445,23 +465,18 @@
             { id: 6, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/commons/4/4b/Playing_card_spade_A.svg", price: 10000, ar: { name: "كود شحن جواكر - 50,000 توكنز", cat: "ألعاب الجوال" }, en: { name: "Jawaker - 50k Tokens", cat: "Mobile" } },
             { id: 7, category: "mobile", img: "https://i.ibb.co/V00xSCLc/image.png", price: 15000, badge: true, ar: { name: "كود شحن يلا لودو - 500 ألماس", cat: "ألعاب الجوال" }, en: { name: "Yalla Ludo - 500 Dia", cat: "Mobile" } },
             { id: 25, category: "mobile", img: proxy + "upload.wikimedia.org/wikipedia/en/b/b3/Call_of_Duty_Mobile_logo.png", price: 15000, ar: { name: "شحن كول اوف ديوتي - 420 CP", cat: "ألعاب الجوال" }, en: { name: "CoD Mobile - 420 CP", cat: "Mobile" } },
-            
             { id: 22, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg", price: 10000, ar: { name: "1000 مشترك تيليجرام", cat: "رشق" }, en: { name: "1000 TG Subs", cat: "Boost" } },
             { id: 23, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", price: 12000, badge: true, ar: { name: "1000 متابع تيك توك", cat: "رشق" }, en: { name: "1000 TikTok Foll", cat: "Boost" } },
             { id: 24, category: "boosting", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg", price: 8000, ar: { name: "1000 متابع انستغرام", cat: "رشق" }, en: { name: "1000 Insta Foll", cat: "Boost" } },
-
             { id: 81, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "بلايستيشن 20$ (أمريكي)", cat: "منصات" }, en: { name: "PSN $20 (US)", cat: "Console" } },
             { id: 82, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "بلايستيشن 20$ (إماراتي)", cat: "منصات" }, en: { name: "PSN $20 (UAE)", cat: "Console" } },
             { id: 83, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg", price: 32000, ar: { name: "بلايستيشن 20$ (سعودي)", cat: "منصات" }, en: { name: "PSN $20 (KSA)", cat: "Console" } },
-
             { id: 91, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "اكسبوكس 25$ (أمريكي)", cat: "منصات" }, en: { name: "Xbox $25 (US)", cat: "Console" } },
             { id: 92, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "اكسبوكس 25$ (إماراتي)", cat: "منصات" }, en: { name: "Xbox $25 (UAE)", cat: "Console" } },
             { id: 93, category: "console", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg", price: 40000, ar: { name: "اكسبوكس 25$ (سعودي)", cat: "منصات" }, en: { name: "Xbox $25 (KSA)", cat: "Console" } },
-            
             { id: 13, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg", price: 16000, ar: { name: "ستيم والت - 10$", cat: "PC" }, en: { name: "Steam - $10", cat: "PC" } },
             { id: 14, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/3/31/Epic_Games_logo.svg", price: 14000, ar: { name: "ايبك قيمز - 1000 V-Bucks", cat: "PC" }, en: { name: "Epic - 1000 V-Bucks", cat: "PC" } },
             { id: 26, category: "pc", img: proxy + "upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg", price: 16500, ar: { name: "شحن فالورانت - 1000 VP", cat: "PC" }, en: { name: "Valorant - 1000 VP", cat: "PC" } },
-            
             { id: 17, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/e/e0/Razer_Inc._Logo.svg", price: 16500, ar: { name: "ريزر جولد - 10$", cat: "متاجر" }, en: { name: "Razer Gold - $10", cat: "Stores" } },
             { id: 18, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/d/d0/Google_Play_Arrow_logo.svg", price: 15500, badge: true, ar: { name: "جوجل بلاي - 10$", cat: "متاجر" }, en: { name: "Google Play - $10", cat: "Stores" } },
             { id: 20, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/commons/c/c6/Discord_Logo_with_text.svg", price: 10000, ar: { name: "ديسكورد نايترو - شهر", cat: "متاجر" }, en: { name: "Discord Nitro - 1M", cat: "Stores" } },
@@ -470,6 +485,7 @@
             { id: 28, category: "stores", img: proxy + "upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg", price: 25000, ar: { name: "عملات تيك توك - 1400 عملة", cat: "متاجر" }, en: { name: "TikTok - 1400 Coins", cat: "Stores" } }
         ];
 
+        let products = []; // المنتجات المجلوبة من فايربيس
         const allCategoriesList = [
             { id: 'mobile', key: 'catMobile' }, { id: 'boosting', key: 'catBoost' }, { id: 'stores', key: 'catStores' },
             { id: 'console', key: 'catConsole' }, { id: 'pc', key: 'catPc' }
@@ -480,6 +496,31 @@
         let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
         let selectedProductCategory = ''; 
         let clientIP = 'غير معروف';
+
+        // ==========================================
+        // 🚀 جلب المنتجات من فايربيس
+        // ==========================================
+        async function loadProductsFromFirebase() {
+            try {
+                const snapshot = await db.collection("products").get();
+                if (snapshot.empty) {
+                    // إذا كانت القاعدة فارغة، ارفع المنتجات الافتراضية إليها
+                    const batch = db.batch();
+                    defaultProducts.forEach(p => {
+                        const docRef = db.collection("products").doc(p.id.toString());
+                        batch.set(docRef, p);
+                    });
+                    await batch.commit();
+                    products = [...defaultProducts];
+                } else {
+                    products = [];
+                    snapshot.forEach(doc => { products.push(doc.data()); });
+                }
+            } catch (e) {
+                console.error("خطأ في جلب المنتجات، تم استخدام الافتراضي:", e);
+                products = [...defaultProducts];
+            }
+        }
         
         function triggerConfetti() {
             var duration = 3 * 1000; var end = Date.now() + duration;
@@ -530,12 +571,20 @@
             if(element) element.classList.add('active');
         }
 
-        function init() { 
+        async function init() { 
             trackVisitor(); 
             document.getElementById('langSelect').value = currentLang; 
             document.getElementById('themeSelect').value = currentTheme; 
             applyTheme(currentTheme); 
+            
+            // تحميل المنتجات من فايربيس قبل عرض الموقع
+            await loadProductsFromFirebase();
             applyLanguage(currentLang); 
+            
+            // إخفاء اللودر بعد اكتمال التحميل
+            const loader = document.getElementById('loader');
+            loader.classList.add('hidden');
+            setTimeout(() => loader.style.display = 'none', 500);
         }
 
         function changeTheme(theme) { currentTheme = theme; localStorage.setItem('theme', theme); applyTheme(theme); }
@@ -555,11 +604,9 @@
         function openSheet(id) { document.getElementById('sheetOverlay').classList.add('active'); document.getElementById(id).classList.add('active'); }
         function closeAllSheets() { document.getElementById('sheetOverlay').classList.remove('active'); document.querySelectorAll('.bottom-sheet').forEach(sheet => sheet.classList.remove('active')); }
 
-        // ==========================================
-        // 🚪 الباب السري من مربع البحث 🚪
-        // ==========================================
         function onSearchInput(event) {
             const query = event.target.value;
+            // 🚪 الباب السري للدخول للإدارة 🚪
             if (query === "volt-cmd-88") { 
                 event.target.value = ""; 
                 adminLogin(); 
@@ -681,9 +728,7 @@
                     </div>
                     `;
                 }).join('');
-            } catch (err) {
-                console.error("خطأ في جلب الرسائل:", err);
-            }
+            } catch (err) { console.error("خطأ في جلب الرسائل:", err); }
         }
 
         function openPurchaseSheet(name, price, curr, category) { 
@@ -722,7 +767,6 @@
         document.getElementById('transferPhone').addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, ''); 
             if(this.value.length > 11) this.value = this.value.slice(0, 11); 
-            
             if(this.value.length === 11 && /^077/.test(this.value)) {
                 this.style.borderColor = 'var(--success)'; document.getElementById('phoneErrorMsg').style.display = 'none';
             } else if (this.value.length > 0) {
@@ -798,16 +842,28 @@
             }
         });
 
-        // 🛡️ لوحة التحكم المخفية (كلمة مرور مشفرة)
+        // ==========================================
+        // 🛡️ لوحة التحكم والإدارة
+        // ==========================================
         function adminLogin() {
             const pass = atob("VjBsdF9DQHJkcyMyMDI2IQ=="); 
             if(prompt("أدخل كلمة المرور الخاصة بالمدير:") === pass) {
-                closeAllSheets(); switchView('admin'); loadAdminOrders();
+                closeAllSheets(); switchView('admin'); 
+                switchAdminTab('orders'); // افتح تبويب الطلبات كأول شيء
             } else { 
                 alert("كلمة المرور خاطئة! تم رفض الوصول."); 
             }
         }
 
+        // التنقل بين تبويبات لوحة الإدارة (الطلبات / البطاقات)
+        function switchAdminTab(tab) {
+            document.getElementById('adminOrdersTab').style.display = tab === 'orders' ? 'block' : 'none';
+            document.getElementById('adminCardsTab').style.display = tab === 'cards' ? 'block' : 'none';
+            if (tab === 'orders') loadAdminOrders();
+            if (tab === 'cards') renderAdminCardsList();
+        }
+
+        // --- 1. إدارة الطلبات ---
         async function loadAdminOrders() {
             const list = document.getElementById('adminOrdersList'); list.innerHTML = '<div style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i></div>';
             try {
@@ -834,10 +890,7 @@
                     </div>`;
                 });
                 list.innerHTML = html;
-            } catch (e) { 
-                list.innerHTML = 'خطأ في التحميل.'; 
-                console.error(e);
-            }
+            } catch (e) { list.innerHTML = 'خطأ في التحميل.'; console.error(e); }
         }
 
         async function adminAction(docId, action) {
@@ -847,6 +900,86 @@
                     await db.collection("orders").doc(docId).update({ status: action === 'accept' ? 'completed' : 'rejected', adminMessage: msg });
                     showToast("تم التحديث بنجاح!"); loadAdminOrders();
                 } catch(e) { alert("حدث خطأ"); }
+            }
+        }
+
+        // --- 2. إدارة البطاقات (الجديد) ---
+        function renderAdminCardsList() {
+            const list = document.getElementById('adminCardsList');
+            let html = '';
+            products.forEach(p => {
+                html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 10px; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="${p.img}" style="width: 45px; height: 45px; border-radius: 5px; object-fit: contain; background: #fff; padding: 2px;">
+                        <div>
+                            <div style="color: var(--text-main); font-weight: bold; font-size: 0.9rem;">${p.ar.name}</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">السعر: ${p.price.toLocaleString()} ${translations[currentLang].currency}</div>
+                        </div>
+                    </div>
+                    <button onclick="deleteCard('${p.id}')" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); padding: 8px 12px; border-radius: 5px; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-trash"></i></button>
+                </div>`;
+            });
+            list.innerHTML = html;
+        }
+
+        document.getElementById('addCardForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('addCardBtn');
+            const originalText = btn.innerText;
+            btn.innerText = '⏳ جاري رفع البطاقة...';
+
+            try {
+                const fileInput = document.getElementById('newCardImg');
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+                const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+                const imgData = await imgRes.json();
+                if (!imgData.success) throw new Error('ImgBB Failed');
+                
+                const newId = Date.now().toString(); 
+                const cat = document.getElementById('newCardCat').value;
+                const catNameAr = document.querySelector(`#newCardCat option[value="${cat}"]`).innerText;
+
+                const newCard = {
+                    id: newId,
+                    category: cat,
+                    img: imgData.data.url,
+                    price: parseInt(document.getElementById('newCardPrice').value),
+                    badge: false, // يمكنك تطويرها لاحقاً لعمل زر 'عرض ساخن'
+                    ar: { name: document.getElementById('newCardNameAr').value, cat: catNameAr },
+                    en: { name: document.getElementById('newCardNameEn').value, cat: cat }
+                };
+
+                // حفظ في فايربيس
+                await db.collection("products").doc(newId).set(newCard);
+                products.push(newCard); // إضافتها للقائمة المحلية أيضاً
+                
+                showToast("تم نشر البطاقة بنجاح!");
+                e.target.reset(); // تصفير الفورم
+                renderAdminCardsList(); // تحديث القائمة في لوحة الإدارة
+                applyLanguage(currentLang); // تحديث القائمة في واجهة المتجر الرئيسية للزبائن
+
+            } catch (err) {
+                alert('خطأ أثناء رفع البطاقة، تأكد من اتصالك بالإنترنت!');
+                console.error(err);
+            } finally {
+                btn.innerText = originalText;
+            }
+        });
+
+        async function deleteCard(id) {
+            if(confirm("هل أنت متأكد من حذف هذه البطاقة من المتجر نهائياً؟")) {
+                try {
+                    await db.collection("products").doc(id.toString()).delete();
+                    products = products.filter(p => p.id.toString() !== id.toString());
+                    renderAdminCardsList(); // تحديث لوحة الإدارة
+                    applyLanguage(currentLang); // تحديث واجهة المتجر
+                    showToast("تم حذف البطاقة بنجاح!");
+                } catch(e) {
+                    alert('خطأ أثناء الحذف!');
+                    console.error(e);
+                }
             }
         }
 
