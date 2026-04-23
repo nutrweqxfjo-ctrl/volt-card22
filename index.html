@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Volt Cards Iraq</title>
+    <title>Volt Card Iraq</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -172,7 +172,7 @@
     <div id="loader" class="loader-overlay">
         <div class="loader-content">
             <i class="fa-solid fa-bolt loader-icon"></i>
-            <h2 data-i18n="logo">فولت كاردز</h2>
+            <h2 data-i18n="logo">فولت كارد</h2>
             <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);">جاري فحص الاتصال...</p>
         </div>
     </div>
@@ -184,7 +184,7 @@
     </div>
 
     <header>
-        <a href="#" class="logo" onclick="switchView('home'); window.scrollTo(0,0)"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كاردز</span></a>
+        <a href="#" class="logo" onclick="switchView('home'); window.scrollTo(0,0)"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كارد</span></a>
         <div class="header-actions">
             <i class="fa-brands fa-telegram" style="color: #24A1DE;" onclick="window.open('https://t.me/HH0O_1', '_blank')"></i>
         </div>
@@ -290,11 +290,16 @@
                         <label class="form-label">السعر قبل الخصم (اكتب الضعف ليظهر كنصف السعر)</label>
                         <input type="number" id="newCardPrice" class="form-input" required>
                     </div>
+                    
                     <div class="form-group">
                         <label class="form-label" id="imgLabel">صورة البطاقة</label>
-                        <input type="file" id="newCardImg" class="form-input" accept="image/*" required>
-                        <small id="imgEditNote" style="display:none; color:var(--warning);">اترك هذا الحقل فارغاً إذا كنت لا تريد تغيير الصورة الحالية.</small>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <img id="adminImagePreview" src="" style="display:none; width: 50px; height: 50px; border-radius: 8px; object-fit: contain; background: #fff; border: 1px solid var(--border-color);">
+                            <input type="file" id="newCardImg" class="form-input" accept="image/*" required style="flex-grow: 1;">
+                        </div>
+                        <small id="imgEditNote" style="display:none; color:var(--warning); margin-top: 8px;">اترك هذا الحقل فارغاً إذا كنت لا تريد تغيير الصورة الحالية الظاهرة بجانبه.</small>
                     </div>
+                    
                     <button type="submit" class="btn-submit" id="addCardBtn">➕ نشر البطاقة في المتجر</button>
                     <button type="button" class="btn-submit" id="cancelEditBtn" onclick="cancelEdit()" style="display:none; background:var(--input-bg); color:var(--danger); border:1px solid var(--danger); margin-top:10px;">❌ إلغاء التعديل</button>
                 </form>
@@ -427,7 +432,7 @@
 
         const translations = {
             ar: {
-                logo: "فولت كاردز", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
+                logo: "فولت كارد", settings: "الإعدادات", language: "اللغة", theme: "المظهر", dark: "داكن", light: "فاتح",
                 catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catConsole: "منصات", catPc: "ألعاب PC", catStores: "متاجر",
                 buyBtn: "شراء", currency: "د.ع", modalTitle: "إتمام الطلب", bestSeller: "الأكثر مبيعاً",
                 slide1Title: "عروض الشدات 🔥", slide1Desc: "أكواد جاهزة للشحن", slide3Title: "خصم 50% 🏷️", slide3Desc: "على جميع الخدمات لفترة محدودة",
@@ -446,7 +451,7 @@
                 searchPlaceholder: "ابحث عن لعبة أو اشتراك...", noResultTitle: "عذراً!", noResultDesc: "لم نجد ما تبحث عنه."
             },
             en: {
-                logo: "Volt Cards", settings: "Settings", language: "Language", theme: "Theme", dark: "Dark", light: "Light",
+                logo: "Volt Card", settings: "Settings", language: "Language", theme: "Theme", dark: "Dark", light: "Light",
                 catAll: "All", catMobile: "Mobile", catBoost: "Social Boost", catConsole: "Console", catPc: "PC Games", catStores: "Stores",
                 buyBtn: "Buy", currency: "IQD", modalTitle: "Complete Order", bestSeller: "Best Seller",
                 slide1Title: "PUBG Offers 🔥", slide1Desc: "Ready to redeem codes", slide3Title: "50% OFF 🏷️", slide3Desc: "On all services for limited time",
@@ -476,9 +481,14 @@
         let currentLang = localStorage.getItem('lang') || 'ar'; let currentTheme = localStorage.getItem('theme') || 'dark';
         let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || []; let selectedProductCategory = ''; let clientIP = 'غير معروف';
 
-        // ==========================================
-        // 🚀 نظام الحظر والرادار
-        // ==========================================
+        // دالة حفظ الطلب بشكل صحيح
+        function saveOrderToHistory(orderName, orderId) {
+            myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
+            const date = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+            myOrdersHistory.unshift({ name: orderName, id: orderId, date: date });
+            localStorage.setItem('myVoltOrders', JSON.stringify(myOrdersHistory));
+        }
+
         async function checkBanAndTrack() {
             try {
                 const r = await fetch('https://api.ipify.org?format=json');
@@ -552,9 +562,6 @@
             if(element) element.classList.add('active');
         }
 
-        // ==========================================
-        // فحص جلسة الإدارة المخزنة 
-        // ==========================================
         function checkAdminSession() {
             if(localStorage.getItem('volt_admin_logged') === 'true') {
                 document.getElementById('adminNavBtn').style.display = 'flex';
@@ -571,7 +578,6 @@
             document.getElementById('themeSelect').value = currentTheme; 
             applyTheme(currentTheme); 
             
-            // فحص هل المدير مسجل دخول مسبقاً؟
             checkAdminSession();
 
             await loadProductsFromFirebase();
@@ -658,10 +664,68 @@
         }
 
         // ==========================================
-        // 🛡️ لوحة الإدارة المتطورة (مع حفظ الجلسة)
+        // 🚀 إصلاح عرض الطلبات في صندوق رسائل الزبون
+        // ==========================================
+        async function renderMyOrders() {
+            // تحديث القائمة من التخزين المحلي قبل المعالجة
+            myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
+            
+            const listContainer = document.getElementById('myOrdersList');
+            if (myOrdersHistory.length === 0) { 
+                listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-envelope-open"></i><p>${translations[currentLang].noOrders}</p></div>`; 
+                return; 
+            }
+            
+            listContainer.innerHTML = '<div style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i></div>';
+            const orderIds = myOrdersHistory.map(order => order.id);
+
+            try {
+                const data = {};
+                for (let id of orderIds) {
+                    const docSnap = await db.collection("orders").doc(id).get();
+                    if (docSnap.exists) {
+                        data[id] = { status: docSnap.data().status, message: docSnap.data().adminMessage || '' };
+                    } else {
+                        data[id] = { status: 'pending', message: '' };
+                    }
+                }
+
+                listContainer.innerHTML = myOrdersHistory.map(order => {
+                    const orderData = data[order.id] || { status: 'pending', message: '' };
+                    let statusHtml = ''; let msgHtml = '';
+                    
+                    if (orderData.status === 'completed') statusHtml = `<span class="order-status" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fa-solid fa-check-double"></i> مكتمل ✅</span>`;
+                    else if (orderData.status === 'rejected') statusHtml = `<span class="order-status" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="fa-solid fa-xmark"></i> مرفوض ❌</span>`;
+                    else statusHtml = `<span class="order-status"><i class="fa-solid fa-hourglass-half"></i> قيد المراجعة ⏳</span>`;
+
+                    if (orderData.message && orderData.message !== 'null' && orderData.message !== '') {
+                        const cleanMsg = orderData.message.replace(/\n/g, '<br>');
+                        msgHtml = `
+                        <div style="margin-top: 12px; padding: 15px; background: rgba(139, 92, 246, 0.1); border-right: 4px solid var(--primary); border-radius: 8px; font-size: 0.95rem; color: var(--text-main);">
+                            <strong style="color: var(--primary);"><i class="fa-solid fa-envelope-open-text"></i> رسالة من الإدارة:</strong><br>
+                            <div style="margin-top: 8px; font-weight: bold; letter-spacing: 0.5px; line-height: 1.5; user-select: all;">${cleanMsg}</div>
+                        </div>`;
+                    }
+
+                    return `
+                    <div class="order-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="order-id">#${order.id}</span>
+                            ${statusHtml}
+                        </div>
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-date"><i class="fa-regular fa-calendar"></i> ${order.date}</div>
+                        ${msgHtml}
+                    </div>
+                    `;
+                }).join('');
+            } catch (err) { console.error("خطأ في جلب الرسائل:", err); }
+        }
+
+        // ==========================================
+        // 🛡️ لوحة الإدارة المتطورة
         // ==========================================
         function adminLogin() {
-            // إذا كان مسجل دخول مسبقاً، ادخل مباشرة
             if(localStorage.getItem('volt_admin_logged') === 'true') {
                 closeAllSheets(); switchView('admin'); switchAdminTab('orders');
                 return;
@@ -669,10 +733,8 @@
 
             const pass = atob("VjBsdF9DQHJkcyMyMDI2IQ=="); 
             if(prompt("أدخل كلمة المرور الخاصة بالمدير:") === pass) {
-                // حفظ الجلسة
                 localStorage.setItem('volt_admin_logged', 'true');
-                checkAdminSession(); // لإظهار الزر السفلي
-                
+                checkAdminSession(); 
                 closeAllSheets(); switchView('admin'); switchAdminTab('orders');
                 showToast("تم تسجيل الدخول بنجاح!");
             } else { alert("كلمة المرور خاطئة!"); }
@@ -700,7 +762,6 @@
             if (tab === 'banned') loadBanned();
         }
 
-        // --- 1. إدارة الطلبات ---
         async function loadAdminOrders() {
             const list = document.getElementById('adminOrdersList'); list.innerHTML = 'جاري التحميل...';
             try {
@@ -734,7 +795,6 @@
             if(msg !== null) { await db.collection("orders").doc(docId).update({ status: action === 'accept' ? 'completed' : 'rejected', adminMessage: msg }); showToast(); loadAdminOrders(); }
         }
 
-        // --- 2. إدارة البطاقات (إضافة وتعديل وحذف) ---
         function renderAdminCardsList() {
             const list = document.getElementById('adminCardsList'); let html = '';
             products.forEach(p => {
@@ -766,6 +826,10 @@
             document.getElementById('newCardPrice').value = card.price;
             document.getElementById('newCardImg').required = false; 
             
+            // إظهار معاينة الصورة الحالية
+            document.getElementById('adminImagePreview').src = card.img;
+            document.getElementById('adminImagePreview').style.display = 'block';
+            
             document.getElementById('formCardTitle').innerHTML = '<i class="fa-solid fa-pen"></i> تعديل البطاقة';
             document.getElementById('addCardBtn').innerHTML = '💾 حفظ التعديلات';
             document.getElementById('cancelEditBtn').style.display = 'inline-block';
@@ -777,11 +841,28 @@
             document.getElementById('addCardForm').reset();
             document.getElementById('editCardId').value = "";
             document.getElementById('newCardImg').required = true;
+            
+            // إخفاء المعاينة
+            document.getElementById('adminImagePreview').style.display = 'none';
+            document.getElementById('adminImagePreview').src = '';
+
             document.getElementById('formCardTitle').innerHTML = '<i class="fa-solid fa-plus"></i> إضافة بطاقة جديدة';
             document.getElementById('addCardBtn').innerHTML = '➕ نشر البطاقة في المتجر';
             document.getElementById('cancelEditBtn').style.display = 'none';
             document.getElementById('imgEditNote').style.display = 'none';
         }
+
+        // تحديث صورة المعاينة عند اختيار صورة جديدة في قسم الإدارة
+        document.getElementById('newCardImg').addEventListener('change', function(e) {
+            if(e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('adminImagePreview').src = e.target.result;
+                    document.getElementById('adminImagePreview').style.display = 'block';
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
 
         document.getElementById('addCardForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -793,14 +874,17 @@
                 const fileInput = document.getElementById('newCardImg');
                 let imageUrl = '';
 
-                if (fileInput.files.length > 0) {
+                // إذا قام باختيار صورة جديدة
+                if (fileInput.files && fileInput.files.length > 0) {
                     const formData = new FormData(); formData.append('image', fileInput.files[0]);
                     const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
                     const imgData = await imgRes.json();
                     if (!imgData.success) throw new Error('ImgBB Failed');
                     imageUrl = imgData.data.url;
                 } else if (isEdit) {
-                    imageUrl = products.find(p => p.id.toString() === editId).img;
+                    // إذا لم يختر صورة جديدة واحتفظ بالقديمة
+                    const existingCard = products.find(p => p.id.toString() === editId);
+                    imageUrl = existingCard ? existingCard.img : '';
                 }
 
                 const cat = document.getElementById('newCardCat').value;
@@ -817,13 +901,14 @@
                 
                 if(isEdit) {
                     const index = products.findIndex(p => p.id.toString() === editId);
-                    products[index] = cardData; showToast("تم التعديل بنجاح!");
+                    if(index !== -1) products[index] = cardData;
+                    showToast("تم التعديل بنجاح!");
                 } else {
                     products.push(cardData); showToast("تمت الإضافة بنجاح!");
                 }
 
                 cancelEdit(); renderAdminCardsList(); applyLanguage(currentLang);
-            } catch (err) { alert('خطأ أثناء الحفظ!'); console.error(err); } finally { btn.innerText = originalText; }
+            } catch (err) { alert('خطأ أثناء الحفظ! تأكد من جودة الإنترنت.'); console.error(err); } finally { btn.innerText = originalText; }
         });
 
         async function deleteCard(id) {
@@ -836,7 +921,6 @@
             }
         }
 
-        // --- 3. نظام الرادار والزيارات ---
         async function loadVisits() {
             const list = document.getElementById('visitsList'); list.innerHTML = 'جاري المسح...';
             try {
@@ -856,7 +940,6 @@
             } catch (e) { list.innerHTML = 'خطأ'; }
         }
 
-        // --- 4. إدارة المحظورين ---
         async function banUser(ip, info) {
             if(confirm(`هل أنت متأكد من حظر الـ IP: ${ip}؟\nلن يتمكن من فتح الموقع نهائياً.`)) {
                 await db.collection("banned_ips").doc(ip).set({ ip: ip, info: info, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
@@ -889,7 +972,6 @@
             }
         }
 
-        // دوال الإرسال (الطلبات) 
         document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btnSpan = document.getElementById('btnText'); const originalText = btnSpan.innerText;
@@ -920,13 +1002,11 @@
                     transferPhone: transferPhoneInput.value, imageUrl: imgData.data.url, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
-                myOrdersHistory.unshift({ name: document.getElementById('selectedCard').value.split('-')[0].trim(), id: orderID, date: new Date().toLocaleDateString('ar-EG') }); 
-                localStorage.setItem('myVoltOrders', JSON.stringify(myOrdersHistory));
+                saveOrderToHistory(document.getElementById('selectedCard').value.split('-')[0].trim(), orderID);
 
                 document.getElementById('formSection').style.display = 'none'; document.getElementById('successSection').style.display = 'block';
                 document.getElementById('successOrderId').innerText = orderID; triggerConfetti(); 
-            } catch (err) { alert('حدث خطأ'); console.error(err); } finally { btnSpan.innerText = originalText; }
+            } catch (err) { alert('حدث خطأ أثناء الإرسال'); console.error(err); } finally { btnSpan.innerText = originalText; }
         });
 
         document.getElementById('customRequestForm').addEventListener('submit', async (e) => {
@@ -938,9 +1018,9 @@
                     id: orderID, type: 'custom', customName: `[خاص: ${orderID}] ${customName} | IP: ${clientIP}`,
                     customContact: document.getElementById('customContact').value, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
-                myOrdersHistory.unshift({ name: `طلب خاص: ${customName}`, id: orderID, date: new Date().toLocaleDateString('ar-EG') }); 
-                localStorage.setItem('myVoltOrders', JSON.stringify(myOrdersHistory));
+                
+                saveOrderToHistory(`طلب خاص: ${customName}`, orderID);
+                
                 e.target.reset(); closeAllSheets(); showToast();
             } catch (err) { alert('خطأ'); } finally { btnSpan.innerText = originalText; }
         });
