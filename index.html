@@ -45,7 +45,6 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
         body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; padding-bottom: 80px; transition: background-color 0.3s; }
 
         .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 99999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease, visibility 0.5s ease; }
@@ -87,7 +86,6 @@
         .products-container-wrapper { padding-bottom: 20px; }
         .section-divider { font-size: 1.2rem; font-weight: 900; color: var(--text-main); margin: 15px 20px 15px; padding-right: 12px; border-right: 4px solid var(--primary); display: flex; align-items: center; gap: 8px; text-shadow: 0 0 5px rgba(139, 92, 246, 0.3);}
         html[dir="ltr"] .section-divider { padding-right: 0; padding-left: 12px; border-right: none; border-left: 4px solid var(--primary); }
-        
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; margin-bottom: 25px; }
         @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(4, 1fr); } }
         
@@ -136,6 +134,7 @@
         .order-limit-note { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); color: var(--warning); padding: 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; text-align: center; }
         .payment-instruction { background: rgba(139, 92, 246, 0.05); border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
         .payment-number { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: var(--primary); color: white; padding: 10px 25px; border-radius: 8px; font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: 0.3s; direction: ltr; box-shadow: var(--neon-glow); border: 1px solid rgba(255,255,255,0.2); }
+        .payment-number:hover { background: var(--primary-hover); box-shadow: var(--neon-glow-strong); }
         
         .form-group { margin-bottom: 15px; }
         .form-label { display: block; font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
@@ -162,7 +161,7 @@
         .toast.error { background: var(--danger); box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
         .toast.show { transform: translate(-50%, 0); }
 
-        .admin-nav { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 10px; scroll-behavior: smooth; }
+        .admin-nav { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 10px; scroll-behavior: smooth; margin-bottom: 15px; }
         .admin-nav::-webkit-scrollbar { display: none; }
         .admin-nav button { flex-shrink: 0; font-size: 0.85rem; padding: 8px 15px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; }
     </style>
@@ -183,12 +182,12 @@
         <p style="color: var(--text-muted); margin-top: 10px;">عذراً، لا يمكنك الوصول إلى هذا المتجر حالياً بسبب انتهاك الشروط.</p>
     </div>
 
-    <div id="adminLoginScreen" class="loader-overlay hidden" style="background:var(--bg-color);z-index:999998;flex-direction:column;padding:30px;">
-        <div style="width:100%;max-width:400px;background:var(--card-bg);border-radius:20px;padding:30px;border:1px solid var(--border-color);box-shadow:var(--neon-glow-strong);">
-            <div style="text-align:center;margin-bottom:25px;">
-                <i class="fa-solid fa-user-shield" style="font-size:3rem;color:var(--primary);filter:drop-shadow(0 0 10px var(--primary));"></i>
-                <h2 style="margin-top:10px;font-weight:900;">لوحة الإدارة</h2>
-                <p style="color:var(--text-muted);font-size:0.9rem;margin-top:5px;">سجّل دخولك للمتابعة</p>
+    <div id="adminLoginScreen" class="loader-overlay hidden" style="background:var(--bg-color); z-index:999998; flex-direction:column; padding:30px;">
+        <div style="width:100%; max-width:400px; background:var(--card-bg); border-radius:20px; padding:30px; border:1px solid var(--border-color); box-shadow:var(--neon-glow-strong);">
+            <div style="text-align:center; margin-bottom:25px;">
+                <i class="fa-solid fa-user-shield" style="font-size:3rem; color:var(--primary); filter:drop-shadow(0 0 10px var(--primary));"></i>
+                <h2 style="margin-top:10px; font-weight:900;">لوحة الإدارة</h2>
+                <p style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;">سجّل دخولك للمتابعة</p>
             </div>
             <div class="form-group">
                 <label class="form-label">البريد الإلكتروني</label>
@@ -198,17 +197,19 @@
                 <label class="form-label">كلمة المرور</label>
                 <input type="password" id="adminPasswordInput" class="form-input" placeholder="••••••••" dir="ltr">
             </div>
-            <div id="adminLoginError" style="display:none;background:rgba(239,68,68,0.1);border:1px solid var(--danger);color:var(--danger);padding:10px;border-radius:8px;font-size:0.85rem;margin-bottom:12px;text-align:center;"></div>
+            <div id="adminLoginError" style="display:none; background:rgba(239,68,68,0.1); border:1px solid var(--danger); color:var(--danger); padding:10px; border-radius:8px; font-size:0.85rem; margin-bottom:12px; text-align:center;"></div>
             <button id="adminLoginBtn" onclick="submitAdminLogin()" class="btn-submit">
                 <span id="adminLoginBtnText"><i class="fa-solid fa-unlock"></i> تسجيل الدخول</span>
             </button>
-            <button onclick="cancelAdminLogin()" style="width:100%;margin-top:10px;padding:12px;background:transparent;border:1px solid var(--border-color);color:var(--text-muted);border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;">إلغاء</button>
+            <button onclick="cancelAdminLogin()" style="width:100%; margin-top:10px; padding:12px; background:transparent; border:1px solid var(--border-color); color:var(--text-muted); border-radius:12px; font-size:0.95rem; font-weight:700; cursor:pointer;">إلغاء</button>
         </div>
     </div>
 
     <header>
         <a href="#" class="logo" onclick="switchView('home'); window.scrollTo(0,0)"><i class="fa-solid fa-bolt"></i> <span data-i18n="logo">فولت كارد</span></a>
         <div class="header-actions">
+            <i class="fa-solid fa-language" onclick="toggleLanguage()"></i>
+            <i class="fa-solid fa-moon" id="theme-icon" onclick="toggleTheme()"></i>
             <i class="fa-brands fa-telegram" style="color: #24A1DE;" onclick="window.open('https://t.me/HH0O_1', '_blank')"></i>
         </div>
     </header>
@@ -270,7 +271,7 @@
                 <i class="fa-solid fa-user-shield" style="color: var(--danger);"></i> الإدارة الذكية
             </h2>
             <button onclick="adminLogout()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); border-radius: 8px; padding: 5px 12px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.3s;">
-                <i class="fa-solid fa-lock"></i> قفل
+                <i class="fa-solid fa-lock"></i> قفل اللوحة
             </button>
         </div>
         
@@ -281,12 +282,12 @@
             <button onclick="switchAdminTab('banned')" style="background: var(--danger);">🚫 المحظورين</button>
         </div>
         
-        <div id="adminOrdersTab" style="margin-top: 20px;">
-            <button onclick="loadAdminOrders()" class="btn-submit" style="background: var(--input-bg); color: var(--primary); border: 1px solid var(--primary); margin-bottom: 15px;">تحديث الطلبات <i class="fa-solid fa-rotate"></i></button>
+        <div id="adminOrdersTab">
+            <button onclick="loadAdminOrders()" class="btn-submit" style="background: var(--input-bg); color: var(--primary); border: 1px solid var(--primary); margin-bottom: 15px;">تحديث الطلبات يدوياً <i class="fa-solid fa-rotate"></i></button>
             <div id="adminOrdersList"></div>
         </div>
 
-        <div id="adminCardsTab" style="display: none; margin-top: 20px;">
+        <div id="adminCardsTab" style="display: none;">
             <div style="background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color);">
                 <h3 id="formCardTitle" style="color: var(--primary); margin-bottom: 15px;"><i class="fa-solid fa-plus"></i> إضافة بطاقة جديدة</h3>
                 <form id="addCardForm">
@@ -310,17 +311,17 @@
                         <input type="text" id="newCardNameEn" class="form-input" placeholder="Example: PUBG 325 UC" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">السعر قبل الخصم (اكتب الضعف ليظهر كنصف السعر)</label>
+                        <label class="form-label">السعر (بالدينار العراقي)</label>
                         <input type="number" id="newCardPrice" class="form-input" required>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label" id="imgLabel">صورة البطاقة</label>
+                        <label class="form-label">صورة البطاقة</label>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <img id="adminImagePreview" src="" style="display:none; width: 50px; height: 50px; border-radius: 8px; object-fit: contain; background: #fff; border: 1px solid var(--border-color);">
                             <input type="file" id="newCardImg" class="form-input" accept="image/*" required style="flex-grow: 1;">
                         </div>
-                        <small id="imgEditNote" style="display:none; color:var(--warning); margin-top: 8px;">اترك هذا الحقل فارغاً إذا كنت لا تريد تغيير الصورة الحالية الظاهرة بجانبه.</small>
+                        <small id="imgEditNote" style="display:none; color:var(--warning); margin-top: 8px;">اترك حقل الصورة فارغاً للحفاظ على الصورة القديمة الحالية الظاهرة بجانبه.</small>
                     </div>
                     
                     <button type="submit" class="btn-submit" id="addCardBtn">➕ نشر البطاقة في المتجر</button>
@@ -328,23 +329,23 @@
                 </form>
             </div>
 
-            <h3 class="section-divider" style="margin-bottom: 15px;"><i class="fa-solid fa-box"></i> البطاقات الحالية</h3>
+            <h3 class="section-divider" style="margin-bottom: 15px;"><i class="fa-solid fa-box"></i> البطاقات الحالية بالمتجر</h3>
             <div id="adminCardsList" style="display: grid; grid-template-columns: 1fr; gap: 10px;"></div>
         </div>
 
-        <div id="adminVisitsTab" style="display: none; margin-top: 20px;">
+        <div id="adminVisitsTab" style="display: none;">
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;" id="statsDashboard">
-                <div style="background: var(--input-bg); border: 1px solid var(--primary); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <div style="background: var(--input-bg); border: 1px solid var(--primary); padding: 15px; border-radius: 12px; text-align: center;">
                     <i class="fa-solid fa-calendar-day" style="color: var(--primary); font-size: 1.5rem; margin-bottom: 8px;"></i>
                     <h4 style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px;">اليوم</h4>
                     <div id="statsToday" style="color: var(--text-main); font-size: 1.3rem; font-weight: 900;">0</div>
                 </div>
-                <div style="background: var(--input-bg); border: 1px solid var(--warning); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <div style="background: var(--input-bg); border: 1px solid var(--warning); padding: 15px; border-radius: 12px; text-align: center;">
                     <i class="fa-solid fa-calendar-week" style="color: var(--warning); font-size: 1.5rem; margin-bottom: 8px;"></i>
                     <h4 style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px;">الأسبوع</h4>
                     <div id="statsWeek" style="color: var(--text-main); font-size: 1.3rem; font-weight: 900;">0</div>
                 </div>
-                <div style="background: var(--input-bg); border: 1px solid var(--success); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <div style="background: var(--input-bg); border: 1px solid var(--success); padding: 15px; border-radius: 12px; text-align: center;">
                     <i class="fa-solid fa-users" style="color: var(--success); font-size: 1.5rem; margin-bottom: 8px;"></i>
                     <h4 style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px;">الإجمالي</h4>
                     <div id="statsTotal" style="color: var(--text-main); font-size: 1.3rem; font-weight: 900;">0</div>
@@ -353,7 +354,7 @@
             <div id="adminVisitsList"></div>
         </div>
 
-        <div id="adminBannedTab" style="display: none; margin-top: 20px;">
+        <div id="adminBannedTab" style="display: none;">
             <div style="background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color);">
                 <h3 style="color: var(--danger); margin-bottom: 15px;"><i class="fa-solid fa-ban"></i> حظر عنوان IP يدوياً</h3>
                 <div style="display: flex; gap: 10px;">
@@ -389,8 +390,13 @@
                     <input type="number" id="buyerWallet" class="form-input" required placeholder="077XXXXXXXX" dir="ltr">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-i18n="labelMessage">رسالة التحويل النصية كاملة (انسخها من آسيا/زين وضعتها هنا)</label>
-                    <textarea id="buyerMsg" class="form-input" required rows="3" placeholder="تأكيد تحويل... المستلم... المبلغ..."></textarea>
+                    <label class="form-label">قم برفع لقطة شاشة لرسالة التحويل (أقل من 2MB)</label>
+                    <div class="upload-area">
+                        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--primary); margin-bottom: 8px;"></i>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">اضغط هنا لاختيار الصورة</p>
+                        <input type="file" id="buyerImg" accept="image/*" onchange="previewImage(event)" required>
+                        <img id="imagePreview" class="upload-preview">
+                    </div>
                 </div>
                 <button type="submit" class="btn-submit" id="submitBtn">
                     <span>🚀 إرسال الطلب الآن</span>
@@ -437,9 +443,9 @@
     <div id="toast" class="toast">تم نسخ الرقم بنجاح!</div>
 
     <script>
-        // تكوين الفايربيس الأساسي (متاح مسبقاً في مشروعك)
+        // إعدادات الفايربيس (قم بوضع بيانات مشروعك الفعلية هنا)
         const firebaseConfig = {
-            apiKey: "AIzaSyA1...", // يرجى الإبقاء على مفاتيحك الأصلية هنا دون تغيير
+            apiKey: "AIzaSyA1...", 
             authDomain: "volt-cards.firebaseapp.com",
             projectId: "volt-cards",
             storageBucket: "volt-cards.appspot.com",
@@ -458,7 +464,6 @@
         let currentLang = 'ar';
         let isAdminAuthenticated = false;
 
-        // القاموس والترجمات المتكاملة
         const translations = {
             ar: {
                 logo: "فولت كارد",
@@ -466,7 +471,7 @@
                 catAll: "الكل", catMobile: "ألعاب الجوال", catBoost: "رشق التطبيقات", catStores: "متاجر واشتراكات", catConsole: "منصات الألعاب", catPc: "ألعاب الكمبيوتر",
                 howToBuy: "خطوات كيفية الشراء؟", step1: "1. اكتب اسمك", step2: "2. رقم التحويل", step3: "3. ارفع رسالة التحويل", step4: "4. استلم الكود",
                 myOrdersTitle: "صندوق الرسائل والطلبات", navStore: "المتجر", navInbox: "صندوقي", labelName: "اسمك الكامل",
-                labelTransfer: "رقم المحفظة الذي حوّلت منه", labelMessage: "رسالة التحويل النصية كاملة", toastMsg: "تم نسخ الرقم بنجاح!", toastErrorSize: "خطأ في حجم الصورة"
+                labelTransfer: "رقم المحفظة الذي حوّلت منه", toastMsg: "تم نسخ الرقم بنجاح!", toastErrorSize: "حجم الصورة كبير جداً! يجب أن يكون أقل من 2 ميغابايت."
             },
             en: {
                 logo: "Volt Card",
@@ -474,7 +479,7 @@
                 catAll: "All", catMobile: "Mobile Games", catBoost: "App Boosting", catStores: "Stores & Subs", catConsole: "Consoles", catPc: "PC Games",
                 howToBuy: "How to Buy Steps?", step1: "1. Enter Name", step2: "2. Transfer Num", step3: "3. Upload Msg", step4: "4. Receive Code",
                 myOrdersTitle: "Inbox & My Orders", navStore: "Store", navInbox: "Inbox", labelName: "Full Name",
-                labelTransfer: "Your Wallet Number", labelMessage: "Full Transfer Message Text", toastMsg: "Copied successfully!", toastErrorSize: "Image size error"
+                labelTransfer: "Your Wallet Number", toastMsg: "Copied successfully!", toastErrorSize: "Image size is too large! Must be less than 2MB."
             }
         };
 
@@ -485,7 +490,6 @@
                 clientIP = data.ip;
             } catch(e) { clientIP = '0.0.0.0'; }
 
-            // فحص الحظر الفوري بناءً على الـ IP
             db.collection("banned_ips").doc(clientIP).get().then(doc => {
                 if(doc.exists) {
                     document.getElementById('bannedScreen').classList.remove('hidden');
@@ -497,7 +501,6 @@
                 document.getElementById('loader').classList.add('hidden');
             });
 
-            // مراقبة حالة تسجيل دخول الأدمن عبر Firebase Auth
             auth.onAuthStateChanged(user => {
                 if (user) {
                     isAdminAuthenticated = true;
@@ -512,6 +515,11 @@
                     }
                 }
             });
+
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+            }
         }
 
         function recordVisit() {
@@ -519,7 +527,6 @@
             db.collection("visits").add({ ip: clientIP, timestamp: firebase.firestore.FieldValue.serverTimestamp(), date: today });
         }
 
-        // لوحة الإدارة الذكية والنظام المأمن للحماية
         function switchView(view) {
             document.getElementById('home-section').style.display = view === 'home' ? 'block' : 'none';
             document.getElementById('inbox-section').style.display = view === 'inbox' ? 'block' : 'none';
@@ -561,7 +568,7 @@
                 })
                 .catch(err => {
                     btnText.innerHTML = "<i class='fa-solid fa-unlock'></i> تسجيل الدخول";
-                    errorDiv.innerText = "بيانات الاعتماد غير صالحة أو غير مصرح لك.";
+                    errorDiv.innerText = "بيانات الدخول غير صحيحة أو غير مصرح لك.";
                     errorDiv.style.display = "block";
                 });
         }
@@ -592,7 +599,6 @@
             document.getElementById('adminBannedTab').style.display = tab === 'banned' ? 'block' : 'none';
         }
 
-        // جلب واستماع حي للمنتجات والبطاقات
         let allProducts = [];
         function listenToProducts() {
             db.collection("products").onSnapshot(snapshot => {
@@ -610,36 +616,73 @@
                 return;
             }
             
-            // تقسيم المنتجات لشبكة منظمة
-            let grid = document.createElement('div');
-            grid.className = 'products-grid';
-            
-            products.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    ${p.isHot ? '<div class="badge-hot"><i class="fa-solid fa-fire"></i> شائع</div>' : ''}
-                    <div class="product-img"><img src="${p.img || 'https://via.placeholder.com/150'}" alt="${p.titleAr}"></div>
-                    <div class="product-info">
-                        <span class="product-cat">${p.category}</span>
-                        <h4 class="product-title">${currentLang === 'ar' ? p.titleAr : p.titleEn}</h4>
-                        <div class="price-wrap">
-                            <span class="price-old">${p.price * 2} د.ع</span>
-                            <span class="price-new">${p.price} د.ع</span>
-                        </div>
-                        <button class="btn-buy" onclick="openBuySheet('${p.id}', '${p.titleAr}', '${p.price}')"><i class="fa-solid fa-cart-shopping"></i> شحن سريع</button>
-                    </div>
+            // مجموعات فرعية منظمة حسب الكود الأصلي
+            let categories = {
+                mobile: { nameAr: 'ألعاب الجوال', nameEn: 'Mobile Games', icon: 'fa-mobile-screen' },
+                boosting: { nameAr: 'رشق التطبيقات', nameEn: 'App Boosting', icon: 'fa-arrow-up-right-dots' },
+                stores: { nameAr: 'متاجر واشتراكات', nameEn: 'Stores & Subscriptions', icon: 'fa-bag-shopping' },
+                console: { nameAr: 'منصات الألعاب', nameEn: 'Console Platforms', icon: 'fa-gamepad' },
+                pc: { nameAr: 'ألعاب الكمبيوتر', nameEn: 'PC Games', icon: 'fa-desktop' }
+            };
+
+            for (let key in categories) {
+                let filtered = products.filter(p => p.category === key);
+                if (filtered.length === 0) continue;
+
+                let section = document.createElement('section');
+                section.id = 'sec-' + key;
+                section.innerHTML = `
+                    <h3 class="section-divider"><i class="fa-solid ${categories[key].icon}"></i> <span>${currentLang === 'ar' ? categories[key].nameAr : categories[key].nameEn}</span></h3>
+                    <div class="products-grid"></div>
                 `;
-                grid.appendChild(card);
-            });
-            container.appendChild(grid);
+                
+                let grid = section.querySelector('.products-grid');
+                filtered.forEach(p => {
+                    let card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        ${p.isHot ? '<div class="badge-hot"><i class="fa-solid fa-fire"></i> شائعة</div>' : ''}
+                        <div class="product-img"><img src="${p.img || 'https://via.placeholder.com/150'}" alt="${p.titleAr}"></div>
+                        <div class="product-info">
+                            <span class="product-cat">${categories[key].nameAr}</span>
+                            <h4 class="product-title">${currentLang === 'ar' ? p.titleAr : p.titleEn}</h4>
+                            <div class="price-wrap">
+                                <span class="price-old">${(p.price * 2).toLocaleString()} د.ع</span>
+                                <span class="price-new">${parseFloat(p.price).toLocaleString()} د.ع</span>
+                            </div>
+                            <button class="btn-buy" onclick="openBuySheet('${p.id}', '${p.titleAr}', '${p.price}')"><i class="fa-solid fa-cart-shopping"></i> شحن سريع</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                container.appendChild(section);
+            }
+            
+            // زر الخدمة المخصصة الثابت أسفل الشبكة
+            let customDiv = document.createElement('div');
+            customDiv.style.cssText = "padding:0 20px; margin-top:20px;";
+            customDiv.innerHTML = `
+                <button class="btn-buy" onclick="openCustomSheet()" style="background:linear-gradient(45deg, #10b981, #059669); padding:15px; border-radius:12px; font-size:1.05rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> طلب خدمة مخصصة غير متوفرة بالمتجر
+                </button>
+            `;
+            container.appendChild(customDiv);
         }
 
         function filterProducts(cat) {
             document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
             event.target.classList.add('active');
-            if(cat === 'all') { renderProducts(allProducts); } 
-            else { renderProducts(allProducts.filter(p => p.category === cat)); }
+            
+            if(cat === 'all') {
+                renderProducts(allProducts);
+            } else {
+                let filtered = allProducts.filter(p => p.category === cat);
+                renderProducts(filtered);
+                // إعادة تنشيط الشيب النشط المناسب
+                document.querySelectorAll('.filter-chip').forEach(el => {
+                    if(el.getAttribute('onclick').includes(cat)) el.classList.add('active');
+                });
+            }
         }
 
         function onSearchInput(e) {
@@ -649,13 +692,17 @@
             renderProducts(filtered);
         }
 
-        // معالجة عمليات الشراء وشيت الإدخال والتأكيد
         function openBuySheet(id, title, price) {
             document.getElementById('formProductId').value = id;
             document.getElementById('sheetProductTitle').innerText = title;
             document.getElementById('sheetProductPrice').innerText = parseInt(price).toLocaleString() + " د.ع";
             document.getElementById('sheetOverlay').classList.add('active');
             document.getElementById('buySheet').classList.add('active');
+        }
+
+        function openCustomSheet() {
+            document.getElementById('sheetOverlay').classList.add('active');
+            document.getElementById('customSheet').classList.add('active');
         }
 
         function closeAllSheets() {
@@ -669,7 +716,7 @@
             navigator.clipboard.writeText(num).then(() => { showToast(); });
         }
 
-        function showToast(msg = "تم نسخ الرقم بنجاح!", type = 'success') {
+        function showToast(msg = translations[currentLang].toastMsg, type = 'success') {
             const toast = document.getElementById('toast');
             toast.innerText = msg;
             toast.className = `toast show ${type === 'error' ? 'error' : ''}` ;
@@ -684,34 +731,72 @@
             localStorage.setItem('volt_orders', JSON.stringify(history));
         }
 
-        // إرسال الطلبات إلى فايرستور المأمن
+        function previewImage(event) { 
+            const file = event.target.files[0]; 
+            const img = document.getElementById("imagePreview");
+            if(!file) return;
+            if(file.size > 2048000) { showToast(translations[currentLang].toastErrorSize, 'error'); event.target.value = ""; img.style.display = "none"; return; }
+            const reader = new FileReader(); 
+            reader.onload = () => { img.src = reader.result; img.style.display = "block"; }; 
+            reader.readAsDataURL(file); 
+        }
+
         document.getElementById('orderForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btnSpan = document.querySelector('#submitBtn span');
             const originalText = btnSpan.innerText;
-            btnSpan.innerText = '⏳ جاري الإرسال والأرشفة...';
+            btnSpan.innerText = '⏳ جاري إرسال الطلب...';
 
             const orderID = generateOrderID();
             const prodId = document.getElementById('formProductId').value;
             const buyerName = document.getElementById('buyerName').value;
+            const fileInput = document.getElementById('buyerImg');
+
+            const uploadAndSave = (base64Img) => {
+                db.collection("orders").doc(orderID).set({
+                    id: orderID, productId: prodId, buyerName: buyerName,
+                    buyerWallet: document.getElementById('buyerWallet').value,
+                    buyerImg: base64Img, clientIP: clientIP, status: 'pending', adminMessage: '',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    saveOrderToHistory(document.getElementById('sheetProductTitle').innerText, orderID);
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                    e.target.reset(); 
+                    document.getElementById("imagePreview").style.display = "none";
+                    closeAllSheets(); 
+                    showToast('تم إرسال طلبك بنجاح ومراجعته فورية!');
+                }).catch(() => { alert('خطأ في الاتصال بالخادم الرئيسي'); })
+                .finally(() => { btnSpan.innerText = originalText; });
+            };
+
+            if(fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function() { uploadAndSave(reader.result); };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                uploadAndSave('');
+            }
+        });
+
+        document.getElementById('customOrderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btnSpan = document.querySelector('#customSubmitBtn span'); 
+            const originalText = btnSpan.innerText; 
+            btnSpan.innerText = '⏳ جاري الإرسال...';
+            const orderID = generateOrderID(); 
+            const customName = document.getElementById('customCardName').value;
 
             try {
                 await db.collection("orders").doc(orderID).set({
-                    id: orderID, productId: prodId, buyerName: buyerName,
-                    buyerWallet: document.getElementById('buyerWallet').value,
-                    buyerMsg: document.getElementById('buyerMsg').value,
-                    clientIP: clientIP, status: 'pending', adminMessage: '',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    id: orderID, type: 'custom', customName: `[خاص: ${orderID}] ${customName} | IP: ${clientIP}`,
+                    customContact: document.getElementById('customContact').value, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                
-                saveOrderToHistory(document.getElementById('sheetProductTitle').innerText, orderID);
-                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-                e.target.reset(); closeAllSheets(); showToast('تم إرسال طلبك بنجاح ومراجعته فورية!');
-            } catch (err) { alert('حدث خطأ، الرجاء تكرار العملية'); } 
+                saveOrderToHistory(`طلب خاص: ${customName}`, orderID);
+                e.target.reset(); closeAllSheets(); showToast();
+            } catch (err) { alert('خطأ'); } 
             finally { btnSpan.innerText = originalText; }
         });
 
-        // صندوق الرسائل الخاص بالعميل (تتبع الطلبات الخاصة به)
         function loadMyOrders() {
             const container = document.getElementById('myOrdersList');
             container.innerHTML = '<p style="text-align:center; color:var(--text-muted);">جاري تحميل رسائلك...</p>';
@@ -747,30 +832,35 @@
             });
         }
 
-        // دوال معالجة لوحة تحكم الأدمن (محمية ومقيدة للمصادقة)
+        // عمليات ومتحكمات لوحة التحكم للأدمن (المحمية بالمصادقة والـ Auth)
         function loadAdminOrders() {
             if(!isAdminAuthenticated) return;
             const list = document.getElementById('adminOrdersList');
-            list.innerHTML = '<p style="color:var(--text-muted);">جاري جلب قائمة الطلبات الحية...</p>';
+            list.innerHTML = '<p style="color:var(--text-muted);">جاري جلب الطلبات من السيرفر...</p>';
 
             db.collection("orders").orderBy('timestamp', 'desc').get().then(snapshot => {
                 list.innerHTML = '';
-                if(snapshot.empty) { list.innerHTML = '<p style="color:var(--text-muted);">لا توجد طلبات واردة حتى الآن.</p>'; return; }
+                if(snapshot.empty) { list.innerHTML = '<p style="color:var(--text-muted);">لا توجد طلبات حالياً.</p>'; return; }
                 snapshot.forEach(doc => {
                     const o = doc.data();
                     const div = document.createElement('div');
                     div.className = 'order-item';
                     div.style.borderLeft = `4px solid ${o.status === 'completed' ? 'var(--success)' : (o.status === 'rejected' ? 'var(--danger)' : 'var(--warning)')}`;
+                    
+                    let imageSection = o.buyerImg ? `<div style="margin-top:10px;"><p style="font-size:0.85rem; font-weight:bold; margin-bottom:5px;">صورة التحويل المرفقة:</p><img src="${o.buyerImg}" style="max-width:100%; max-height:200px; border-radius:8px; border:1px solid var(--border-color); cursor:pointer;" onclick="window.open(this.src)"></div>` : '';
+                    
                     div.innerHTML = `
-                        <span class="order-id">${o.id} - العميل: ${o.buyerName}</span>
-                        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:5px;"><b>IP:</b> ${o.clientIP || 'غير معروف'} | <b>رقم المحفظة:</b> ${o.buyerWallet || 'لا يوجد'}</p>
-                        <p style="background:var(--bg-color); padding:8px; border-radius:6px; margin:10px 0; font-size:0.9rem; white-space:pre-wrap;">${o.buyerMsg || o.customName || ''}</p>
-                        <div class="form-group" style="margin-top:10px;">
-                            <input type="text" id="reply-${o.id}" class="form-input" style="padding:8px; font-size:0.85rem;" placeholder="اكتب كود الشحن أو سبب الرفض هنا..." value="${o.adminMessage || ''}">
+                        <span class="order-id">${o.id} - ${o.buyerName || 'طلب خاص'}</span>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:5px;"><b>IP:</b> ${o.clientIP || 'غير معروف'} | <b>الرقم:</b> ${o.buyerWallet || o.customContact || 'لا يوجد'}</p>
+                        ${o.buyerMsg ? `<p style="background:var(--bg-color); padding:8px; border-radius:6px; margin:10px 0; font-size:0.9rem; white-space:pre-wrap;">${o.buyerMsg}</p>` : ''}
+                        ${o.customName ? `<p style="background:var(--bg-color); padding:8px; border-radius:6px; margin:10px 0; font-size:0.9rem; color:var(--warning);">${o.customName}</p>` : ''}
+                        ${imageSection}
+                        <div class="form-group" style="margin-top:12px;">
+                            <input type="text" id="reply-${o.id}" class="form-input" style="padding:8px; font-size:0.85rem;" placeholder="اكتب كود الشحن أو الرسالة التوضيحية للعميل..." value="${o.adminMessage || ''}">
                         </div>
-                        <div style="display:flex; gap:10px;">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
                             <button onclick="updateOrderStatus('${o.id}', 'completed')" class="filter-chip active" style="background:var(--success); border-color:var(--success); padding:5px 15px;">✅ قبول وتسليم</button>
-                            <button onclick="updateOrderStatus('${o.id}', 'rejected')" class="filter-chip active" style="background:var(--danger); border-color:var(--danger); padding:5px 15px;">❌ رفض</button>
+                            <button onclick="updateOrderStatus('${o.id}', 'rejected')" class="filter-chip active" style="background:var(--danger); border-color:var(--danger); padding:5px 15px;">❌ رفض الطلب</button>
                             <button onclick="banUserIp('${o.clientIP}')" class="filter-chip active" style="background:transparent; border-color:var(--danger); color:var(--danger); padding:5px 15px;">🚫 حظر IP</button>
                         </div>
                     `;
@@ -783,14 +873,14 @@
             if(!isAdminAuthenticated) return;
             const msg = document.getElementById(`reply-${id}`).value.trim();
             db.collection("orders").doc(id).update({ status: status, adminMessage: msg })
-                .then(() => { showToast('تم تحديث حالة الطلب والرد بنجاح!'); loadAdminOrders(); });
+                .then(() => { showToast('تم تحديث الطلب وإرسال الرد!'); loadAdminOrders(); });
         }
 
         function banUserIp(ip) {
             if(!ip || ip === '0.0.0.0' || !isAdminAuthenticated) return;
-            if(confirm(`هل أنت متأكد من حظر الـ IP التالي تماماً: ${ip}?`)) {
+            if(confirm(`هل أنت متأكد من حظر المستخدم صاحب هذا الـ IP نهائياً: ${ip}?`)) {
                 db.collection("banned_ips").doc(ip).set({ bannedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                    .then(() => { showToast('تم حظر المستخدم بنجاح'); loadAdminDashboardData(); });
+                    .then(() => { showToast('تم الحظر بنجاح'); loadAdminDashboardData(); });
             }
         }
 
@@ -806,11 +896,11 @@
             const block = document.getElementById('adminBannedList');
             db.collection("banned_ips").get().then(snap => {
                 block.innerHTML = '';
-                if(snap.empty) { block.innerHTML = '<p style="color:var(--text-muted);">لا يوجد أي IPs محظورة حالياً.</p>'; return; }
+                if(snap.empty) { block.innerHTML = '<p style="color:var(--text-muted);">لا توجد أجهزة محظورة حالياً.</p>'; return; }
                 snap.forEach(doc => {
                     const div = document.createElement('div');
                     div.className = 'order-item';
-                    div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
+                    div.style.cssText = 'display:flex; justify-content:space-between; align-items:center;';
                     div.innerHTML = `<span>🛑 ${doc.id}</span><button onclick="unbanIp('${doc.id}')" style="background:var(--success); border:none; color:white; padding:4px 10px; border-radius:6px; font-size:0.8rem; font-weight:bold; cursor:pointer;">فك الحظر</button>`;
                     block.appendChild(div);
                 });
@@ -819,15 +909,15 @@
 
         function unbanIp(ip) {
             if(!isAdminAuthenticated) return;
-            db.collection("banned_ips").doc(ip).delete().then(() => { showToast('تم إلغاء الحظر'); loadAdminBannedList(); });
+            db.collection("banned_ips").doc(ip).delete().then(() => { showToast('تم إلغاء الحظر العميل'); loadAdminBannedList(); });
         }
 
-        // إدارة ونشر البطاقات يدوياً من الأدمن ببيانات الـ Base64 لرفع الصور الفوري
         document.getElementById('addCardForm').addEventListener('submit', function(e) {
             e.preventDefault();
             if(!isAdminAuthenticated) return;
             const btn = document.getElementById('addCardBtn');
-            btn.innerText = '⏳ جاري النشر والرفع...';
+            const originalText = btn.innerText;
+            btn.innerText = '⏳ جاري المعالجة والرفع...';
 
             const editId = document.getElementById('editCardId').value;
             const fileInput = document.getElementById('newCardImg');
@@ -860,7 +950,7 @@
         });
 
         function finishCardForm() {
-            showToast('تم حفظ ونشر البطاقة بنجاح!');
+            showToast('تم تحديث ونشر تعديلات البطاقة!');
             document.getElementById('addCardForm').reset();
             cancelEdit();
             loadAdminCards();
@@ -875,11 +965,11 @@
                     const p = doc.data();
                     const div = document.createElement('div');
                     div.className = 'order-item';
-                    div.style.display = 'flex'; div.style.justifyContent = 'space-between'; div.style.alignItems = 'center';
+                    div.style.cssText = 'display:flex; justify-content:space-between; align-items:center;';
                     div.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${p.img || ''}" style="width:40px; height:40px; object-fit:contain; background:#fff; border-radius:6px;">
-                            <div><b>${p.titleAr}</b><br><small style="color:var(--text-muted);">${p.price} د.ع - ${p.category}</small></div>
+                            <img src="${p.img || ''}" style="width:40px; height:40px; object-fit:contain; background:#fff; border-radius:6px; border:1px solid var(--border-color);">
+                            <div><b>${p.titleAr}</b><br><small style="color:var(--text-muted);">${parseFloat(p.price).toLocaleString()} د.ع - ${p.category}</small></div>
                         </div>
                         <div style="display:flex; gap:5px;">
                             <button onclick="editCard('${doc.id}', ${JSON.stringify(p).replace(/"/g, '&quot;')})" style="background:var(--warning); border:none; color:white; padding:4px 10px; border-radius:6px; font-size:0.8rem; font-weight:bold; cursor:pointer;">تعديل</button>
@@ -903,7 +993,7 @@
             document.getElementById('newCardImg').required = false;
             document.getElementById('imgEditNote').style.display = 'block';
             
-            document.getElementById('formCardTitle').innerHTML = "📝 تعديل البطاقة الحالية";
+            document.getElementById('formCardTitle').innerHTML = "📝 تعديل بيانات البطاقة";
             document.getElementById('addCardBtn').innerText = "💾 حفظ التعديلات وإعادة النشر";
             document.getElementById('cancelEditBtn').style.display = "block";
             window.scrollTo({ top: document.getElementById('addCardForm').offsetTop - 100, behavior: 'smooth' });
@@ -922,8 +1012,8 @@
 
         function deleteCard(id) {
             if(!isAdminAuthenticated) return;
-            if(confirm('هل أنت متأكد من رغبتك في حذف هذه البطاقة نهائياً من المتجر؟')) {
-                db.collection("products").doc(id).delete().then(() => { showToast('تم حذف البطاقة بنجاح'); loadAdminCards(); });
+            if(confirm('هل تريد بالتأكيد إزالة هذه الخدمة نهائياً من العرض؟')) {
+                db.collection("products").doc(id).delete().then(() => { showToast('تم حذف البطاقة من المعرض'); loadAdminCards(); });
             }
         }
 
@@ -951,7 +1041,30 @@
             });
         }
 
-        // تهيئة البدء والتشغيل الفوري للمشروع عند التحميل
+        // أنظمة اللغات والثيمات الأصلية 100%
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) el.innerText = translations[currentLang][key];
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
+            });
+            renderProducts(allProducts);
+        }
+
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            document.getElementById('theme-icon').className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
+
         init();
     </script>
 </body>
