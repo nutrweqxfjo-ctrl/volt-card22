@@ -10,6 +10,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     
     <style>
         :root {
@@ -180,6 +181,30 @@
         <i class="fa-solid fa-ban" style="font-size: 5rem; color: var(--danger); margin-bottom: 20px;"></i>
         <h1 style="color: var(--danger); font-weight: 900;">تم حظرك</h1>
         <p style="color: var(--text-muted); margin-top: 10px;">عذراً، لا يمكنك الوصول إلى هذا المتجر حالياً بسبب انتهاك الشروط.</p>
+    </div>
+
+    <!-- شاشة تسجيل دخول الأدمن -->
+    <div id="adminLoginScreen" class="loader-overlay hidden" style="background:var(--bg-color);z-index:999998;flex-direction:column;padding:30px;">
+        <div style="width:100%;max-width:400px;background:var(--card-bg);border-radius:20px;padding:30px;border:1px solid var(--border-color);box-shadow:var(--neon-glow-strong);">
+            <div style="text-align:center;margin-bottom:25px;">
+                <i class="fa-solid fa-user-shield" style="font-size:3rem;color:var(--primary);filter:drop-shadow(0 0 10px var(--primary));"></i>
+                <h2 style="margin-top:10px;font-weight:900;">لوحة الإدارة</h2>
+                <p style="color:var(--text-muted);font-size:0.9rem;margin-top:5px;">سجّل دخولك للمتابعة</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">البريد الإلكتروني</label>
+                <input type="email" id="adminEmailInput" class="form-input" placeholder="admin@example.com" dir="ltr">
+            </div>
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input type="password" id="adminPasswordInput" class="form-input" placeholder="••••••••" dir="ltr">
+            </div>
+            <div id="adminLoginError" style="display:none;background:rgba(239,68,68,0.1);border:1px solid var(--danger);color:var(--danger);padding:10px;border-radius:8px;font-size:0.85rem;margin-bottom:12px;text-align:center;"></div>
+            <button id="adminLoginBtn" onclick="submitAdminLogin()" class="btn-submit">
+                <span id="adminLoginBtnText"><i class="fa-solid fa-unlock"></i> تسجيل الدخول</span>
+            </button>
+            <button onclick="cancelAdminLogin()" style="width:100%;margin-top:10px;padding:12px;background:transparent;border:1px solid var(--border-color);color:var(--text-muted);border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;">إلغاء</button>
+        </div>
     </div>
 
     <header>
@@ -449,6 +474,7 @@
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
+        const auth = firebase.auth();
         const IMGBB_API_KEY = "58ffaf3be2f46af1d7bd3c67fd08986f";
 
         const translations = {
@@ -588,12 +614,22 @@
         }
 
         function checkAdminSession() {
-            if(localStorage.getItem('volt_admin_logged') === 'true') {
-                document.getElementById('adminNavBtn').style.display = 'flex';
-            } else {
-                document.getElementById('adminNavBtn').style.display = 'none';
-            }
+            // Firebase Auth يتحكم تلقائياً عبر onAuthStateChanged
         }
+
+        // مراقبة حالة تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            const adminBtn = document.getElementById('adminNavBtn');
+            if (user) {
+                adminBtn.style.display = 'flex';
+            } else {
+                adminBtn.style.display = 'none';
+                if (document.getElementById('admin-section') && document.getElementById('admin-section').style.display === 'block') {
+                    switchView('home');
+                    setActiveNav(document.querySelectorAll('.nav-item')[0]);
+                }
+            }
+        });
 
         async function init() { 
             const isAllowed = await checkBanAndTrack();
@@ -632,7 +668,6 @@
 
         function onSearchInput(event) {
             const query = event.target.value;
-            if (query === "volt-cmd-88") { event.target.value = ""; adminLogin(); return; }
             document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.filter-chip').classList.add('active');
             renderProducts('all', query.toLowerCase());
@@ -746,25 +781,63 @@
         // 🛡️ لوحة الإدارة المتطورة
         // ==========================================
         function adminLogin() {
-            if(localStorage.getItem('volt_admin_logged') === 'true') {
+            if (auth.currentUser) {
                 closeAllSheets();
                 switchView('admin'); switchAdminTab('orders');
                 return;
             }
-
-            const pass = atob("VjBsdF9DQHJkcyMyMDI2IQ==");
-            if(prompt("أدخل كلمة المرور الخاصة بالمدير:") === pass) {
-                localStorage.setItem('volt_admin_logged', 'true');
-                checkAdminSession(); 
-                closeAllSheets(); switchView('admin'); switchAdminTab('orders');
-                showToast("تم تسجيل الدخول بنجاح!");
-            } else { alert("كلمة المرور خاطئة!"); }
+            document.getElementById('adminLoginScreen').classList.remove('hidden');
+            document.getElementById('adminLoginScreen').style.display = 'flex';
+            setTimeout(() => document.getElementById('adminEmailInput').focus(), 100);
         }
 
-        function adminLogout() {
+        async function submitAdminLogin() {
+            const email = document.getElementById('adminEmailInput').value.trim();
+            const password = document.getElementById('adminPasswordInput').value;
+            const errorDiv = document.getElementById('adminLoginError');
+            const btnText = document.getElementById('adminLoginBtnText');
+            errorDiv.style.display = 'none';
+            if (!email || !password) {
+                errorDiv.innerText = 'يرجى إدخال البريد وكلمة المرور.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            btnText.innerHTML = '⏳ جاري التحقق...';
+            document.getElementById('adminLoginBtn').disabled = true;
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                cancelAdminLogin();
+                closeAllSheets();
+                switchView('admin'); switchAdminTab('orders');
+                showToast('مرحباً! تم تسجيل الدخول بنجاح ✅');
+            } catch (err) {
+                let msg = 'بيانات خاطئة، حاول مجدداً.';
+                if (err.code === 'auth/user-not-found') msg = 'البريد الإلكتروني غير موجود.';
+                if (err.code === 'auth/wrong-password') msg = 'كلمة المرور غير صحيحة.';
+                if (err.code === 'auth/too-many-requests') msg = 'محاولات كثيرة، حاول لاحقاً.';
+                errorDiv.innerText = msg;
+                errorDiv.style.display = 'block';
+            } finally {
+                btnText.innerHTML = '<i class="fa-solid fa-unlock"></i> تسجيل الدخول';
+                document.getElementById('adminLoginBtn').disabled = false;
+            }
+        }
+
+        function cancelAdminLogin() {
+            document.getElementById('adminLoginScreen').classList.add('hidden');
+            document.getElementById('adminEmailInput').value = '';
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminLoginError').style.display = 'none';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const screen = document.getElementById('adminLoginScreen');
+            if (e.key === 'Enter' && screen && screen.style.display === 'flex') submitAdminLogin();
+        });
+
+        async function adminLogout() {
             if(confirm("هل تريد تسجيل الخروج وقفل لوحة الإدارة؟")) {
-                localStorage.removeItem('volt_admin_logged');
-                checkAdminSession();
+                await auth.signOut();
                 switchView('home');
                 setActiveNav(document.querySelectorAll('.nav-item')[0]);
                 showToast("تم قفل لوحة الإدارة 🔒");
