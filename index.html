@@ -149,6 +149,7 @@
 
         .btn-submit { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; margin-top: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); transition: 0.3s;}
         .btn-submit:hover, .btn-submit:active { box-shadow: var(--neon-glow-strong); transform: translateY(-2px); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .inbox-container { padding: 20px; padding-bottom: 40px; }
         .order-item { background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 15px; transition: 0.3s; }
@@ -173,7 +174,6 @@
         <div class="loader-content">
             <i class="fa-solid fa-bolt loader-icon"></i>
             <h2 data-i18n="logo">فولت كارد</h2>
-            <!-- تم تغيير الجملة هنا -->
             <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); font-weight: bold;">أهلا وسهلا بك في فولت كارد</p>
         </div>
     </div>
@@ -258,7 +258,7 @@
         </section>
     </div>
 
-    <!-- قسم تجميع النقاط الجديد -->
+    <!-- قسم تجميع النقاط -->
     <div id="points-section" class="inbox-container" style="display: none;">
         <h2 class="section-divider" style="margin-bottom: 25px;"><i class="fa-solid fa-coins" style="color: var(--warning);"></i> نظام النقاط والمكافآت</h2>
         
@@ -403,7 +403,7 @@
         </div>
     </div>
 
-    <!-- شريط التنقل المحدث (إضافة النقاط بدل حسابي) -->
+    <!-- شريط التنقل -->
     <nav class="bottom-nav">
         <a class="nav-item active" onclick="setActiveNav(this); switchView('home');">
             <i class="fa-solid fa-house"></i>
@@ -453,7 +453,7 @@
                     </div>
                     <button type="submit" class="btn-submit" id="authBtn">تسجيل الدخول / إنشاء حساب</button>
                 </form>
-                <div id="authErrorMsg" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; display: none; text-align: center;"></div>
+                <div id="authErrorMsg" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; display: none; text-align: center; word-break: break-word; overflow-wrap: anywhere;"></div>
             </div>
 
             <div id="verifyEmailSection" style="display: none; text-align: center; padding: 20px 0;">
@@ -468,20 +468,18 @@
         </div>
     </div>
 
-    <!-- نافذة الإعدادات مدمج معها الحساب -->
+    <!-- نافذة الإعدادات -->
     <div class="bottom-sheet" id="settingsSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
             <h2 class="sheet-title" data-i18n="settings">الإعدادات</h2>
             
-            <!-- قسم الحساب داخل الإعدادات -->
             <div id="settingsProfileSection" style="display: none; background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); text-align: center;">
                 <i class="fa-solid fa-circle-user" style="font-size: 3rem; color: var(--primary); margin-bottom: 10px;"></i>
                 <h3 id="settingsEmail" style="color: var(--text-main); margin-bottom: 15px; font-size: 1.1rem; word-break: break-all;"></h3>
                 <button onclick="userLogout()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer;"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
             </div>
             
-            <!-- تنبيه للتسجيل إذا لم يكن مسجلاً -->
             <div id="settingsLoginPrompt" style="display: block; background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); text-align: center;">
                 <p style="color: var(--text-muted); margin-bottom: 10px; font-weight: bold;">قم بتسجيل الدخول لحفظ نقاطك وطلباتك</p>
                 <button onclick="closeAllSheets(); openSheet('loginSheet');" class="btn-submit" style="margin-top: 0; padding: 10px; border-radius: 8px;"><i class="fa-solid fa-user-plus"></i> تسجيل الدخول الآن</button>
@@ -627,7 +625,7 @@
         let hasCheckedAuthOnce = false; // متغير لمنع تكرار ظهور النافذة
 
         // ==========================================
-        // 🔐 نظام التسجيل المحدث وإدارة ظهور النافذة
+        // 🔐 نظام التسجيل وإدارة ظهور النافذة
         // ==========================================
         auth.onAuthStateChanged(async (user) => {
             const adminBtn = document.getElementById('adminNavBtn');
@@ -647,8 +645,10 @@
                 document.getElementById('settingsLoginPrompt').style.display = 'none';
                 document.getElementById('settingsEmail').innerText = user.email;
                 
-                await user.reload();
-                if(!user.emailVerified) {
+                try { await user.reload(); } catch (e) { console.log('reload error', e); }
+                const currentUser = auth.currentUser || user;
+
+                if (!currentUser.emailVerified) {
                     // مسجل ولكن غير مؤكد
                     document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('verifyEmailSection').style.display = 'block';
@@ -672,15 +672,64 @@
             hasCheckedAuthOnce = true;
         });
 
+        // ------------------------------------------
+        // 🔧 دوال مساعدة لمعالجة أخطاء Firebase
+        // (إصلاح مشكلة INVALID_LOGIN_CREDENTIALS)
+        // ------------------------------------------
+        // نسخة Firebase 8.10.1 القديمة ترجع الخطأ كـ auth/internal-error
+        // والنص الأصلي يكون داخل error.message، لذلك نفحص الاثنين معاً.
+        function isInvalidCredentialError(error) {
+            if (!error) return false;
+            const code = error.code || '';
+            const text = (error.message || '') + ' ' + code;
+            return (
+                code === 'auth/user-not-found' ||
+                code === 'auth/invalid-login-credentials' ||
+                code === 'auth/invalid-credential' ||
+                code === 'auth/internal-error' ||
+                text.includes('INVALID_LOGIN_CREDENTIALS') ||
+                text.includes('EMAIL_NOT_FOUND') ||
+                text.includes('INVALID_CREDENTIAL')
+            );
+        }
+
+        function friendlyAuthError(error) {
+            const code = (error && error.code) || '';
+            const text = ((error && error.message) || '') + ' ' + code;
+            if (code === 'auth/invalid-email' || text.includes('INVALID_EMAIL')) return 'البريد الإلكتروني غير صالح.';
+            if (code === 'auth/weak-password' || text.includes('WEAK_PASSWORD')) return 'كلمة المرور ضعيفة، يجب أن تكون 6 أحرف أو أكثر.';
+            if (code === 'auth/email-already-in-use' || text.includes('EMAIL_EXISTS')) return 'الحساب موجود بالفعل، كلمة المرور التي أدخلتها غير صحيحة.';
+            if (code === 'auth/wrong-password') return 'كلمة المرور غير صحيحة.';
+            if (code === 'auth/too-many-requests' || text.includes('TOO_MANY_ATTEMPTS')) return 'محاولات كثيرة، يرجى الانتظار قليلاً ثم المحاولة مجدداً.';
+            if (code === 'auth/network-request-failed') return 'مشكلة في الاتصال بالإنترنت، حاول مجدداً.';
+            if (code === 'auth/operation-not-allowed' || text.includes('OPERATION_NOT_ALLOWED')) return 'تسجيل الدخول بالإيميل غير مفعّل في إعدادات Firebase.';
+            if (code === 'auth/unauthorized-domain' || text.includes('UNAUTHORIZED_DOMAIN')) return 'هذا الدومين غير مصرّح به في إعدادات Firebase.';
+            if (code === 'auth/user-disabled') return 'تم تعطيل هذا الحساب.';
+            return 'حدث خطأ غير متوقع، حاول مجدداً.';
+        }
+
+        function showAuthError(msg) {
+            const errorDiv = document.getElementById('authErrorMsg');
+            errorDiv.innerText = msg;
+            errorDiv.style.display = 'block';
+        }
+
         document.getElementById('userAuthForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('userEmail').value;
+            const email = document.getElementById('userEmail').value.trim();
             const pass = document.getElementById('userPassword').value;
             const btn = document.getElementById('authBtn');
             const errorDiv = document.getElementById('authErrorMsg');
             
-            btn.innerText = '⏳ جاري التحقق...';
             errorDiv.style.display = 'none';
+
+            if (pass.length < 6) {
+                showAuthError('كلمة المرور يجب أن تكون 6 أحرف أو أكثر.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = '⏳ جاري التحقق...';
 
             try {
                 // 1. محاولة تسجيل الدخول
@@ -688,41 +737,47 @@
                 closeAllSheets();
                 showToast('تم تسجيل الدخول بنجاح!');
             } catch (error) {
-                // 2. معالجة إنشاء الحساب وتخطي مشكلة INVALID_LOGIN_CREDENTIALS
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-login-credentials' || error.code === 'auth/invalid-credential') {
+                if (error.code === 'auth/wrong-password') {
+                    showAuthError('كلمة المرور غير صحيحة.');
+                } else if (isInvalidCredentialError(error)) {
+                    // 2. الحساب غير موجود (أو كلمة المرور خطأ) → نحاول إنشاء حساب جديد
                     try {
                         const userCred = await auth.createUserWithEmailAndPassword(email, pass);
-                        await userCred.user.sendEmailVerification();
-                        
-                        await db.collection('users').doc(userCred.user.uid).set({
-                            email: email,
-                            points: 0,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        
+
+                        // إرسال رابط التحقق (إذا فشل لا نوقف العملية)
+                        try { await userCred.user.sendEmailVerification(); } 
+                        catch (verErr) { console.log('verification email error', verErr); }
+
+                        // حفظ بيانات المستخدم (إذا فشل بسبب قواعد Firestore لا نوقف العملية)
+                        try {
+                            await db.collection('users').doc(userCred.user.uid).set({
+                                email: email,
+                                points: 0,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        } catch (dbErr) { console.log('users doc error', dbErr); }
+
                         document.getElementById('loginSection').style.display = 'none';
                         document.getElementById('verifyEmailSection').style.display = 'block';
                         showToast('تم إنشاء الحساب! يرجى فحص إيميلك.');
                     } catch (createError) {
-                        if (createError.code === 'auth/email-already-in-use') {
-                            errorDiv.innerText = 'الحساب موجود بالفعل، كلمة المرور التي أدخلتها غير صحيحة.';
-                        } else {
-                            errorDiv.innerText = 'خطأ في الإنشاء: ' + createError.message;
-                        }
-                        errorDiv.style.display = 'block';
+                        // الحساب موجود مسبقاً ⇒ يعني كلمة المرور اللي كتبتها غلط
+                        showAuthError(friendlyAuthError(createError));
                     }
                 } else {
-                    errorDiv.innerText = 'خطأ: ' + error.message;
-                    errorDiv.style.display = 'block';
+                    showAuthError(friendlyAuthError(error));
                 }
             } finally {
+                btn.disabled = false;
                 btn.innerText = 'تسجيل الدخول / إنشاء حساب';
             }
         });
 
         async function checkEmailVerification() {
             if (auth.currentUser) {
-                await auth.currentUser.reload();
+                try {
+                    await auth.currentUser.reload();
+                } catch (e) { console.log(e); }
                 if (auth.currentUser.emailVerified) {
                     showToast('تم التحقق بنجاح! ✅');
                     closeAllSheets();
@@ -787,6 +842,13 @@
                     if (userDoc.exists) {
                         const newPoints = (userDoc.data().points || 0) + 10;
                         transaction.update(userRef, { points: newPoints });
+                    } else {
+                        // إذا لم يكن مستند المستخدم موجوداً (فشل إنشاؤه سابقاً) ننشئه الآن
+                        transaction.set(userRef, {
+                            email: auth.currentUser.email,
+                            points: 10,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
                     }
                 });
                 
@@ -881,7 +943,7 @@
             document.getElementById('home-section').style.display = 'none';
             document.getElementById('inbox-section').style.display = 'none';
             document.getElementById('admin-section').style.display = 'none';
-            document.getElementById('points-section').style.display = 'none'; // إضافة قسم النقاط
+            document.getElementById('points-section').style.display = 'none';
             
             if (viewName === 'home') document.getElementById('home-section').style.display = 'block';
             else if (viewName === 'inbox') document.getElementById('inbox-section').style.display = 'block';
@@ -1448,48 +1510,4 @@
 
                 document.getElementById('formSection').style.display = 'none'; document.getElementById('successSection').style.display = 'block';
                 document.getElementById('successOrderId').innerText = orderID; triggerConfetti(); 
-            } catch (err) { alert('حدث خطأ أثناء الإرسال'); console.error(err); } finally { btnSpan.innerText = originalText; }
-        });
-
-        document.getElementById('customRequestForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btnSpan = document.querySelector('#customSubmitBtn span'); const originalText = btnSpan.innerText; btnSpan.innerText = '⏳ جاري الإرسال...';
-            const orderID = generateOrderID(); const customName = document.getElementById('customCardName').value;
-            try {
-                const orderData = {
-                    id: orderID, type: 'custom', customName: `[خاص: ${orderID}] ${customName} | IP: ${clientIP}`,
-                    customContact: document.getElementById('customContact').value, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                if (auth.currentUser && auth.currentUser.emailVerified) {
-                    orderData.userId = auth.currentUser.uid;
-                }
-
-                await db.collection("orders").doc(orderID).set(orderData);
-                
-                saveOrderToHistory(`طلب خاص: ${customName}`, orderID);
-                
-                e.target.reset(); closeAllSheets(); showToast();
-            } catch (err) { alert('خطأ'); } finally { btnSpan.innerText = originalText; }
-        });
-
-        function showToast(msg = translations[currentLang].toastMsg, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.className = `toast show ${type === 'error' ? 'error' : ''}`;
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
-        }
-
-        function previewImage(event) { 
-            const file = event.target.files[0];
-            const img = document.getElementById("imagePreview");
-            if(!file) return;
-            if(file.size > 2048000) { showToast(translations[currentLang].toastErrorSize, 'error'); event.target.value = ""; img.style.display = "none"; return; }
-            const reader = new FileReader();
-            reader.onload = () => { img.src = reader.result; img.style.display = "block"; }; reader.readAsDataURL(file);
-        }
-
-        init();
-    </script>
-</body>
-</html>
+            } catch (e
