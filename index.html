@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Volt Card Iraq</title>
+    
+    <!-- أيقونة الموقع (Favicon & Apple Touch Icon) -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/XrVH9qG2">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/XrVH9qG2">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -634,7 +639,6 @@
         auth.onAuthStateChanged(async (user) => {
             const adminBtn = document.getElementById('adminNavBtn');
             
-            // التحقق بتجاهل حالة الأحرف الكبيرة والصغيرة لضمان الظهور الفوري
             if (user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                 if (adminBtn) adminBtn.style.display = 'flex';
             } else {
