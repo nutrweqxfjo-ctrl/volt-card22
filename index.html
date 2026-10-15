@@ -555,7 +555,6 @@
 
     <script>
         // ⚠️ إعدادات الإدارة ⚠️
-        // ضع إيميل الإدارة الخاص بك هنا لكي يظهر لك زر الإدارة حصرياً!
         const ADMIN_EMAIL = "admin@gmail.com"; 
 
         // إعدادات Firebase
@@ -622,7 +621,7 @@
         let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
         let selectedProductCategory = ''; let clientIP = 'غير معروف';
         
-        let hasCheckedAuthOnce = false; // متغير لمنع تكرار ظهور النافذة
+        let hasCheckedAuthOnce = false;
 
         // ==========================================
         // 🔐 نظام التسجيل وإدارة ظهور النافذة
@@ -640,7 +639,6 @@
             }
 
             if (user) {
-                // المستخدم مسجل دخوله
                 document.getElementById('settingsProfileSection').style.display = 'block';
                 document.getElementById('settingsLoginPrompt').style.display = 'none';
                 document.getElementById('settingsEmail').innerText = user.email;
@@ -649,17 +647,14 @@
                 const currentUser = auth.currentUser || user;
 
                 if (!currentUser.emailVerified) {
-                    // مسجل ولكن غير مؤكد
                     document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('verifyEmailSection').style.display = 'block';
                     if (!hasCheckedAuthOnce) setTimeout(() => openSheet('loginSheet'), 1000);
                 } else {
-                    // مسجل ومؤكد بنجاح
                     fetchUserPointsUI();
                     if (document.getElementById('loginSheet').classList.contains('active')) closeAllSheets();
                 }
             } else {
-                // المستخدم غير مسجل - إظهار النافذة التلقائي
                 document.getElementById('settingsProfileSection').style.display = 'none';
                 document.getElementById('settingsLoginPrompt').style.display = 'block';
                 document.getElementById('loginSection').style.display = 'block';
@@ -672,12 +667,6 @@
             hasCheckedAuthOnce = true;
         });
 
-        // ------------------------------------------
-        // 🔧 دوال مساعدة لمعالجة أخطاء Firebase
-        // (إصلاح مشكلة INVALID_LOGIN_CREDENTIALS)
-        // ------------------------------------------
-        // نسخة Firebase 8.10.1 القديمة ترجع الخطأ كـ auth/internal-error
-        // والنص الأصلي يكون داخل error.message، لذلك نفحص الاثنين معاً.
         function isInvalidCredentialError(error) {
             if (!error) return false;
             const code = error.code || '';
@@ -732,7 +721,6 @@
             btn.innerText = '⏳ جاري التحقق...';
 
             try {
-                // 1. محاولة تسجيل الدخول
                 await auth.signInWithEmailAndPassword(email, pass);
                 closeAllSheets();
                 showToast('تم تسجيل الدخول بنجاح!');
@@ -740,15 +728,12 @@
                 if (error.code === 'auth/wrong-password') {
                     showAuthError('كلمة المرور غير صحيحة.');
                 } else if (isInvalidCredentialError(error)) {
-                    // 2. الحساب غير موجود (أو كلمة المرور خطأ) → نحاول إنشاء حساب جديد
                     try {
                         const userCred = await auth.createUserWithEmailAndPassword(email, pass);
 
-                        // إرسال رابط التحقق (إذا فشل لا نوقف العملية)
                         try { await userCred.user.sendEmailVerification(); } 
                         catch (verErr) { console.log('verification email error', verErr); }
 
-                        // حفظ بيانات المستخدم (إذا فشل بسبب قواعد Firestore لا نوقف العملية)
                         try {
                             await db.collection('users').doc(userCred.user.uid).set({
                                 email: email,
@@ -761,7 +746,6 @@
                         document.getElementById('verifyEmailSection').style.display = 'block';
                         showToast('تم إنشاء الحساب! يرجى فحص إيميلك.');
                     } catch (createError) {
-                        // الحساب موجود مسبقاً ⇒ يعني كلمة المرور اللي كتبتها غلط
                         showAuthError(friendlyAuthError(createError));
                     }
                 } else {
@@ -799,9 +783,6 @@
             }
         }
 
-        // ==========================================
-        // 💰 نظام تحديث واجهة النقاط والمكافأة اليومية
-        // ==========================================
         async function fetchUserPointsUI() {
             if(!auth.currentUser) {
                 document.getElementById('pointsDisplay').innerText = "0";
@@ -843,7 +824,6 @@
                         const newPoints = (userDoc.data().points || 0) + 10;
                         transaction.update(userRef, { points: newPoints });
                     } else {
-                        // إذا لم يكن مستند المستخدم موجوداً (فشل إنشاؤه سابقاً) ننشئه الآن
                         transaction.set(userRef, {
                             email: auth.currentUser.email,
                             points: 10,
@@ -956,20 +936,31 @@
             if(element) element.classList.add('active');
         }
 
+        // ==========================================
+        // 🚀 دالة التهيئة الآمنة لمنع تعليق شاشة التحميل
+        // ==========================================
         async function init() { 
-            const isAllowed = await checkBanAndTrack();
-            if (!isAllowed) return; 
+            try {
+                const isAllowed = await checkBanAndTrack();
+                if (!isAllowed) return; 
 
-            document.getElementById('langSelect').value = currentLang; 
-            document.getElementById('themeSelect').value = currentTheme; 
-            applyTheme(currentTheme); 
+                document.getElementById('langSelect').value = currentLang; 
+                document.getElementById('themeSelect').value = currentTheme; 
+                applyTheme(currentTheme); 
 
-            await loadProductsFromFirebase();
-            applyLanguage(currentLang); 
-            
-            const loader = document.getElementById('loader');
-            loader.classList.add('hidden');
-            setTimeout(() => loader.style.display = 'none', 500);
+                await loadProductsFromFirebase();
+                applyLanguage(currentLang); 
+            } catch (err) {
+                console.error("خطأ في التهيئة:", err);
+                products = [...defaultProducts];
+                applyLanguage(currentLang);
+            } finally {
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.classList.add('hidden');
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }
         }
 
         function changeTheme(theme) { currentTheme = theme; localStorage.setItem('theme', theme); applyTheme(theme); }
@@ -1510,4 +1501,48 @@
 
                 document.getElementById('formSection').style.display = 'none'; document.getElementById('successSection').style.display = 'block';
                 document.getElementById('successOrderId').innerText = orderID; triggerConfetti(); 
-            } catch (e
+            } catch (err) { alert('حدث خطأ أثناء الإرسال'); console.error(err); } finally { btnSpan.innerText = originalText; }
+        });
+
+        document.getElementById('customRequestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btnSpan = document.querySelector('#customSubmitBtn span'); const originalText = btnSpan.innerText; btnSpan.innerText = '⏳ جاري الإرسال...';
+            const orderID = generateOrderID(); const customName = document.getElementById('customCardName').value;
+            try {
+                const orderData = {
+                    id: orderID, type: 'custom', customName: `[خاص: ${orderID}] ${customName} | IP: ${clientIP}`,
+                    customContact: document.getElementById('customContact').value, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (auth.currentUser && auth.currentUser.emailVerified) {
+                    orderData.userId = auth.currentUser.uid;
+                }
+
+                await db.collection("orders").doc(orderID).set(orderData);
+                
+                saveOrderToHistory(`طلب خاص: ${customName}`, orderID);
+                
+                e.target.reset(); closeAllSheets(); showToast();
+            } catch (err) { alert('خطأ'); } finally { btnSpan.innerText = originalText; }
+        });
+
+        function showToast(msg = translations[currentLang].toastMsg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.className = `toast show ${type === 'error' ? 'error' : ''}`;
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        function previewImage(event) { 
+            const file = event.target.files[0];
+            const img = document.getElementById("imagePreview");
+            if(!file) return;
+            if(file.size > 2048000) { showToast(translations[currentLang].toastErrorSize, 'error'); event.target.value = ""; img.style.display = "none"; return; }
+            const reader = new FileReader();
+            reader.onload = () => { img.src = reader.result; img.style.display = "block"; }; reader.readAsDataURL(file);
+        }
+
+        init();
+    </script>
+</body>
+</html>
