@@ -120,7 +120,7 @@
         .step-item h4 { font-size: 0.85rem; font-weight: 800; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bottom-nav-bg); border-top: 1px solid var(--border-color); display: flex; padding: 10px 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 1000; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: 800; gap: 5px; cursor: pointer;}
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.7rem; font-weight: 800; gap: 5px; cursor: pointer;}
         .nav-item i { font-size: 1.3rem; transition: 0.3s; }
         .nav-item.active { color: var(--primary); }
         .nav-item.active i { transform: translateY(-3px); filter: drop-shadow(0 0 8px var(--primary)); }
@@ -192,7 +192,7 @@
                 <p style="color:var(--text-muted);font-size:0.9rem;margin-top:5px;">سجّل دخولك للمتابعة</p>
             </div>
             <div class="form-group">
-                <label class="form-label">البريد الإلكتروني</label>
+                <label class="form-label">البريد الإلكتروني للإدارة</label>
                 <input type="email" id="adminEmailInput" class="form-input" placeholder="admin@example.com" dir="ltr">
             </div>
             <div class="form-group">
@@ -201,7 +201,7 @@
             </div>
             <div id="adminLoginError" style="display:none;background:rgba(239,68,68,0.1);border:1px solid var(--danger);color:var(--danger);padding:10px;border-radius:8px;font-size:0.85rem;margin-bottom:12px;text-align:center;"></div>
             <button id="adminLoginBtn" onclick="submitAdminLogin()" class="btn-submit">
-                <span id="adminLoginBtnText"><i class="fa-solid fa-unlock"></i> تسجيل الدخول</span>
+                <span id="adminLoginBtnText"><i class="fa-solid fa-unlock"></i> تسجيل الدخول للإدارة</span>
             </button>
             <button onclick="cancelAdminLogin()" style="width:100%;margin-top:10px;padding:12px;background:transparent;border:1px solid var(--border-color);color:var(--text-muted);border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;">إلغاء</button>
         </div>
@@ -363,6 +363,7 @@
         </div>
     </div>
 
+    <!-- شريط التنقل المحدث (إضافة زر حسابي) -->
     <nav class="bottom-nav">
         <a class="nav-item active" onclick="setActiveNav(this); switchView('home');">
             <i class="fa-solid fa-house"></i>
@@ -371,6 +372,10 @@
         <a class="nav-item" onclick="setActiveNav(this); switchView('home'); document.getElementById('searchInput').focus();">
             <i class="fa-solid fa-magnifying-glass"></i>
             <span data-i18n="navSearch">بحث</span>
+        </a>
+        <a class="nav-item" onclick="setActiveNav(this); openAccountSheet();">
+            <i class="fa-solid fa-user"></i>
+            <span>حسابي</span>
         </a>
         <a class="nav-item" onclick="setActiveNav(this); switchView('inbox'); renderMyOrders();">
             <i class="fa-solid fa-envelope"></i>
@@ -389,6 +394,59 @@
 
     <div class="sheet-overlay" id="sheetOverlay" onclick="closeAllSheets()"></div>
 
+    <!-- نافذة الحساب وتجميع النقاط -->
+    <div class="bottom-sheet" id="accountSheet">
+        <div class="sheet-drag-handle"></div>
+        <div class="sheet-content">
+            <!-- قسم تسجيل الدخول / إنشاء الحساب -->
+            <div id="loginSection">
+                <h2 class="sheet-title">حسابي في فولت</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">سجل دخولك لتتمكن من تجميع النقاط!</p>
+                
+                <form id="userAuthForm">
+                    <div class="form-group">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" id="userEmail" class="form-input" required dir="ltr" placeholder="example@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">كلمة المرور (6 أحرف أو أكثر)</label>
+                        <input type="password" id="userPassword" class="form-input" required dir="ltr" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-submit" id="authBtn">تسجيل الدخول / إنشاء حساب</button>
+                </form>
+                <div id="authErrorMsg" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; display: none; text-align: center;"></div>
+            </div>
+
+            <!-- قسم التنبيه بضرورة تأكيد الإيميل -->
+            <div id="verifyEmailSection" style="display: none; text-align: center; padding: 20px 0;">
+                <i class="fa-solid fa-envelope-open-text" style="font-size: 4rem; color: var(--warning); margin-bottom: 15px;"></i>
+                <h3 style="color: var(--warning); margin-bottom: 10px;">يرجى تأكيد بريدك الإلكتروني!</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                    لقد أرسلنا رابط التحقق إلى إيميلك. يرجى فتح الإيميل والضغط على الرابط لتفعيل حسابك ونقاطك.
+                </p>
+                <button onclick="checkEmailVerification()" class="btn-submit" style="background: var(--input-bg); color: var(--success); border: 1px solid var(--success); margin-bottom: 10px;">لقد قمت بالتأكيد، تحديث الصفحة <i class="fa-solid fa-rotate"></i></button>
+                <button onclick="resendVerificationEmail()" style="background: transparent; border: none; color: var(--primary); text-decoration: underline; cursor: pointer; font-weight: bold;">إرسال الرابط مجدداً</button>
+                <br><br>
+                <button onclick="userLogout()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 8px 20px; border-radius: 8px; font-weight: bold;">تسجيل الخروج</button>
+            </div>
+
+            <!-- قسم البروفايل (يظهر فقط بعد تأكيد الإيميل) -->
+            <div id="profileSection" style="display: none; text-align: center;">
+                <i class="fa-solid fa-circle-check" style="font-size: 1.5rem; color: var(--success); position: absolute; transform: translate(25px, -10px);"></i>
+                <i class="fa-solid fa-circle-user" style="font-size: 4rem; color: var(--primary); margin-bottom: 10px;"></i>
+                <h3 id="profileEmail" style="color: var(--text-main); margin-bottom: 5px;">user@email.com</h3>
+                
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); padding: 15px; border-radius: 12px; margin: 20px 0;">
+                    <h4 style="color: var(--warning); margin-bottom: 5px;"><i class="fa-solid fa-coins"></i> نقاطي</h4>
+                    <div id="userPoints" style="font-size: 2.5rem; font-weight: 900; color: var(--text-main);">0</div>
+                </div>
+
+                <button onclick="userLogout()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%;">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- باقي النوافذ كما هي -->
     <div class="bottom-sheet" id="purchaseSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -461,6 +519,10 @@
     <div class="toast" id="toast" data-i18n="toastMsg">تم بنجاح! ✅</div>
 
     <script>
+        // ⚠️ إعدادات الإدارة ⚠️
+        // ضع إيميل الإدارة الخاص بك هنا لكي يظهر لك زر الإدارة حصرياً!
+        const ADMIN_EMAIL = "admin@gmail.com"; 
+
         // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB6bqBKnoRbFGMHJfs47av3ikUE3AIEb74",
@@ -515,7 +577,6 @@
             }
         };
 
-        const proxy = "https://wsrv.nl/?url=";
         const defaultProducts =[
             { id: 1, category: "mobile", img: "https://i.ibb.co/wr7mHdYG/images-18.jpg", price: 10000, ar: { name: "كود شحن ببجي - 325 شدة", cat: "ألعاب الجوال" }, en: { name: "PUBG Code - 325 UC", cat: "Mobile" } }
         ];
@@ -526,7 +587,133 @@
         let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
         let selectedProductCategory = ''; let clientIP = 'غير معروف';
 
-        // دالة حفظ الطلب بشكل صحيح
+        // ==========================================
+        // 🔐 نظام إدارة الحسابات وتجميع النقاط
+        // ==========================================
+        async function openAccountSheet() {
+            openSheet('accountSheet');
+            
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('verifyEmailSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+
+            const user = auth.currentUser;
+
+            if (user) {
+                await user.reload(); 
+                if (user.emailVerified) {
+                    document.getElementById('profileSection').style.display = 'block';
+                    document.getElementById('profileEmail').innerText = user.email;
+                    fetchUserPoints();
+                } else {
+                    document.getElementById('verifyEmailSection').style.display = 'block';
+                }
+            } else {
+                document.getElementById('loginSection').style.display = 'block';
+            }
+        }
+
+        document.getElementById('userAuthForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('userEmail').value;
+            const pass = document.getElementById('userPassword').value;
+            const btn = document.getElementById('authBtn');
+            const errorDiv = document.getElementById('authErrorMsg');
+            
+            btn.innerText = '⏳ جاري التحقق...';
+            errorDiv.style.display = 'none';
+
+            try {
+                // تسجيل الدخول العادي للمستخدمين
+                await auth.signInWithEmailAndPassword(email, pass);
+                openAccountSheet();
+            } catch (error) {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    try {
+                        // إنشاء حساب جديد
+                        const userCred = await auth.createUserWithEmailAndPassword(email, pass);
+                        
+                        // إرسال رابط التحقق للإيميل
+                        await userCred.user.sendEmailVerification();
+                        
+                        // تهيئة ملف المستخدم في قاعدة البيانات برصيد 0
+                        await db.collection('users').doc(userCred.user.uid).set({
+                            email: email,
+                            points: 0,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        showToast('تم إنشاء الحساب! يرجى فحص إيميلك.');
+                        openAccountSheet();
+                    } catch (createError) {
+                        errorDiv.innerText = 'خطأ في الإنشاء: ' + createError.message;
+                        errorDiv.style.display = 'block';
+                    }
+                } else {
+                    errorDiv.innerText = 'خطأ: ' + error.message;
+                    errorDiv.style.display = 'block';
+                }
+            } finally {
+                btn.innerText = 'تسجيل الدخول / إنشاء حساب';
+            }
+        });
+
+        async function checkEmailVerification() {
+            if (auth.currentUser) {
+                await auth.currentUser.reload();
+                if (auth.currentUser.emailVerified) {
+                    showToast('تم التحقق بنجاح! ✅');
+                    openAccountSheet();
+                } else {
+                    showToast('لم تقم بتأكيد الإيميل بعد!', 'error');
+                }
+            }
+        }
+
+        async function resendVerificationEmail() {
+            if (auth.currentUser) {
+                try {
+                    await auth.currentUser.sendEmailVerification();
+                    showToast('تم إرسال الرابط مجدداً! افحص صندوق الوارد.');
+                } catch(e) {
+                    showToast('يرجى الانتظار قليلاً قبل طلب رابط جديد.', 'error');
+                }
+            }
+        }
+
+        async function fetchUserPoints() {
+            if(!auth.currentUser) return;
+            try {
+                const doc = await db.collection('users').doc(auth.currentUser.uid).get();
+                if (doc.exists) {
+                    document.getElementById('userPoints').innerText = doc.data().points || 0;
+                }
+            } catch(e) { console.error("خطأ في جلب النقاط", e); }
+        }
+
+        async function userLogout() {
+            await auth.signOut();
+            closeAllSheets();
+            showToast('تم تسجيل الخروج');
+        }
+
+        // ==========================================
+        // مراقبة الدخول (لإظهار زر الإدارة للأدمن فقط)
+        // ==========================================
+        auth.onAuthStateChanged((user) => {
+            const adminBtn = document.getElementById('adminNavBtn');
+            // يظهر زر الإدارة فقط إذا كان الإيميل المسجل يطابق إيميل الأدمن المخصص
+            if (user && user.email === ADMIN_EMAIL) {
+                adminBtn.style.display = 'flex';
+            } else {
+                adminBtn.style.display = 'none';
+                if (document.getElementById('admin-section') && document.getElementById('admin-section').style.display === 'block') {
+                    switchView('home');
+                    setActiveNav(document.querySelectorAll('.nav-item')[0]);
+                }
+            }
+        });
+
         function saveOrderToHistory(orderName, orderId) {
             myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
             const date = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
@@ -610,24 +797,6 @@
             if(element) element.classList.add('active');
         }
 
-        function checkAdminSession() {
-            // Firebase Auth يتحكم تلقائياً عبر onAuthStateChanged
-        }
-
-        // مراقبة حالة تسجيل الدخول
-        auth.onAuthStateChanged((user) => {
-            const adminBtn = document.getElementById('adminNavBtn');
-            if (user) {
-                adminBtn.style.display = 'flex';
-            } else {
-                adminBtn.style.display = 'none';
-                if (document.getElementById('admin-section') && document.getElementById('admin-section').style.display === 'block') {
-                    switchView('home');
-                    setActiveNav(document.querySelectorAll('.nav-item')[0]);
-                }
-            }
-        });
-
         async function init() { 
             const isAllowed = await checkBanAndTrack();
             if (!isAllowed) return; 
@@ -635,8 +804,6 @@
             document.getElementById('langSelect').value = currentLang; 
             document.getElementById('themeSelect').value = currentTheme; 
             applyTheme(currentTheme); 
-            
-            checkAdminSession();
 
             await loadProductsFromFirebase();
             applyLanguage(currentLang); 
@@ -665,6 +832,8 @@
 
         function onSearchInput(event) {
             const query = event.target.value;
+            // فحص كود الأوامر السري
+            if (query === "volt-cmd-88") { event.target.value = ""; adminLogin(); return; }
             document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.filter-chip').classList.add('active');
             renderProducts('all', query.toLowerCase());
@@ -775,10 +944,11 @@
         }
 
         // ==========================================
-        // 🛡️ لوحة الإدارة المتطورة
+        // 🛡️ لوحة الإدارة 
         // ==========================================
         function adminLogin() {
-            if (auth.currentUser) {
+            // إذا كان المستخدم الحالي مسجل دخوله وهو الأدمن، يدخل فوراً
+            if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
                 closeAllSheets();
                 switchView('admin'); switchAdminTab('orders');
                 return;
@@ -793,12 +963,20 @@
             const password = document.getElementById('adminPasswordInput').value;
             const errorDiv = document.getElementById('adminLoginError');
             const btnText = document.getElementById('adminLoginBtnText');
+            
             errorDiv.style.display = 'none';
             if (!email || !password) {
                 errorDiv.innerText = 'يرجى إدخال البريد وكلمة المرور.';
                 errorDiv.style.display = 'block';
                 return;
             }
+
+            if (email !== ADMIN_EMAIL) {
+                errorDiv.innerText = 'عذراً، هذا الحساب ليس لديه صلاحيات الإدارة.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
             btnText.innerHTML = '⏳ جاري التحقق...';
             document.getElementById('adminLoginBtn').disabled = true;
             try {
@@ -806,7 +984,7 @@
                 cancelAdminLogin();
                 closeAllSheets();
                 switchView('admin'); switchAdminTab('orders');
-                showToast('مرحباً! تم تسجيل الدخول بنجاح ✅');
+                showToast('مرحباً أستاذ! تم تسجيل الدخول للإدارة ✅');
             } catch (err) {
                 let msg = 'بيانات خاطئة، حاول مجدداً.';
                 if (err.code === 'auth/user-not-found') msg = 'البريد الإلكتروني غير موجود.';
@@ -815,7 +993,7 @@
                 errorDiv.innerText = msg;
                 errorDiv.style.display = 'block';
             } finally {
-                btnText.innerHTML = '<i class="fa-solid fa-unlock"></i> تسجيل الدخول';
+                btnText.innerHTML = '<i class="fa-solid fa-unlock"></i> تسجيل الدخول للإدارة';
                 document.getElementById('adminLoginBtn').disabled = false;
             }
         }
@@ -833,7 +1011,7 @@
         });
 
         async function adminLogout() {
-            if(confirm("هل تريد تسجيل الخروج وقفل لوحة الإدارة؟")) {
+            if(confirm("هل تريد قفل لوحة الإدارة وتسجيل الخروج؟")) {
                 await auth.signOut();
                 switchView('home');
                 setActiveNav(document.querySelectorAll('.nav-item')[0]);
@@ -882,9 +1060,43 @@
             } catch (e) { list.innerHTML = 'خطأ'; }
         }
         
+        // 🌟 دالة الموافقة وإضافة النقاط للزبون 🌟
         async function adminAction(docId, action) {
-            let msg = prompt(action === 'accept' ? "اكتب كود البطاقة:" : "اكتب سبب الرفض:");
-            if(msg !== null) { await db.collection("orders").doc(docId).update({ status: action === 'accept' ? 'completed' : 'rejected', adminMessage: msg }); showToast(); loadAdminOrders(); }
+            let msg = prompt(action === 'accept' ? "اكتب كود البطاقة للزبون:" : "اكتب سبب الرفض:");
+            if(msg !== null) { 
+                
+                // تحديث حالة الطلب
+                await db.collection("orders").doc(docId).update({ 
+                    status: action === 'accept' ? 'completed' : 'rejected', 
+                    adminMessage: msg 
+                }); 
+                
+                // إضافة نقاط في حالة القبول
+                if (action === 'accept') {
+                    const orderDoc = await db.collection("orders").doc(docId).get();
+                    const orderData = orderDoc.data();
+                    
+                    // التحقق إذا كان المشتري مسجل دخوله بحساب (لديه userId)
+                    if (orderData.userId) {
+                        let pointsInput = prompt("كم عدد النقاط التي تريد منحها للزبون مكافأةً لشرائه؟ (اتركه 0 إذا لم ترد إضافة نقاط)", "50");
+                        let pointsToAdd = parseInt(pointsInput) || 0;
+                        
+                        if (pointsToAdd > 0) {
+                            const userRef = db.collection('users').doc(orderData.userId);
+                            await db.runTransaction(async (transaction) => {
+                                const userDoc = await transaction.get(userRef);
+                                if (userDoc.exists) {
+                                    const newPoints = (userDoc.data().points || 0) + pointsToAdd;
+                                    transaction.update(userRef, { points: newPoints });
+                                }
+                            });
+                        }
+                    }
+                }
+                
+                showToast(); 
+                loadAdminOrders(); 
+            }
         }
 
         function renderAdminCardsList() {
@@ -1010,15 +1222,11 @@
             }
         }
 
-        // ==========================================
-        // 📊 دالة تحميل الزيارات والإحصائيات الجديدة
-        // ==========================================
         async function loadVisits() {
             const list = document.getElementById('visitsList');
             list.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary)"></i></div>';
             
             try {
-                // 1. حساب الإحصائيات (الإجمالي، الأسبوع، اليوم)
                 const allVisitsSnap = await db.collection("visits").get();
                 const total = allVisitsSnap.size;
                 let todayCount = 0;
@@ -1040,7 +1248,6 @@
                 document.getElementById('statsToday').innerText = todayCount;
                 document.getElementById('statsWeek').innerText = weekCount;
 
-                // 2. عرض أحدث 30 زيارة في القائمة
                 const snapshot = await db.collection("visits").orderBy("timestamp", "desc").limit(30).get();
                 let html = '';
                 snapshot.forEach((doc) => {
@@ -1097,7 +1304,6 @@
             selectedProductCategory = category;
             document.getElementById('selectedCard').value = `${name} - ${price}`;
             
-            // Show target account field only for boosting/subs if needed
             const targetGroup = document.getElementById('targetAccountGroup');
             if (category === 'boosting' || category === 'stores') {
                 targetGroup.style.display = 'block';
@@ -1137,10 +1343,18 @@
                 const imgData = await imgRes.json();
                 if (!imgData.success) throw new Error('ImgBB Failed');
                 
-                await db.collection("orders").doc(orderID).set({
+                const orderData = {
                     id: orderID, type: 'order', cardDetails: finalCardDetails, userName: document.getElementById('userName').value, 
                     transferPhone: transferPhoneInput.value, imageUrl: imgData.data.url, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                };
+
+                // 🌟 ربط الطلب بحساب الزبون لكي يستلم النقاط 🌟
+                if (auth.currentUser && auth.currentUser.emailVerified) {
+                    orderData.userId = auth.currentUser.uid;
+                }
+
+                await db.collection("orders").doc(orderID).set(orderData);
+                
                 saveOrderToHistory(document.getElementById('selectedCard').value.split('-')[0].trim(), orderID);
 
                 document.getElementById('formSection').style.display = 'none'; document.getElementById('successSection').style.display = 'block';
@@ -1153,10 +1367,16 @@
             const btnSpan = document.querySelector('#customSubmitBtn span'); const originalText = btnSpan.innerText; btnSpan.innerText = '⏳ جاري الإرسال...';
             const orderID = generateOrderID(); const customName = document.getElementById('customCardName').value;
             try {
-                await db.collection("orders").doc(orderID).set({
+                const orderData = {
                     id: orderID, type: 'custom', customName: `[خاص: ${orderID}] ${customName} | IP: ${clientIP}`,
                     customContact: document.getElementById('customContact').value, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                };
+
+                if (auth.currentUser && auth.currentUser.emailVerified) {
+                    orderData.userId = auth.currentUser.uid;
+                }
+
+                await db.collection("orders").doc(orderID).set(orderData);
                 
                 saveOrderToHistory(`طلب خاص: ${customName}`, orderID);
                 
