@@ -173,7 +173,8 @@
         <div class="loader-content">
             <i class="fa-solid fa-bolt loader-icon"></i>
             <h2 data-i18n="logo">فولت كارد</h2>
-            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);">جاري فحص الاتصال...</p>
+            <!-- تم تغيير الجملة هنا -->
+            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); font-weight: bold;">أهلا وسهلا بك في فولت كارد</p>
         </div>
     </div>
 
@@ -257,11 +258,50 @@
         </section>
     </div>
 
+    <!-- قسم تجميع النقاط الجديد -->
+    <div id="points-section" class="inbox-container" style="display: none;">
+        <h2 class="section-divider" style="margin-bottom: 25px;"><i class="fa-solid fa-coins" style="color: var(--warning);"></i> نظام النقاط والمكافآت</h2>
+        
+        <div style="text-align: center; padding: 30px 20px; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 25px; box-shadow: var(--neon-glow);">
+            <h3 style="color: var(--text-muted); font-size: 1rem; margin-bottom: 10px;">رصيد نقاطك الحالي</h3>
+            <div style="font-size: 3.5rem; font-weight: 900; color: var(--warning); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span id="pointsDisplay">0</span> <i class="fa-solid fa-circle-dollar-to-slot"></i>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 10px;">اجمع النقاط واستبدلها ببطاقات مجانية لاحقاً!</p>
+        </div>
+
+        <h3 class="section-divider" style="font-size: 1.1rem; border-color: var(--success);"><i class="fa-solid fa-gift" style="color: var(--success);"></i> طرق الحصول على النقاط</h3>
+        
+        <div style="display: grid; gap: 15px;">
+            <div style="background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px;">
+                <div style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+                <div style="flex-grow: 1;">
+                    <h4 style="color: var(--text-main); margin-bottom: 5px; font-size: 0.95rem;">الشراء من المتجر</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem;">احصل على نقاط ومكافآت مع كل طلب شراء يتم الموافقة عليه من الإدارة.</p>
+                </div>
+            </div>
+
+            <div style="background: var(--input-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px;">
+                <div style="background: rgba(139, 92, 246, 0.1); color: var(--primary); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div style="flex-grow: 1;">
+                    <h4 style="color: var(--text-main); margin-bottom: 5px; font-size: 0.95rem;">المكافأة اليومية</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem;">ادخل للموقع يومياً لتحصل على 10 نقاط مجانية.</p>
+                </div>
+                <button onclick="claimDailyPoints()" style="background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 10px rgba(139,92,246,0.3);">استلام</button>
+            </div>
+        </div>
+    </div>
+
     <div id="inbox-section" class="inbox-container" style="display: none;">
         <h2 class="section-divider" style="margin-bottom: 25px;"><i class="fa-solid fa-envelope-open-text" style="color: var(--primary);"></i> <span data-i18n="myOrdersTitle">صندوق الرسائل والطلبات</span></h2>
         <div id="myOrdersList"></div>
     </div>
 
+    <!-- قسم الإدارة -->
     <div id="admin-section" class="inbox-container" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <h2 class="section-divider" style="border-right-color: var(--danger); margin: 0;">
@@ -363,7 +403,7 @@
         </div>
     </div>
 
-    <!-- شريط التنقل المحدث (إضافة زر حسابي) -->
+    <!-- شريط التنقل المحدث (إضافة النقاط بدل حسابي) -->
     <nav class="bottom-nav">
         <a class="nav-item active" onclick="setActiveNav(this); switchView('home');">
             <i class="fa-solid fa-house"></i>
@@ -373,9 +413,9 @@
             <i class="fa-solid fa-magnifying-glass"></i>
             <span data-i18n="navSearch">بحث</span>
         </a>
-        <a class="nav-item" onclick="setActiveNav(this); openAccountSheet();">
-            <i class="fa-solid fa-user"></i>
-            <span>حسابي</span>
+        <a class="nav-item" onclick="setActiveNav(this); switchView('points'); fetchUserPointsUI();">
+            <i class="fa-solid fa-coins"></i>
+            <span>النقاط</span>
         </a>
         <a class="nav-item" onclick="setActiveNav(this); switchView('inbox'); renderMyOrders();">
             <i class="fa-solid fa-envelope"></i>
@@ -394,14 +434,13 @@
 
     <div class="sheet-overlay" id="sheetOverlay" onclick="closeAllSheets()"></div>
 
-    <!-- نافذة الحساب وتجميع النقاط -->
-    <div class="bottom-sheet" id="accountSheet">
+    <!-- نافذة تسجيل الدخول تظهر تلقائياً -->
+    <div class="bottom-sheet" id="loginSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
-            <!-- قسم تسجيل الدخول / إنشاء الحساب -->
             <div id="loginSection">
-                <h2 class="sheet-title">حسابي في فولت</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">سجل دخولك لتتمكن من تجميع النقاط!</p>
+                <h2 class="sheet-title">أهلاً بك في فولت كارد</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">سجل دخولك أو أنشئ حساباً جديداً لتتمكن من تجميع النقاط والفوز بالهدايا!</p>
                 
                 <form id="userAuthForm">
                     <div class="form-group">
@@ -417,36 +456,61 @@
                 <div id="authErrorMsg" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; display: none; text-align: center;"></div>
             </div>
 
-            <!-- قسم التنبيه بضرورة تأكيد الإيميل -->
             <div id="verifyEmailSection" style="display: none; text-align: center; padding: 20px 0;">
                 <i class="fa-solid fa-envelope-open-text" style="font-size: 4rem; color: var(--warning); margin-bottom: 15px;"></i>
                 <h3 style="color: var(--warning); margin-bottom: 10px;">يرجى تأكيد بريدك الإلكتروني!</h3>
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-                    لقد أرسلنا رابط التحقق إلى إيميلك. يرجى فتح الإيميل والضغط على الرابط لتفعيل حسابك ونقاطك.
+                    لقد أرسلنا رابط التحقق إلى إيميلك. يرجى فتح الإيميل والضغط على الرابط لتفعيل حسابك.
                 </p>
                 <button onclick="checkEmailVerification()" class="btn-submit" style="background: var(--input-bg); color: var(--success); border: 1px solid var(--success); margin-bottom: 10px;">لقد قمت بالتأكيد، تحديث الصفحة <i class="fa-solid fa-rotate"></i></button>
                 <button onclick="resendVerificationEmail()" style="background: transparent; border: none; color: var(--primary); text-decoration: underline; cursor: pointer; font-weight: bold;">إرسال الرابط مجدداً</button>
-                <br><br>
-                <button onclick="userLogout()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 8px 20px; border-radius: 8px; font-weight: bold;">تسجيل الخروج</button>
-            </div>
-
-            <!-- قسم البروفايل (يظهر فقط بعد تأكيد الإيميل) -->
-            <div id="profileSection" style="display: none; text-align: center;">
-                <i class="fa-solid fa-circle-check" style="font-size: 1.5rem; color: var(--success); position: absolute; transform: translate(25px, -10px);"></i>
-                <i class="fa-solid fa-circle-user" style="font-size: 4rem; color: var(--primary); margin-bottom: 10px;"></i>
-                <h3 id="profileEmail" style="color: var(--text-main); margin-bottom: 5px;">user@email.com</h3>
-                
-                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); padding: 15px; border-radius: 12px; margin: 20px 0;">
-                    <h4 style="color: var(--warning); margin-bottom: 5px;"><i class="fa-solid fa-coins"></i> نقاطي</h4>
-                    <div id="userPoints" style="font-size: 2.5rem; font-weight: 900; color: var(--text-main);">0</div>
-                </div>
-
-                <button onclick="userLogout()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%;">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- باقي النوافذ كما هي -->
+    <!-- نافذة الإعدادات مدمج معها الحساب -->
+    <div class="bottom-sheet" id="settingsSheet">
+        <div class="sheet-drag-handle"></div>
+        <div class="sheet-content">
+            <h2 class="sheet-title" data-i18n="settings">الإعدادات</h2>
+            
+            <!-- قسم الحساب داخل الإعدادات -->
+            <div id="settingsProfileSection" style="display: none; background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); text-align: center;">
+                <i class="fa-solid fa-circle-user" style="font-size: 3rem; color: var(--primary); margin-bottom: 10px;"></i>
+                <h3 id="settingsEmail" style="color: var(--text-main); margin-bottom: 15px; font-size: 1.1rem; word-break: break-all;"></h3>
+                <button onclick="userLogout()" style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer;"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+            
+            <!-- تنبيه للتسجيل إذا لم يكن مسجلاً -->
+            <div id="settingsLoginPrompt" style="display: block; background: var(--input-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); text-align: center;">
+                <p style="color: var(--text-muted); margin-bottom: 10px; font-weight: bold;">قم بتسجيل الدخول لحفظ نقاطك وطلباتك</p>
+                <button onclick="closeAllSheets(); openSheet('loginSheet');" class="btn-submit" style="margin-top: 0; padding: 10px; border-radius: 8px;"><i class="fa-solid fa-user-plus"></i> تسجيل الدخول الآن</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" data-i18n="language">اللغة / Language</label>
+                <select class="form-input" id="langSelect" onchange="changeLanguage(this.value)">
+                    <option value="ar">العربية</option><option value="en">English</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" data-i18n="theme">المظهر / Theme</label>
+                <select class="form-input" id="themeSelect" onchange="changeTheme(this.value)">
+                    <option value="dark" data-i18n="dark">داكن</option><option value="light" data-i18n="light">فاتح</option>
+                </select>
+            </div>
+            <hr style="border:0; border-top: 1px solid var(--border-color); margin: 25px 0;">
+            <h3 style="color: var(--warning); margin-bottom: 15px;" data-i18n="customOrderTitle">الطلبات الخاصة</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="customOrderDesc">لم تجد الخدمة المطلوبة؟ اطلبها من هنا:</p>
+            <form id="customRequestForm">
+                <div class="form-group"><input type="text" id="customCardName" class="form-input" required placeholder="الخدمة المطلوبة والكمية" data-i18n-placeholder="customCardInput"></div>
+                <div class="form-group"><input type="text" id="customContact" class="form-input" required placeholder="رقم الهاتف أو المعرف" data-i18n-placeholder="formContact"></div>
+                <button type="submit" class="btn-submit" id="customSubmitBtn"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="customOrderBtn">إرسال الطلب</span></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة إتمام الطلب -->
     <div class="bottom-sheet" id="purchaseSheet">
         <div class="sheet-drag-handle"></div>
         <div class="sheet-content">
@@ -486,33 +550,6 @@
                 <div id="successOrderId" style="font-size: 1.5rem; color: var(--primary); font-weight: 900; letter-spacing: 2px; margin-bottom: 20px;"></div>
                 <button class="btn-submit" onclick="closeAllSheets()" style="background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main);" data-i18n="closeBtn">إغلاق</button>
             </div>
-        </div>
-    </div>
-
-    <div class="bottom-sheet" id="settingsSheet">
-        <div class="sheet-drag-handle"></div>
-        <div class="sheet-content">
-            <h2 class="sheet-title" data-i18n="settings">الإعدادات</h2>
-            <div class="form-group">
-                <label class="form-label" data-i18n="language">اللغة / Language</label>
-                <select class="form-input" id="langSelect" onchange="changeLanguage(this.value)">
-                    <option value="ar">العربية</option><option value="en">English</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label" data-i18n="theme">المظهر / Theme</label>
-                <select class="form-input" id="themeSelect" onchange="changeTheme(this.value)">
-                    <option value="dark" data-i18n="dark">داكن</option><option value="light" data-i18n="light">فاتح</option>
-                </select>
-            </div>
-            <hr style="border:0; border-top: 1px solid var(--border-color); margin: 25px 0;">
-            <h3 style="color: var(--warning); margin-bottom: 15px;" data-i18n="customOrderTitle">الطلبات الخاصة</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="customOrderDesc">لم تجد الخدمة المطلوبة؟ اطلبها من هنا:</p>
-            <form id="customRequestForm">
-                <div class="form-group"><input type="text" id="customCardName" class="form-input" required placeholder="الخدمة المطلوبة والكمية" data-i18n-placeholder="customCardInput"></div>
-                <div class="form-group"><input type="text" id="customContact" class="form-input" required placeholder="رقم الهاتف أو المعرف" data-i18n-placeholder="formContact"></div>
-                <button type="submit" class="btn-submit" id="customSubmitBtn"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="customOrderBtn">إرسال الطلب</span></button>
-            </form>
         </div>
     </div>
 
@@ -586,32 +623,54 @@
         let currentLang = localStorage.getItem('lang') || 'ar'; let currentTheme = localStorage.getItem('theme') || 'dark';
         let myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
         let selectedProductCategory = ''; let clientIP = 'غير معروف';
+        
+        let hasCheckedAuthOnce = false; // متغير لمنع تكرار ظهور النافذة
 
         // ==========================================
-        // 🔐 نظام إدارة الحسابات وتجميع النقاط
+        // 🔐 نظام التسجيل المحدث وإدارة ظهور النافذة
         // ==========================================
-        async function openAccountSheet() {
-            openSheet('accountSheet');
-            
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('verifyEmailSection').style.display = 'none';
-            document.getElementById('profileSection').style.display = 'none';
-
-            const user = auth.currentUser;
+        auth.onAuthStateChanged(async (user) => {
+            const adminBtn = document.getElementById('adminNavBtn');
+            if (user && user.email === ADMIN_EMAIL) {
+                adminBtn.style.display = 'flex';
+            } else {
+                adminBtn.style.display = 'none';
+                if (document.getElementById('admin-section').style.display === 'block') {
+                    switchView('home');
+                    setActiveNav(document.querySelectorAll('.nav-item')[0]);
+                }
+            }
 
             if (user) {
-                await user.reload(); 
-                if (user.emailVerified) {
-                    document.getElementById('profileSection').style.display = 'block';
-                    document.getElementById('profileEmail').innerText = user.email;
-                    fetchUserPoints();
-                } else {
+                // المستخدم مسجل دخوله
+                document.getElementById('settingsProfileSection').style.display = 'block';
+                document.getElementById('settingsLoginPrompt').style.display = 'none';
+                document.getElementById('settingsEmail').innerText = user.email;
+                
+                await user.reload();
+                if(!user.emailVerified) {
+                    // مسجل ولكن غير مؤكد
+                    document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('verifyEmailSection').style.display = 'block';
+                    if (!hasCheckedAuthOnce) setTimeout(() => openSheet('loginSheet'), 1000);
+                } else {
+                    // مسجل ومؤكد بنجاح
+                    fetchUserPointsUI();
+                    if (document.getElementById('loginSheet').classList.contains('active')) closeAllSheets();
                 }
             } else {
+                // المستخدم غير مسجل - إظهار النافذة التلقائي
+                document.getElementById('settingsProfileSection').style.display = 'none';
+                document.getElementById('settingsLoginPrompt').style.display = 'block';
                 document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('verifyEmailSection').style.display = 'none';
+                
+                if (!hasCheckedAuthOnce) {
+                    setTimeout(() => openSheet('loginSheet'), 1500);
+                }
             }
-        }
+            hasCheckedAuthOnce = true;
+        });
 
         document.getElementById('userAuthForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -624,29 +683,32 @@
             errorDiv.style.display = 'none';
 
             try {
-                // تسجيل الدخول العادي للمستخدمين
+                // 1. محاولة تسجيل الدخول
                 await auth.signInWithEmailAndPassword(email, pass);
-                openAccountSheet();
+                closeAllSheets();
+                showToast('تم تسجيل الدخول بنجاح!');
             } catch (error) {
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                // 2. معالجة إنشاء الحساب وتخطي مشكلة INVALID_LOGIN_CREDENTIALS
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-login-credentials' || error.code === 'auth/invalid-credential') {
                     try {
-                        // إنشاء حساب جديد
                         const userCred = await auth.createUserWithEmailAndPassword(email, pass);
-                        
-                        // إرسال رابط التحقق للإيميل
                         await userCred.user.sendEmailVerification();
                         
-                        // تهيئة ملف المستخدم في قاعدة البيانات برصيد 0
                         await db.collection('users').doc(userCred.user.uid).set({
                             email: email,
                             points: 0,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                         
+                        document.getElementById('loginSection').style.display = 'none';
+                        document.getElementById('verifyEmailSection').style.display = 'block';
                         showToast('تم إنشاء الحساب! يرجى فحص إيميلك.');
-                        openAccountSheet();
                     } catch (createError) {
-                        errorDiv.innerText = 'خطأ في الإنشاء: ' + createError.message;
+                        if (createError.code === 'auth/email-already-in-use') {
+                            errorDiv.innerText = 'الحساب موجود بالفعل، كلمة المرور التي أدخلتها غير صحيحة.';
+                        } else {
+                            errorDiv.innerText = 'خطأ في الإنشاء: ' + createError.message;
+                        }
                         errorDiv.style.display = 'block';
                     }
                 } else {
@@ -663,7 +725,8 @@
                 await auth.currentUser.reload();
                 if (auth.currentUser.emailVerified) {
                     showToast('تم التحقق بنجاح! ✅');
-                    openAccountSheet();
+                    closeAllSheets();
+                    fetchUserPointsUI();
                 } else {
                     showToast('لم تقم بتأكيد الإيميل بعد!', 'error');
                 }
@@ -681,38 +744,69 @@
             }
         }
 
-        async function fetchUserPoints() {
-            if(!auth.currentUser) return;
+        // ==========================================
+        // 💰 نظام تحديث واجهة النقاط والمكافأة اليومية
+        // ==========================================
+        async function fetchUserPointsUI() {
+            if(!auth.currentUser) {
+                document.getElementById('pointsDisplay').innerText = "0";
+                return;
+            }
             try {
                 const doc = await db.collection('users').doc(auth.currentUser.uid).get();
                 if (doc.exists) {
-                    document.getElementById('userPoints').innerText = doc.data().points || 0;
+                    document.getElementById('pointsDisplay').innerText = doc.data().points || 0;
                 }
             } catch(e) { console.error("خطأ في جلب النقاط", e); }
+        }
+
+        async function claimDailyPoints() {
+            if(!auth.currentUser) {
+                showToast('يجب تسجيل الدخول أولاً!', 'error');
+                setTimeout(() => openSheet('loginSheet'), 1000);
+                return;
+            }
+            if(!auth.currentUser.emailVerified) {
+                showToast('يرجى تأكيد إيميلك أولاً!', 'error');
+                openSheet('loginSheet');
+                return;
+            }
+            
+            const today = new Date().toDateString();
+            const lastClaim = localStorage.getItem('last_daily_claim_' + auth.currentUser.uid);
+            
+            if (lastClaim === today) {
+                showToast('لقد استلمت مكافأتك اليوم، عد غداً! ⏳', 'error');
+                return;
+            }
+            
+            try {
+                const userRef = db.collection('users').doc(auth.currentUser.uid);
+                await db.runTransaction(async (transaction) => {
+                    const userDoc = await transaction.get(userRef);
+                    if (userDoc.exists) {
+                        const newPoints = (userDoc.data().points || 0) + 10;
+                        transaction.update(userRef, { points: newPoints });
+                    }
+                });
+                
+                localStorage.setItem('last_daily_claim_' + auth.currentUser.uid, today);
+                showToast('تمت إضافة 10 نقاط لرصيدك! 🎉');
+                fetchUserPointsUI();
+                triggerConfetti();
+            } catch (error) {
+                showToast('حدث خطأ، حاول مجدداً', 'error');
+            }
         }
 
         async function userLogout() {
             await auth.signOut();
             closeAllSheets();
             showToast('تم تسجيل الخروج');
+            document.getElementById('pointsDisplay').innerText = "0";
+            switchView('home');
+            setActiveNav(document.querySelectorAll('.nav-item')[0]);
         }
-
-        // ==========================================
-        // مراقبة الدخول (لإظهار زر الإدارة للأدمن فقط)
-        // ==========================================
-        auth.onAuthStateChanged((user) => {
-            const adminBtn = document.getElementById('adminNavBtn');
-            // يظهر زر الإدارة فقط إذا كان الإيميل المسجل يطابق إيميل الأدمن المخصص
-            if (user && user.email === ADMIN_EMAIL) {
-                adminBtn.style.display = 'flex';
-            } else {
-                adminBtn.style.display = 'none';
-                if (document.getElementById('admin-section') && document.getElementById('admin-section').style.display === 'block') {
-                    switchView('home');
-                    setActiveNav(document.querySelectorAll('.nav-item')[0]);
-                }
-            }
-        });
 
         function saveOrderToHistory(orderName, orderId) {
             myOrdersHistory = JSON.parse(localStorage.getItem('myVoltOrders')) || [];
@@ -787,9 +881,12 @@
             document.getElementById('home-section').style.display = 'none';
             document.getElementById('inbox-section').style.display = 'none';
             document.getElementById('admin-section').style.display = 'none';
+            document.getElementById('points-section').style.display = 'none'; // إضافة قسم النقاط
+            
             if (viewName === 'home') document.getElementById('home-section').style.display = 'block';
             else if (viewName === 'inbox') document.getElementById('inbox-section').style.display = 'block';
             else if (viewName === 'admin') document.getElementById('admin-section').style.display = 'block';
+            else if (viewName === 'points') document.getElementById('points-section').style.display = 'block';
         }
 
         function setActiveNav(element) {
@@ -832,7 +929,6 @@
 
         function onSearchInput(event) {
             const query = event.target.value;
-            // فحص كود الأوامر السري
             if (query === "volt-cmd-88") { event.target.value = ""; adminLogin(); return; }
             document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.filter-chip').classList.add('active');
@@ -947,7 +1043,6 @@
         // 🛡️ لوحة الإدارة 
         // ==========================================
         function adminLogin() {
-            // إذا كان المستخدم الحالي مسجل دخوله وهو الأدمن، يدخل فوراً
             if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
                 closeAllSheets();
                 switchView('admin'); switchAdminTab('orders');
@@ -989,7 +1084,6 @@
                 let msg = 'بيانات خاطئة، حاول مجدداً.';
                 if (err.code === 'auth/user-not-found') msg = 'البريد الإلكتروني غير موجود.';
                 if (err.code === 'auth/wrong-password') msg = 'كلمة المرور غير صحيحة.';
-                if (err.code === 'auth/too-many-requests') msg = 'محاولات كثيرة، حاول لاحقاً.';
                 errorDiv.innerText = msg;
                 errorDiv.style.display = 'block';
             } finally {
@@ -1060,23 +1154,19 @@
             } catch (e) { list.innerHTML = 'خطأ'; }
         }
         
-        // 🌟 دالة الموافقة وإضافة النقاط للزبون 🌟
         async function adminAction(docId, action) {
             let msg = prompt(action === 'accept' ? "اكتب كود البطاقة للزبون:" : "اكتب سبب الرفض:");
             if(msg !== null) { 
                 
-                // تحديث حالة الطلب
                 await db.collection("orders").doc(docId).update({ 
                     status: action === 'accept' ? 'completed' : 'rejected', 
                     adminMessage: msg 
                 }); 
                 
-                // إضافة نقاط في حالة القبول
                 if (action === 'accept') {
                     const orderDoc = await db.collection("orders").doc(docId).get();
                     const orderData = orderDoc.data();
                     
-                    // التحقق إذا كان المشتري مسجل دخوله بحساب (لديه userId)
                     if (orderData.userId) {
                         let pointsInput = prompt("كم عدد النقاط التي تريد منحها للزبون مكافأةً لشرائه؟ (اتركه 0 إذا لم ترد إضافة نقاط)", "50");
                         let pointsToAdd = parseInt(pointsInput) || 0;
@@ -1348,7 +1438,6 @@
                     transferPhone: transferPhoneInput.value, imageUrl: imgData.data.url, status: 'pending', adminMessage: '', timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 };
 
-                // 🌟 ربط الطلب بحساب الزبون لكي يستلم النقاط 🌟
                 if (auth.currentUser && auth.currentUser.emailVerified) {
                     orderData.userId = auth.currentUser.uid;
                 }
